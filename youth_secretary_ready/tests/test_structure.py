@@ -164,7 +164,9 @@ def test_income_amount_is_compared_only_for_annual_income_code():
     for pay, expected in [(200, 'match'), (410, 'unknown'), (430, 'unknown'), (450, 'mismatch')]:   # 연 2,400 / 4,920 / 5,160 / 5,400만원
         assert verdict(limited, {'income_monthly': pay})[1]['income'] == expected
     floor = made(earnCndSeCd='0043002', earnMinAmt='2400', earnMaxAmt='5000')
-    assert [verdict(floor, {'income_monthly': x})[1]['income'] for x in (100, 200, 300)] == ['mismatch', 'unknown', 'match']
+    # 최소 금액이 함께 적히면 하한인지 다른 대상의 상한인지 알 수 없다(실제 사례: 청년 5,000 / 신혼부부 7,500). 견주지 않는다.
+    assert [verdict(floor, {'income_monthly': x})[1]['income'] for x in (100, 200, 300, 900)] == ['unknown'] * 4
+    assert '두 값' in verdict(floor, {'income_monthly': 100})[0]['criteria'][3]['basis']
     assert (limited['income']['min_raw'], limited['income']['max_raw']) == ('0', '5000')
     assert verdict(limited, {})[1]['income'] == 'unknown'
 
@@ -482,6 +484,7 @@ def test_whole_sido_policy_matches_sido_only_profile():
 
 def test_ask_asks_one_missing_fact_in_order(ctx, monkeypatch):
     catalog(ctx)
+    seed([good('SJ', jobCd='0013003', ptcpPrpTrgtCn='타 지자체 유사 사업 중복 참여자 제외')])   # 취업 상태·받는 지원으로 갈리는 정책
     monkeypatch.setattr(desk_finder, 'model_status', lambda: {'ready': True})
     monkeypatch.setattr(desk_finder, 'generate', lambda m: picked())
     ask = lambda profile, message='월세': ctx.post(ASK, json={'message': message, 'profile': profile, 'on': '2026-11-17'}).json()['question']
@@ -1074,4 +1077,193 @@ def test_region_match_understands_city_and_ward_codes_and_abolished_codes():
     assert region_of('28185', '28125') == 'mismatch'                  # 폐지 코드가 없으면 그대로 다르다
     with pytest.raises(ValueError):
         validate_profile({'region_code': '99110'})
+
+
+# ── v0.23: 남은 API 필드(지원 규모·선착순, 사업기간, 서류, 심사, 수정일)와 자리표시 ──────────
+def test_scale_and_first_come_follow_operator_site_and_first_come_is_not_open():
+    from policy_structure import scale
+    assert scale({'sprtSclLmtYn': 'Y', 'sprtSclCnt': '0', 'sprtArvlSeqYn': 'Y'}) == {
+        'count': None, 'no_limit': True, 'first_come': None, 'limit_flag_raw': 'Y', 'arrival_flag_raw': 'Y'}   # 규모 제한이 없으면 선착순 표기를 읽지 않는다
+    limited = made(sprtSclLmtYn='N', sprtSclCnt='30', sprtArvlSeqYn='Y')
+    assert (limited['scale']['count'], limited['scale']['no_limit'], limited['scale']['first_come']) == (30, False, True)
+    assert made(sprtSclLmtYn='N', sprtSclCnt='0', sprtArvlSeqYn='')['scale'] == {
+        'count': None, 'no_limit': False, 'first_come': None, 'limit_flag_raw': 'N', 'arrival_flag_raw': ''}   # 0명은 미기재, 빈 선착순은 모름
+    out, results = verdict(limited, PROFILE)
+    assert results['period'] == 'unknown' and '선착순 30명' in out['criteria'][0]['basis'] and out['outcome'] == 'needs_check'
+    assert verdict(made(sprtSclLmtYn='N', sprtSclCnt='30', sprtArvlSeqYn='N'), PROFILE)[1]['period'] == 'match'
+    assert verdict(limited, PROFILE, 'ended')[1]['period'] == 'mismatch'      # 지난 기간은 그대로 지난 것
+
+
+def test_placeholders_are_not_content_and_stated_none_is_kept_apart():
+    for text in ('-', '--', '.', '해당없음', '해당 없음', '없음'):
+        item = made(plcyAplyMthdCn=text, sbmsnDcmntCn=text, srngMthdCn=text, etcMttrCn=text, refUrlAddr1='https://example.go.kr/n')
+        assert item['access']['has_method'] is False and item['documents']['has_text'] is False, text
+        assert item['selection'] == {'text': '', 'methods': []} and item['notes'] == ''
+        assert (item['access']['method_stated_none'], item['documents']['stated_none']) == ((text not in ('-', '--', '.'),) * 2), text
+        assert verdict(item, PROFILE)[1]['apply'] == 'unknown'
+    said = verdict(made(plcyAplyMthdCn='해당없음', refUrlAddr1='https://example.go.kr/n'), PROFILE)[0]['criteria']
+    assert "'해당없음'으로 적혀" in next(c['basis'] for c in said if c['key'] == 'apply')
+    assert tier(made(plcyAplyMthdCn='해당없음'), 'open')['reasons'] == ['no_application_route']   # 참고 주소도 없으면 링크만
+
+
+def test_documents_selection_project_and_update_stamp_are_structured():
+    item = made(sbmsnDcmntCn='신청서, 주민등록초본, 혼인관계증명서, 재직증명서, 사업계획서, 서약서 각 1부',
+                srngMthdCn='서류 심사 후 면접, 동점자는 추첨', operInstCdNm='청년센터', etcMttrCn='문의 02-000-0000',
+                bizPrdSeCd='0056001', bizPrdBgngYmd='20261101', bizPrdEndYmd='20261130',
+                frstRegDt='2026-10-01 09:00:00', lastMdfcnDt='2026-11-05 16:54:21')
+    assert item['documents'] == {'has_text': True, 'stated_none': False, 'pointer_only': False,
+                                 'known': ['resident_abstract', 'application', 'marriage', 'employment_cert', 'business_plan', 'pledge']}
+    assert item['selection']['methods'] == ['추첨', '서류', '면접', '심사'] and item['operator'] == '청년센터' and item['notes'].startswith('문의')
+    assert item['project'] == {'code': '0056001', 'kind': 'fixed', 'start': '2026-11-01', 'end': '2026-11-30', 'text': '', 'same_as_application': True}
+    assert item['updated'] == {'registered': '2026-10-01', 'modified': '2026-11-05', 'modified_is_bulk': False}
+    assert made(lastMdfcnDt='2026-01-01 00:00:00')['updated']['modified_is_bulk'] is True
+    other = made(bizPrdSeCd='0056002', bizPrdEtcCn='연중', bizPrdBgngYmd='', sbmsnDcmntCn='☞ 자세한 내용은 붙임파일을 확인해주시기 바랍니다.')
+    assert (other['project']['kind'], other['project']['text'], other['project']['start'], other['project']['same_as_application']) == ('other', '연중', None, False)
+    assert other['documents'] == {'has_text': True, 'stated_none': False, 'known': [], 'pointer_only': True}
+    blank = made()
+    assert blank['documents'] == {'has_text': False, 'stated_none': False, 'known': [], 'pointer_only': False}   # 빈칸은 '서류 없음'이 아니다
+    assert blank['project']['kind'] == 'unknown' and blank['updated'] == {'registered': None, 'modified': None, 'modified_is_bulk': False}
+
+
+def test_plan_tells_stated_none_and_attachment_only_documents_apart(ctx):
+    seed([good('DN1', sbmsnDcmntCn='해당없음'), good('DN2', sbmsnDcmntCn='붙임 공고문 참조'), good('DN3', sbmsnDcmntCn='신청서, 서약서'),
+          good('DN4', sbmsnDcmntCn='', sprtSclLmtYn='N', sprtSclCnt='20', sprtArvlSeqYn='Y')])
+    plan = plan_of(ctx, ['DN1', 'DN2', 'DN3', 'DN4'])[1].json()
+    by_id = {p['external_id']: p for p in plan['policies']}
+    assert "'해당없음'으로 적혀" in by_id['DN1']['documents_note'] and by_id['DN1']['documents_text'] == '' and 'DN1' in plan['documents_unlisted']
+    assert '붙임파일' in by_id['DN2']['documents_note'] and by_id['DN3']['documents_note'] == ''
+    assert [d['key'] for d in plan['documents']] == ['application', 'pledge']
+    assert by_id['DN4']['scale']['first_come'] is True and by_id['DN4']['selection'] == {'text': '', 'methods': []}
+
+
+def test_question_picker_asks_what_splits_the_found_policies_most(ctx, monkeypatch):
+    # 전국 대상 3건: 취업 요건이 있는 정책 2건, 나이 범위가 있는 정책 1건. 지역으로는 하나도 갈리지 않는다.
+    seed([good('Q1', zipCd=ALL, jobCd='0013003'), good('Q2', zipCd=ALL, jobCd='0013001', sprtTrgtMinAge='0', sprtTrgtMaxAge='0'),
+          good('Q3', zipCd=ALL, sprtTrgtMinAge='0', sprtTrgtMaxAge='0')])
+    monkeypatch.setattr(desk_finder, 'model_status', lambda: {'ready': True})
+    monkeypatch.setattr(desk_finder, 'generate', lambda m: picked())
+    ask = lambda profile: ctx.post(ASK, json={'message': '월세', 'profile': profile, 'on': '2026-11-17'}).json()['question']
+    assert post(ctx, {}).json()['splits'] == {'job_code': 2, 'age': 1}
+    assert ask({})['key'] == 'job_code'                          # 지역·나이를 몰라도, 가장 많이 가르는 취업 상태부터 묻는다
+    assert ask({'job_code': '0013003'})['key'] == 'age'
+    assert ask({'job_code': '0013003', 'age': 26}) is None       # 남은 항목(지역·받는 지원)으로는 갈리는 정책이 없어 묻지 않는다
+    assert desk_finder.next_question({}, {})['key'] == 'sido'    # 찾은 정책 정보 없이 부르면 정해 둔 순서
+    assert desk_finder.next_question({}, {'job_code': '0013003'}, {'job_code': 2, 'age': 1})['key'] == 'age'   # 방금 말에서 읽은 값은 묻지 않는다
+
+
+def test_official_page_notes_override_api_income_and_show_official_period(ctx):
+    item = made()
+    note = lambda field, quote: {'field': field, 'quotes': [quote]}
+    out, results = verdict(item, PROFILE)
+    assert results['income'] == 'match'
+    out = screen(item, PROFILE, 'open', None, [note('conditions', '연소득 5천만원 이하 청년'), note('period', '2026. 11. 3. ~ 11. 14.')])
+    by_key = {c['key']: c for c in out['criteria']}
+    assert by_key['income']['result'] == 'unknown' and '연소득 5천만원 이하 청년' in by_key['income']['basis'] and out['outcome'] == 'needs_check'
+    assert by_key['period']['result'] == 'unknown' and '2026. 11. 3. ~ 11. 14.' in by_key['period']['basis']   # 기준일을 모르면 공식 시기와 견줄 수 없다
+    period = lambda quote, on: screen(item, PROFILE, 'open', None, [note('period', quote)], on)['criteria'][0]
+    inside = period('가. 신청기간 : 2026. 3. 25.(수) ~ 11. 30.(월) 18시까지', date(2026, 11, 18))
+    assert inside['result'] == 'match' and '공식 페이지에도' in inside['basis']
+    over = period('○ 모집기간 : 2026.10.14.(수) ~ 10.27.(화)', date(2026, 11, 18))
+    assert over['result'] == 'unknown' and '이미 지났습니다' in over['basis']          # API는 접수 중, 공식 페이지는 지남 → 단정하지 않고 확인 필요
+    for vague in ('2026. 8. 6. (목) ~ 예산 소진 시까지', '신청기간: 2026. 2. 19.(목) ~ 12. 11.(금) / 예산소진시 조기종료', '상반기: 1~4월, 하반기: 7~9월',
+                  '❍ 신청기간 : ’26. 4. 6.(월) ∼ 11. 30.(월) ※ 매월 첫째주 월요일 오전 9시부터 선착순 모집'):
+        assert period(vague, date(2026, 11, 18))['result'] == 'unknown', vague          # 끝날을 믿을 수 없는 문장은 읽지 않는다
+    from screening import official_window
+    assert official_window('기간 : 2026.04.13 09:00 ~ 2026.04.30 18:00') == (date(2026, 4, 13), date(2026, 4, 30))
+    assert official_window('2026-06-29 ~ 2026-12-31') == (date(2026, 6, 29), date(2026, 12, 31))
+    assert official_window('’26. 12. 20. ~ ’27. 1. 10.') == (date(2026, 12, 20), date(2027, 1, 10))
+    assert official_window('2026. 13. 1. ~ 2. 30.') is None and official_window('2026. 5. 1. ~ 3. 1.') is None
+    said = '청년은 2월 6일(금) 오전 10시~11월 20일(금) 오후 6시 누리집에서 신청하면 된다.'
+    assert official_window(said) is None and official_window(said, 2026) == (date(2026, 2, 6), date(2026, 11, 20))   # 연도는 확인한 해
+    two = [{'field': 'period', 'quotes': ['2026년 11월 24일(화) 14:00~17:00 / 행사장', '1차 신청 2026. 11. 11. ~ 11. 20.'], 'checked_on': '2026-11-18'}]
+    assert screen(item, PROFILE, 'open', None, two, date(2026, 11, 18))['criteria'][0]['result'] == 'match'   # 행사일이 아니라 읽히는 기간 하나를 쓴다
+    many = [{'field': 'period', 'quotes': ['1차 2026. 11. 11. ~ 11. 20.', '2차 2026. 11. 6. ~ 11. 17.'], 'checked_on': '2026-11-18'}]
+    assert screen(item, PROFILE, 'open', None, many, date(2026, 11, 18))['criteria'][0]['result'] == 'unknown'  # 기간이 둘이면 정하지 않는다
+    ended = screen(item, PROFILE, 'ended', None, [note('period', '2026. 11. 3. ~ 11. 14.')])['criteria'][0]
+    assert ended['result'] == 'mismatch' and '2026. 11. 3.' in ended['basis']
+    born = [note('conditions', '연령요건 : 21세~24세 청년(2002~2005년생)')]
+    assert [screen(item, {'age': a}, 'open', None, born)['criteria'][1]['result'] for a in (26, 40)] == ['unknown', 'unknown']   # 규칙으로 못 옮긴 나이 문장
+    ruled = {'predicate': {'fact': 'age', 'op': 'between', 'value': [21, 24]}, 'quote': 'q', 'message': 'm'}
+    assert [screen(item, {'age': a}, 'open', ruled, born)['criteria'][1]['result'] for a in (24, 26)] == ['match', 'mismatch']     # 규칙이 있으면 그 규칙으로
+    assert screen(item, PROFILE, 'open', None, [note('conditions', '서울 거주 청년')])['outcome'] == 'api_match'   # 소득 문장이 아니면 그대로
+    assert screen(made(earnCndSeCd='0043003'), PROFILE, 'open', None, [note('conditions', '소득 기준 있음')])['criteria'][3]['basis'].startswith('소득 조건이 있습니다')
+
+
+def test_plan_documents_carry_the_preparation_kind(ctx):
+    from policy_structure import DOCS, DOC_KIND
+    assert {key for key, *_ in DOCS} == set(DOC_KIND)             # 서류마다 준비판의 칸이 정해져 있다
+    seed([good('DK1', sbmsnDcmntCn='주민등록초본, 재학증명서, 신청서')])
+    plan = plan_of(ctx, ['DK1'])[1].json()
+    assert [(d['key'], d['kind']) for d in plan['documents']] == [('resident_abstract', '공공 발급'), ('enrollment', '기관·학교·은행 발행'), ('application', '직접 작성·보관')]
+
+
+def test_old_category_names_are_shown_under_the_current_names():
+    from policy_structure import CATEGORY_ALIAS
+    tree = json.loads((Path(ontong.BASE) / 'data/api_field_notes.json').read_text(encoding='utf-8'))['categories']
+    assert set(CATEGORY_ALIAS.values()) <= set(tree) | {m for names in tree.values() for m in names}
+    old = made(lclsfNm='복지문화', mclsfNm='문화활동')
+    assert (old['category'], old['category_raw'], old['subcategory']) == ('금융･복지･문화', '복지문화', '문화활동 및 생활지원')
+    assert made(lclsfNm='일자리', mclsfNm='취업')['category'] == '일자리' and made()['category'] == ''
+
+
+# ── v0.24: 넓힌 신청 경로·제한 종류, 소득 기준 방식, 거주 기간 ──────────────────────
+@pytest.mark.parametrize('text,channels', [
+    ('포스터 내 QR코드로 접속 후 참여신청서 제출', ['온라인']), ('구글폼을 통해 신청', ['온라인']),
+    ('정부24 – 보조금24 검색 후 신청', ['온라인']), ('읍‧면사무소 신청 후 보건의료원 서류확인', ['방문']),
+    ('각 대학교로 신청서 제출, 대학교 자체 선발', ['학교·기관 경유']), ('매년 상/하반기 모집 공고에 따라 서류 접수', ['공고에서 확인']),
+    ('입주기업 모집→프로그램 운영→최종성과공유회', [])])
+def test_application_channels_cover_the_wording_found_in_real_data(text, channels):
+    assert made(plcyAplyMthdCn=text)['access']['channels'] == channels
+
+
+def test_limit_and_income_kinds_name_what_to_check_without_judging():
+    kinds = lambda text: made(ptcpPrpTrgtCn=text)['exclusions']['kinds']
+    assert kinds('2025년 청년문화예술패스 이용자 신청 불가') == ['과거 참여·선정 이력']
+    assert kinds('융자제외 업종 등') == ['업종'] and kinds('참여 제외 대상 조건은 사업 공고 시 확인') == ['공고에서 확인']
+    assert kinds('금융기관으로부터 채무불이행 또는 불량거래자로 규제 중인 자') == ['채무·신용']
+    assert verdict(made(ptcpPrpTrgtCn='융자제외 업종 등'), PROFILE)[1]['exclusion'] == 'unknown'      # 종류를 읽어도 판정은 하지 않는다
+    item = made(earnCndSeCd='0043003', earnEtcCn='도시근로자 월평균 소득 100% 이하, 건강보험료 기준')
+    assert item['income']['kinds'] == ['도시근로자 월평균소득', '건강보험료'] and item['income']['comparable'] is False
+    out, results = verdict(item, {'income_monthly': 180, 'household': 1})
+    assert results['income'] == 'unknown' and '기준 방식: 도시근로자 월평균소득, 건강보험료' in out['criteria'][3]['basis']
+    assert made(earnCndSeCd='0043003', earnEtcCn='-')['income']['kinds'] == []
+
+
+def test_residence_period_is_compared_by_band_and_only_when_the_band_is_clearly_above_or_below(ctx):
+    item = made(addAplyQlfcCndCn='공고일 기준 1년 이상 계속 거주한 청년')
+    assert item['region']['residence_min_months'] == 12
+    region_of = lambda months: verdict(item, {'region_code': '11305', 'residence_months': months})[1]['region']
+    assert [region_of(m) for m in (None, 0, 6, 12, 60)] == ['unknown', 'mismatch', 'mismatch', 'match', 'match']
+    odd = made(addAplyQlfcCndCn='3개월 이상 거주')            # 조건이 구간 가운데(0~6개월)에 걸리면 정하지 않는다
+    assert verdict(odd, {'region_code': '11305', 'residence_months': 0})[1]['region'] == 'unknown'
+    assert verdict(item, {'region_code': '26110', 'residence_months': 60})[1]['region'] == 'mismatch'      # 지역이 다르면 거주 기간과 무관
+    assert verdict(made(), {'region_code': '11305', 'residence_months': 0})[1]['region'] == 'match'        # 거주 조건이 없으면 영향 없음
+    seed([good('RM1', addAplyQlfcCndCn='1년 이상 거주')])
+    body = post(ctx, {**PROFILE, 'residence_months': 6}).json()
+    assert body['items'][0]['screen']['outcome'] == 'api_mismatch' and body['splits']['residence_months'] == 1
+    assert post(ctx, {**PROFILE, 'residence_months': 601}).status_code == 422
+
+
+@pytest.mark.parametrize('text,expected', [
+    ('공지사항 참고', ('pointer', [])), ('공고문에 따름', ('pointer', [])), ('기업별 상이', ('pointer', [])),
+    ('별도 제출서류 없음', ('none', [])), ('지원서, 우대사항 증빙서류 등', ('known', ['application'])),
+    ('취창업 계획서', ('known', ['business_plan'])), ('진단서 또는 소견서', ('known', ['medical'])), ('청년내일카드', ('other', []))])
+def test_document_notes_are_sorted_into_names_pointers_and_stated_none(text, expected):
+    doc = made(sbmsnDcmntCn=text)['documents']
+    kind = 'none' if doc['stated_none'] else 'known' if doc['known'] else 'pointer' if doc['pointer_only'] else 'other'
+    assert (kind, doc['known']) == expected
+
+
+def test_question_picker_can_ask_school_and_residence_when_they_split_most(ctx, monkeypatch):
+    seed([good('QS1', zipCd=ALL, schoolCd='0049005', sprtTrgtMinAge='0', sprtTrgtMaxAge='0'),
+          good('QS2', zipCd=ALL, schoolCd='0049007', sprtTrgtMinAge='0', sprtTrgtMaxAge='0', addAplyQlfcCndCn='1년 이상 거주')])
+    monkeypatch.setattr(desk_finder, 'model_status', lambda: {'ready': True})
+    monkeypatch.setattr(desk_finder, 'generate', lambda m: picked())
+    ask = lambda profile: ctx.post(ASK, json={'message': '월세', 'profile': profile, 'on': '2026-11-17'}).json()['question']
+    first = ask({})
+    assert first['key'] == 'school_code' and {'value': '0049007', 'label': '대학 졸업'} in first['options'] and '0049010' not in [o['value'] for o in first['options']]
+    lived = ask({'school_code': '0049007'})
+    assert lived['key'] == 'residence_months' and lived['options'][0] == {'value': '0', 'label': '6개월 미만'}
+    assert ask({'school_code': '0049007', 'residence_months': 12}) is None
+    assert post(ctx, {'region_code': '11305', 'residence_months': '12'}).status_code == 200     # 챗봇 답은 글자로 온다
 

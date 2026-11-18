@@ -130,6 +130,30 @@
       "constraints": {},
       "instructions": "공고의 서식을 내려받아 작성 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
       "alternatives": []
+    },
+    {
+      "code": "marriage",
+      "title": "혼인관계증명서",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "대법원 전자가족관계등록시스템 또는 정부24 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    },
+    {
+      "code": "employment_cert",
+      "title": "재직증명서",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "재직 중인 회사에서 발급 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    },
+    {
+      "code": "pledge",
+      "title": "서약서",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "공고의 서식을 내려받아 작성 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
     }
   ]
 }

@@ -26,7 +26,12 @@ QUESTIONS = [
     ('age', '만 나이가 어떻게 되세요? 숫자로 알려 주세요.', {}),
     ('job_code', '지금 일하고 계신가요? 미취업자만 지원하는 정책이 있어서 여쭤봐요.', JOBS),
     # 받고 있는 지원 때문에 제외되는 정책이 있다(참여 제한 문장이 있는 정책 768건).
-    ('benefits', '지금 받고 있는 지원이 있나요? 함께 받을 수 없는 정책이 있어서 여쭤봐요.', {**{b: b for b in BENEFITS}, '': '없어요'})]
+    ('benefits', '지금 받고 있는 지원이 있나요? 함께 받을 수 없는 정책이 있어서 여쭤봐요.', {**{b: b for b in BENEFITS}, '': '없어요'}),
+    # 아래 둘은 찾은 정책 가운데 그 조건으로 갈리는 정책이 가장 많을 때만 묻게 된다(질문 선택기).
+    ('school_code', '최종 학력이 어떻게 되세요? 학력 조건이 있는 정책이 있어서 여쭤봐요.',
+     {c: v['label'] for c, v in CODEBOOK['groups']['schoolCd']['codes'].items() if c != '0049010'}),
+    ('residence_months', '지금 사는 시·군·구에 얼마나 사셨어요? 거주 기간 조건이 있는 정책이 있어서 여쭤봐요.',
+     {'0': '6개월 미만', '6': '6개월~1년', '12': '1~2년', '24': '2~3년', '36': '3~5년', '60': '5년 이상'})]
 # 취업 상태는 사용자의 말에 이 낱말이 있을 때만 읽는다(실제 모델이 말하지 않은 상태를 지어낸 사례가 있다).
 JOB_ALIAS = {'0013003': ('취준', '미취업', '구직', '무직', '백수', '취업 준비', '취업준비'), '0013001': ('재직', '직장인', '회사 다니', '회사다니', '근무 중'),
              '0013002': ('자영업',), '0013004': ('프리랜서',), '0013006': ('창업 준비', '예비창업')}
@@ -50,18 +55,22 @@ SCHEMA = {'type': 'object', 'properties': {
     'required': ['keywords', 'age', 'sido', 'job_code'], 'additionalProperties': False}
 
 
-def next_question(profile, suggestion):
-    """되물을 것 하나. 지역(시도 → 시군구) → 나이 → 취업 상태 → 받고 있는 지원 순서다."""
+def next_question(profile, suggestion, splits=None):
+    """되물을 것 하나. 찾은 정책들을 가장 많이 가르는 항목을 고른다(splits: 항목별로 그 항목 때문에 갈리는 정책 수).
+    같으면 지역(시도 → 시군구) → 나이 → 취업 상태 → 받고 있는 지원 순이고, 어느 항목도 가르지 못하면 묻지 않는다."""
     def missing(key):
         return profile.get(key) in (None, '') and key not in suggestion
     sido = profile.get('sido') or (profile.get('region_code') or '')[:2]
+    asks = []
     if not sido and missing('sido'):
-        key, text, options = QUESTIONS[0]
+        asks.append(QUESTIONS[0])
     elif sido in SIGUNGU_COMPLETE and missing('region_code') and sum(c[:2] == sido for c in SIGUNGU) > 1:   # 세종은 시군구가 하나라 묻지 않는다
-        key, text = 'region_code', '어느 구·시·군에 사세요? 같은 시도 안에서도 정책이 달라서 여쭤봐요.'
-        options = {c: n for c, n in sorted(SIGUNGU.items(), key=lambda x: x[1]) if c[:2] == sido}
-    else:
-        key, text, options = next((q for q in QUESTIONS[1:] if missing(q[0])), (None, None, None))
+        asks.append(('region_code', '어느 구·시·군에 사세요? 같은 시도 안에서도 정책이 달라서 여쭤봐요.',
+                     {c: n for c, n in sorted(SIGUNGU.items(), key=lambda x: x[1]) if c[:2] == sido}))
+    asks += [q for q in QUESTIONS[1:] if missing(q[0])]
+    if splits is not None:   # max는 값이 같으면 앞의 것을 고르므로 위 순서가 그대로 동점 규칙이 된다
+        asks = [max(asks, key=lambda q: splits.get(q[0], 0))] if any(splits.get(q[0]) for q in asks) else []
+    key, text, options = asks[0] if asks else (None, None, None)
     return {'key': key, 'text': text, 'options': [{'value': v, 'label': label} for v, label in options.items()]} if key else None
 
 
@@ -153,7 +162,7 @@ def find(message, profile, on):
         suggestion = {}
     compared = provided(profile)
     # 아직 모르는 정보 중 하나만 묻는다. 방금 말에서 읽어 제안한 값은 다시 묻지 않는다.
-    question = next_question(profile, suggestion)
+    question = next_question(profile, suggestion, result['splits'])
     topic = "'" + '·'.join(words) + "' 관련" if words else '수집된 전체'
     o, t = result['outcomes'], result['tiers']
     if not result['total']:

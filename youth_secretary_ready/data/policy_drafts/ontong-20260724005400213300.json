@@ -143,6 +143,14 @@
       "constraints": {},
       "instructions": "결제처·시험 주관기관 누리집 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
       "alternatives": []
+    },
+    {
+      "code": "labor_contract",
+      "title": "근로계약서",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "보관 중인 계약서 사본 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
     }
   ]
 }

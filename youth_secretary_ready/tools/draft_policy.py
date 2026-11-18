@@ -106,7 +106,7 @@ def draft(payload, supplements=()):
         rules = [r for r in rules if r['id'] != rule['id']] + [rule]
     if not rules:
         raise ValueError('규칙으로 옮길 수 있는 API 값이 없습니다(나이 범위·지역·취업·학력·전공·결혼 요건 모두 불가).')
-    text, ref = (payload.get('sbmsnDcmntCn') or '').strip(), 'api'
+    text, ref = ((payload.get('sbmsnDcmntCn') or '').strip() if st['documents']['has_text'] else ''), 'api'   # '해당없음'·'-'는 안내 글로 치지 않는다
     for n, x in enumerate(supplements, 1):
         if not text and x['field'] == 'documents':
             text, ref = ' '.join(x['quotes']), f'web{n}'
@@ -115,6 +115,8 @@ def draft(payload, supplements=()):
                  for key, name, needles, how in DOCS if any(w in text for w in needles)]
     checks.append({'id': 'documents', 'source_ref': ref, 'message': ('서류 안내 글에서 이름을 찾은 서류만 옮겼습니다. 목록 전체를 공고와 대조하세요.' if text
                                                                      else '서류 안내가 없습니다. 서류가 필요 없다는 뜻이 아닙니다.')})
+    if st['scale']['first_come']:
+        checks.append({'id': 'first_come', 'source_ref': 'api', 'message': f"API에 선착순{(' ' + format(st['scale']['count'], ',') + '명') if st['scale']['count'] else ''}으로 적혀 있습니다. 조기 마감 여부와 실제 마감일을 공고에서 확인하세요."})
     windows = st['application']['windows']
     return validate_policy({
         'code': 'ontong-' + payload['plcyNo'].lower(), 'version': '2026.1', 'name': payload['plcyNm'],

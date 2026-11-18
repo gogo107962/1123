@@ -39,13 +39,60 @@ CLOSED = ('ended', 'closed_code', 'closed_official')
 # 제외·중복 수혜를 말하는 문장을 찾는 표지. 문장을 해석하지 않고 그대로 보존하는 데만 쓴다.
 EXCLUDE = re.compile(r'제외|중복|불가|제한|유사')
 # 참여 제한 칸에 '없음'이라고 적은 표기(실제 532문장 중 약 100개). 제한 문장으로 세지 않고 '없다고 적혀 있음'으로 따로 남긴다.
-_NONE = re.compile(r'(해당\s*(사항)?\s*없음|제한\s*없음|없음|무관)\.?')
+_NONE = re.compile(r'(해당\s*(사항)?\s*없음|제한\s*없음|(별도\s*)?(제출\s*)?서류\s*없음|없음|무관)\.?')
 # 제한 문장이 무엇에 관한 것인지. 문장을 해석해 판정하지 않고, 사용자가 확인할 항목 이름으로만 쓴다.
 LIMIT_KINDS = {'다른 지원과 중복': r'중복|유사|동일|타 ?사업|다른 ?사업|기 ?수혜|수혜 ?중|참여 ?중|참여자|참여한|수혜자|지원을 받고',
                '취업·사업자': r'재직|근로자|직장가입자|취업자|사업자|자영업|고용보험', '공무원·공공기관': r'공무원|공공기관|직업군인',
                '수급': r'수급자|생계급여|주거급여|실업급여|구직급여', '재학·휴학': r'재학|휴학|대학생|학생',
                '주택': r'주택|임차|임대', '체납·연체': r'체납|연체|신용', '거주': r'거주|주소|전입|주민등록',
-               '소득·재산': r'소득|재산|자산', '국적': r'외국인|국적'}
+               '소득·재산': r'소득|재산|자산', '국적': r'외국인|국적',
+               # 아래는 분류가 안 되던 252문장을 보고 더한 종류
+               '과거 참여·선정 이력': r'기존|이용자|수료|기선정|선정된|선정자|연임|\d{4}년도?.{0,20}(참여|이용|선정|지원받)|회 이상',
+               '업종': r'업종', '채무·신용': r'채무|불량거래|신용유의|파산|회생', '활동 목적': r'종교|정당|선거|영리',
+               '건강 상태': r'질환|중독|질병', '공고에서 확인': r'공고'}
+# 서류 준비판의 칸: 공공기관이 발급 / 학교·회사·은행 등이 발행 / 내가 작성·보관. 동의로 대체되는지는 공고를 봐야 알 수 있어 나누지 않는다.
+DOC_KIND = {**dict.fromkeys(('resident_register', 'resident_abstract', 'family', 'marriage', 'insurance_status', 'insurance_premium', 'income',
+                             'business', 'employment_insurance', 'disability', 'recipient', 'military', 'tax'), '공공 발급'),
+            **dict.fromkeys(('enrollment', 'graduation', 'employment_cert', 'transfer', 'bankbook', 'exam', 'receipt', 'license', 'medical'), '기관·학교·은행 발행'),
+            **dict.fromkeys(('lease', 'labor_contract', 'id_card', 'application', 'consent', 'pledge', 'business_plan', 'self_intro', 'resume'), '직접 작성·보관')}
+# 칸에 줄표나 '없음'만 적은 자리표시. 내용이 있는 것으로 세지 않는다(신청 방법 '해당없음' 45건, 서류 124건 등).
+_PLACEHOLDER = re.compile(r'(-+|\.+|해당\s*(사항)?\s*없음|없음|제한\s*없음|무관)\.?')
+# 서류 안내가 목록 없이 다른 곳을 가리키기만 하는 표현
+_POINTER = re.compile(r'붙임|첨부|참조|참고|공고|공지|안내문|별도\s*(문의|안내)|에 따름|확인|상이|미정|서식')
+# (키, 표시 이름, API 글에서 찾을 말, 발급·준비 방법)
+DOCS = [
+    ('resident_register', '주민등록등본', ('주민등록등본', '주민등록표등본', '주민등록표 등본', '주민등록 등본'), '정부24에서 발급'),
+    ('resident_abstract', '주민등록초본', ('초본',), '정부24에서 발급'),
+    ('family', '가족관계증명서', ('가족관계증명',), '대법원 전자가족관계등록시스템 또는 정부24'),
+    ('insurance_status', '건강보험 자격득실확인서', ('자격득실',), '국민건강보험공단 누리집·앱'),
+    ('insurance_premium', '건강보험료 납부확인서', ('건강보험료',), '국민건강보험공단 누리집·앱'),
+    ('income', '소득금액증명', ('소득금액증명',), '홈택스'),
+    ('business', '사업자등록 관련 서류', ('사업자등록',), '홈택스 · 등록증인지 사실증명인지는 공고 확인'),
+    ('employment_insurance', '고용보험 관련 서류', ('고용보험',), '고용24 · 서류 종류는 공고 확인'),
+    ('lease', '임대차계약서', ('임대차계약서', '임대차 계약서'), '보관 중인 계약서 사본 · 확정일자 필요 여부는 공고 확인'),
+    ('transfer', '이체 확인 자료', ('이체',), '은행 앱·창구'),
+    ('bankbook', '통장 사본', ('통장',), '은행 앱에서 저장'),
+    ('id_card', '신분증 사본', ('신분증',), '본인 보관'),
+    ('enrollment', '재학증명서', ('재학증명',), '학교 증명 발급 시스템'),
+    ('graduation', '졸업증명서', ('졸업증명',), '학교 증명 발급 시스템'),
+    ('exam', '응시 확인 자료', ('응시',), '시험 주관기관 누리집'),
+    ('receipt', '결제 영수증', ('영수증',), '결제처·시험 주관기관 누리집'),
+    ('application', '신청서', ('신청서', '지원서'), '공고의 서식을 내려받아 작성'),
+    ('consent', '동의서', ('동의서',), '공고의 서식을 내려받아 작성'),
+    ('marriage', '혼인관계증명서', ('혼인관계증명',), '대법원 전자가족관계등록시스템 또는 정부24'),
+    ('employment_cert', '재직증명서', ('재직증명',), '재직 중인 회사에서 발급'),
+    ('labor_contract', '근로계약서', ('근로계약서',), '보관 중인 계약서 사본'),
+    ('business_plan', '계획서(사업·활동 계획 등)', ('계획서',), '공고의 서식을 내려받아 작성'),
+    ('medical', '진단서·소견서', ('진단서', '소견서'), '진료받은 의료기관에서 발급'),
+    ('self_intro', '자기소개서', ('자기소개서',), '공고의 서식을 내려받아 작성'),
+    ('resume', '이력서', ('이력서',), '공고의 서식이 있는지 확인해 작성'),
+    ('pledge', '서약서', ('서약서',), '공고의 서식을 내려받아 작성'),
+    ('license', '자격증 사본', ('자격증 사본', '자격증사본', '합격증'), '자격 발급기관 누리집'),
+    ('disability', '장애인 증명서', ('장애인증명', '장애인 증명', '복지카드'), '정부24 또는 주민센터'),
+    ('recipient', '수급자·차상위 증명서', ('수급자증명', '수급자 증명', '차상위'), '정부24 또는 주민센터'),
+    ('military', '병적증명서', ('병적증명', '전역증'), '정부24'),
+    ('tax', '납세·체납 관련 증명', ('납세증명', '완납증명', '체납'), '홈택스·위택스 · 국세인지 지방세인지는 공고 확인'),
+]
 _SPLIT = re.compile(r'[\r\n]+|\s/\s|(?<=[.。])\s+')
 _BULLET = re.compile(r'^(?:[\s\-–·•○□▪◦※*]+|[①-⑳]\s*|\d{1,2}[.)]\s+)+')
 _RESIDENCE = re.compile(r'(\d{1,2})\s*(년|개월)\s*이상\s*(?:계속\s*|연속\s*|연속하여\s*)?(?:거주|주민등록)')
@@ -61,10 +108,17 @@ TARGETS = {'여성': r'여성', '대학(원)생': r'대학생|대학원생|재�
 # 정책특화 요건코드(sbizCd) → 내 정보의 '해당하는 것'. 지역인재·기타는 고를 수 없는 항목이라 이름 그대로 남긴다.
 SPECIAL = {'0014001': '중소기업 재직', '0014002': '여성', '0014003': '기초생활수급·차상위', '0014004': '한부모·양육',
            '0014005': '장애', '0014006': '농어업인', '0014007': '군 복무·전역', '0014008': '지역인재', '0014009': '기타 특화 요건'}
+# 수집본에는 옛 분류 이름(코드표 xlsx의 목록, 774건)과 누리집이 지금 쓰는 이름이 섞여 있다. 같은 분류로 묶어 보여 주려고 새 이름으로 맞춘다.
+# 옛 이름 → 새 이름의 짝은 이름을 보고 맞춘 것이다(공식 대응표는 찾지 못함, data/api_field_notes.json).
+CATEGORY_ALIAS = {'교육': '교육･직업훈련', '복지문화': '금융･복지･문화', '참여권리': '참여･기반',
+                  '문화활동': '문화활동 및 생활지원', '온라인교육': '온·오프라인교육'}
 LOAN = ('0042003', '0042007')   # 정책제공 방법코드: 직접대출, 대출보증
 _AMOUNT = re.compile(r'((?:월|매월|연|연간|매년|1회|회당|1인당|총)\s*)?(최대\s*)?(\d[\d,]*(?:\.\d+)?)\s*(천|백)?\s*(만|억)\s*원')
-CHANNELS = {'온라인': r'온라인|누리집|홈페이지|인터넷|사이트|http|앱\b', '방문': r'방문|내방|창구|주민센터|행정복지센터', '우편': r'우편|등기',
-            '이메일': r'이메일|e-?mail|메일', '전화': r'전화|유선'}
+# 실제 수집본에서 경로가 안 읽히던 609건을 보고 더한 표현: QR·구글폼·정부24 같은 온라인 창구, 읍면사무소, 학교·기관을 거치는 신청, '공고에 따라'.
+CHANNELS = {'온라인': r'온라인|누리집|홈페이지|인터넷|사이트|http|앱\b|QR|큐알|구글 ?폼|링크|URL|포털|정부24|보조금24|복지로|고용24|워크넷|잡아바|플랫폼|접속|회원 ?가입',
+            '방문': r'방문|내방|창구|주민센터|행정복지센터|읍\W?면|사무소|보건소', '우편': r'우편|등기',
+            '이메일': r'이메일|e-?mail|메일', '전화': r'전화|유선',
+            '학교·기관 경유': r'추천|학교 ?별|대학교?로|각 대학|소속 ?(학교|기관|대학)|학교를 통해', '공고에서 확인': r'공고'}
 # 신청기간이 이 일수 이상이면 모집기간이 아니라 사업기간을 적은 것으로 본다. 팀 대조에서 API 1/1~12/31인데
 # 실제 접수는 2주였던 사례(서울 청년월세, 청년인턴 직무캠프)가 이 형태였고, '접수 중' 237건 중 169건이 300일 이상이다.
 LONG_WINDOW_DAYS = 300
@@ -75,6 +129,25 @@ _PERCENT = re.compile(r'(\d{2,3})\s*%\s*(이하|이내|미만|초과|이상)?')
 def _number(value):
     text = str(value if value is not None else '').strip()
     return int(text) if text.isdigit() else None
+
+
+def _text(payload, field):
+    """글 칸의 내용. 자리표시(-, 해당없음)는 빈 값으로 본다."""
+    text = str(payload.get(field) or '').strip()
+    return '' if _PLACEHOLDER.fullmatch(text) else text
+
+
+def _stated_none(payload, field):
+    """칸에 '해당 없음'이라고 적혀 있는가. 빈칸과 줄표는 아니다."""
+    return bool(_NONE.fullmatch(str(payload.get(field) or '').strip()))
+
+
+def _day(value):
+    text = re.sub(r'\D', '', str(value or ''))[:8]
+    try:
+        return date(int(text[:4]), int(text[4:6]), int(text[6:8])).isoformat() if len(text) == 8 else None
+    except ValueError:
+        return None
 
 
 def _url(value):
@@ -164,6 +237,12 @@ def region(payload):
             'local_agency_hint': bool(LOCAL_AGENCY.search(str(payload.get('sprvsnInstCdNm') or '').strip()))}
 
 
+# 소득 글이 어떤 방식의 기준인지(비교하지는 못해도 무엇을 확인할지 알려 준다)
+INCOME_KINDS = {'기준 중위소득': r'중위', '도시근로자 월평균소득': r'도시근로자|월평균 ?소득', '건강보험료': r'건강보험료|건보료',
+                '학자금 지원구간': r'지원구간|소득분위|소득구간|구간', '수급·차상위': r'수급|차상위|저소득', '금액 기준': r'만 ?원|억 ?원',
+                '공고에서 확인': r'공고|문의|참조|참고'}
+
+
 def income(payload):
     kind = _codes(payload, 'earnCndSeCd')
     # 연소득(0043002)의 금액은 만원 단위다(온통청년 누리집 표시 기준, data/api_field_notes.json). 최대 금액이 있을 때만 비교에 쓴다.
@@ -173,6 +252,7 @@ def income(payload):
             'unknown_codes': kind['unknown_codes'], 'missing': kind['missing'],
             'min_raw': str(payload.get('earnMinAmt') or ''), 'max_raw': str(payload.get('earnMaxAmt') or ''),
             'text': str(payload.get('earnEtcCn') or '')[:300],
+            'kinds': [k for k, pattern in INCOME_KINDS.items() if re.search(pattern, _text(payload, 'earnEtcCn'))],
             # 소득 글에 적힌 '중위소득 N%'. 가구원 수·산정 방식(소득금액증명/건강보험료)을 몰라 비교에는 쓰지 않는다.
             'median_pct': sorted({b['pct'] for b in _median(str(payload.get('earnEtcCn') or ''))}),
             # 방향까지 읽힌 기준만 비교에 쓴다. 방향이 없는 숫자가 하나라도 섞이면('?') 비교하지 않는다.
@@ -236,19 +316,61 @@ def amounts(payload):
 
 def structure(payload):
     return {'external_id': payload.get('plcyNo', ''), 'name': payload.get('plcyNm', ''),
-            'agency': payload.get('sprvsnInstCdNm', ''), 'category': payload.get('lclsfNm', ''),
+            'agency': payload.get('sprvsnInstCdNm', ''), 'category_raw': payload.get('lclsfNm', ''),
+            'category': CATEGORY_ALIAS.get(str(payload.get('lclsfNm') or '').strip(), str(payload.get('lclsfNm') or '').strip()),
             'age': age(payload), 'application': application(payload), 'region': region(payload),
             'income': income(payload), 'exclusions': exclusions(payload), 'targets': targets(payload), 'amounts': amounts(payload),
             'special': _codes(payload, 'sbizCd'), 'provision': provision(payload),
-            'subcategory': str(payload.get('mclsfNm') or ''),
+            'subcategory': CATEGORY_ALIAS.get(str(payload.get('mclsfNm') or '').strip(), str(payload.get('mclsfNm') or '').strip()), 'operator': str(payload.get('operInstCdNm') or '').strip(),
+            'scale': scale(payload), 'project': project(payload, application(payload)), 'documents': documents(payload),
+            'selection': selection(payload), 'updated': updated(payload), 'notes': _text(payload, 'etcMttrCn')[:300],
             'keywords': [k.strip() for k in str(payload.get('plcyKywdNm') or '').split(',') if k.strip()],
             **{key: _codes(payload, field) for key, field in
                [('job', 'jobCd'), ('school', 'schoolCd'), ('major', 'plcyMajorCd'), ('marriage', 'mrgSttsCd')]},
             'access': {'channels': [k for k, pattern in CHANNELS.items() if re.search(pattern, str(payload.get('plcyAplyMthdCn') or ''), re.I)],
-                       'has_method': bool(str(payload.get('plcyAplyMthdCn') or '').strip()),
+                       'has_method': bool(_text(payload, 'plcyAplyMthdCn')), 'method_stated_none': _stated_none(payload, 'plcyAplyMthdCn'),
                        'has_apply_url': _url(payload.get('aplyUrlAddr')),
                        'has_reference_url': _url(payload.get('refUrlAddr1')) or _url(payload.get('refUrlAddr2'))},
             'basis': 'ontong_api', 'verified_against_notice': False}
+
+
+def scale(payload):
+    """지원 규모와 선착순. 누리집 표시 기준으로 규모 제한 표기 Y는 '제한없음', 단위는 명이다(data/api_field_notes.json).
+    누리집은 규모에 제한이 있을 때만 선착순 표기를 읽는다. 0명은 '0명 선발'이 아니라 미기재다."""
+    count, free = _number(payload.get('sprtSclCnt')) or None, str(payload.get('sprtSclLmtYn') or '') == 'Y'
+    arrival = str(payload.get('sprtArvlSeqYn') or '')
+    return {'count': count, 'no_limit': free, 'first_come': None if free or not arrival else arrival == 'Y',
+            'limit_flag_raw': str(payload.get('sprtSclLmtYn') or ''), 'arrival_flag_raw': arrival}
+
+
+def project(payload, app):
+    """사업 운영 기간. 신청기간과 다른 칸이지만 같은 날짜가 그대로 들어간 정책이 많다(same_as_application)."""
+    code = str(payload.get('bizPrdSeCd') or '')
+    start, end = _day(payload.get('bizPrdBgngYmd')), _day(payload.get('bizPrdEndYmd'))
+    return {'code': code, 'kind': {'0056001': 'fixed', '0056002': 'other'}.get(code, 'unknown'), 'start': start, 'end': end,
+            'text': _text(payload, 'bizPrdEtcCn')[:200],
+            'same_as_application': bool(start and end) and app['windows'] == [{'start': start, 'end': end}]}
+
+
+def documents(payload):
+    """제출서류 안내 글에서 이름이 그대로 나온 서류. 글이 비었으면 '서류 불필요'가 아니라 '안내 없음'이다."""
+    text = _text(payload, 'sbmsnDcmntCn')
+    known = [key for key, _, needles, _ in DOCS if any(n in text for n in needles)]
+    return {'has_text': bool(text), 'stated_none': _stated_none(payload, 'sbmsnDcmntCn'), 'known': known,
+            # 목록 없이 '붙임파일 확인'처럼 다른 곳만 가리키는 안내
+            'pointer_only': bool(text) and not known and bool(_POINTER.search(text))}
+
+
+def selection(payload):
+    """심사·발표 안내 글과 거기 나오는 선발 방식 낱말."""
+    text = _text(payload, 'srngMthdCn')
+    return {'text': text[:300], 'methods': [k for k in ('선착순', '추첨', '서류', '면접', '심사') if k in text]}
+
+
+def updated(payload):
+    """API 등록·수정 시각. 2026-01-01 00:00:00은 725건에 똑같이 찍힌 일괄 처리 시각이라 실제 수정일로 보지 않는다."""
+    stamp = str(payload.get('lastMdfcnDt') or '')
+    return {'registered': _day(payload.get('frstRegDt')), 'modified': _day(stamp), 'modified_is_bulk': stamp.startswith('2026-01-01 00:00:00')}
 
 
 def tier(structured, status, reviewed=False):

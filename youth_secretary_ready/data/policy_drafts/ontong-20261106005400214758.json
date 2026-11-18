@@ -111,6 +111,11 @@
       "id": "documents",
       "source_ref": "web1",
       "message": "서류 안내 글에서 이름을 찾은 서류만 옮겼습니다. 목록 전체를 공고와 대조하세요."
+    },
+    {
+      "id": "first_come",
+      "source_ref": "api",
+      "message": "API에 선착순 1,000명으로 적혀 있습니다. 조기 마감 여부와 실제 마감일을 공고에서 확인하세요."
     }
   ],
   "documents": [

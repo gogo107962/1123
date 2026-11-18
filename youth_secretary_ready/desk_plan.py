@@ -8,30 +8,9 @@
 import re
 from datetime import date
 from fastapi import HTTPException
-from policy_structure import EXCLUDE, RANK, period_status, structure, timing
+from policy_structure import DOC_KIND, DOCS, EXCLUDE, RANK, period_status, structure, timing
 from screening import NOTICE, age_rule, provided, screen
 
-# (키, 표시 이름, API 글에서 찾을 말, 발급·준비 방법)
-DOCS = [
-    ('resident_register', '주민등록등본', ('주민등록등본', '주민등록표등본', '주민등록표 등본', '주민등록 등본'), '정부24에서 발급'),
-    ('resident_abstract', '주민등록초본', ('초본',), '정부24에서 발급'),
-    ('family', '가족관계증명서', ('가족관계증명',), '대법원 전자가족관계등록시스템 또는 정부24'),
-    ('insurance_status', '건강보험 자격득실확인서', ('자격득실',), '국민건강보험공단 누리집·앱'),
-    ('insurance_premium', '건강보험료 납부확인서', ('건강보험료',), '국민건강보험공단 누리집·앱'),
-    ('income', '소득금액증명', ('소득금액증명',), '홈택스'),
-    ('business', '사업자등록 관련 서류', ('사업자등록',), '홈택스 · 등록증인지 사실증명인지는 공고 확인'),
-    ('employment_insurance', '고용보험 관련 서류', ('고용보험',), '고용24 · 서류 종류는 공고 확인'),
-    ('lease', '임대차계약서', ('임대차계약서', '임대차 계약서'), '보관 중인 계약서 사본 · 확정일자 필요 여부는 공고 확인'),
-    ('transfer', '이체 확인 자료', ('이체',), '은행 앱·창구'),
-    ('bankbook', '통장 사본', ('통장',), '은행 앱에서 저장'),
-    ('id_card', '신분증 사본', ('신분증',), '본인 보관'),
-    ('enrollment', '재학증명서', ('재학증명',), '학교 증명 발급 시스템'),
-    ('graduation', '졸업증명서', ('졸업증명',), '학교 증명 발급 시스템'),
-    ('exam', '응시 확인 자료', ('응시',), '시험 주관기관 누리집'),
-    ('receipt', '결제 영수증', ('영수증',), '결제처·시험 주관기관 누리집'),
-    ('application', '신청서', ('신청서',), '공고의 서식을 내려받아 작성'),
-    ('consent', '동의서', ('동의서',), '공고의 서식을 내려받아 작성'),
-]
 SIMILAR = re.compile(r'유사|동일|중복|타\s*(지자체|기관|시군|시·군|자치구)')
 TOPICS = ('응시료', '월세', '수당', '대출', '계좌', '교통', '장학', '인턴')
 GENERIC = {'지원사업', '지원제도', '프로젝트', '프로그램', '청년정책', '청년지원'}
@@ -72,8 +51,9 @@ def build(wid, external_ids, profile, on):
         fields, item = bundle['public_fields'], structure(bundle['public_fields'])
         status = period_status(item['application'], on, bundle['source_check'])
         deadline, label = timing(item['application'], status, on)
-        result = screen(item, profile, status, age_rule(bundle['supplements'])) if compared else None
-        text, source = fields.get('sbmsnDcmntCn', '').strip(), 'api'
+        result = screen(item, profile, status, age_rule(bundle['supplements']), bundle['supplements'], on) if compared else None
+        docs = item['documents']
+        text, source = (fields.get('sbmsnDcmntCn', '').strip() if docs['has_text'] else ''), 'api'
         if not text:  # API가 비어 있으면 공식 페이지에서 확인해 둔 서류 안내를 쓴다(사람 검수 전).
             found_docs = [x for x in bundle['supplements'] if x['field'] == 'documents']
             if found_docs:
@@ -82,11 +62,15 @@ def build(wid, external_ids, profile, on):
             unlisted.append(eid)
         for key, name, needles, how in DOCS:
             if any(n in text for n in needles):
-                found.setdefault(key, {'key': key, 'name': name, 'how': how, 'policies': []})['policies'].append(eid)
+                found.setdefault(key, {'key': key, 'name': name, 'how': how, 'kind': DOC_KIND[key], 'policies': []})['policies'].append(eid)
         policies.append({
             'external_id': eid, 'name': fields['plcyNm'], 'agency': fields.get('sprvsnInstCdNm', ''),
             'period_status': status, 'period_label': label, 'deadline': deadline, 'documents_text': text,
             'amounts': item['amounts'], 'channels': item['access']['channels'], 'documents_source': source,
+            # 서류 칸에 '해당없음'이라고 적힌 경우와, 목록 없이 붙임파일만 가리키는 경우를 빈칸과 구분해 알린다.
+            'documents_note': ("API 서류 칸에 '해당없음'으로 적혀 있습니다. 실제로 서류가 없는지 공고에서 확인하세요." if docs['stated_none'] and not text
+                               else '서류 목록이 글에 없고 붙임파일·공고문을 보라고만 적혀 있습니다.' if docs['pointer_only'] and source == 'api' else ''),
+            'scale': item['scale'], 'selection': item['selection'],
             'criteria': result['criteria'] if result else None, 'links': links,
             # 수집 글의 참여 제한 문장 + 공식 페이지에서 보완한 조건 문장 중 제외·중복 문구
             'exclusions': item['exclusions']['sentences'] + [q for x in bundle['supplements'] if x['field'] == 'conditions'

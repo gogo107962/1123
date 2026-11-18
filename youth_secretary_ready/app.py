@@ -128,6 +128,7 @@ class ScreenProfile(BaseModel):
     benefits: list[Annotated[str,Field(min_length=1,max_length=30)]] | None=Field(default=None,max_length=6)
     # 월 소득(만원)과 가구원 수. 기준 중위소득 대비 비율로만 쓴다.
     income_monthly: int | None=Field(default=None,ge=0,le=10000)
+    residence_months: int | None=Field(default=None,ge=0,le=600)
     # 내가 해당하는 대상 집단. None=묻지 않음. 이름은 policy_structure.TARGETS에서 검증한다.
     groups: list[Annotated[str,Field(min_length=1,max_length=30)]] | None=Field(default=None,max_length=12)
     household: int | None=Field(default=None,ge=1,le=6)
@@ -206,7 +207,7 @@ def ontong_candidate_screen(external_id:str,profile:ScreenProfile):
     link_only=not policy and bundle['tier']['tier']=='link_only'
     return {**({'tier':'reviewed','reasons':[]} if policy else bundle['tier']),'period_status':bundle['period_status'],'notice':NOTICE,
             'engine':engine_view(policy,profile.model_dump(),korean_now().date()) if policy else None,
-            'screen':None if link_only else screen(bundle['structured'],profile.model_dump(),bundle['period_status'],age_rule(bundle['supplements']))}
+            'screen':None if link_only else screen(bundle['structured'],profile.model_dump(),bundle['period_status'],age_rule(bundle['supplements']),bundle['supplements'],korean_now().date())}
 
 @app.get('/api/integrations/ontong/candidates/{external_id}')
 def ontong_candidate_bundle(external_id:str):

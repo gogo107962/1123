@@ -25,7 +25,7 @@ bizPrdEtcCn plcyAplyMthdCn srngMthdCn aplyUrlAddr sbmsnDcmntCn etcMttrCn
 refUrlAddr1 refUrlAddr2 sprtSclCnt sprtSclLmtYn sprtArvlSeqYn sprtTrgtMinAge
 sprtTrgtMaxAge sprtTrgtAgeLmtYn mrgSttsCd earnCndSeCd earnMinAmt earnMaxAmt
 earnEtcCn addAplyQlfcCndCn ptcpPrpTrgtCn zipCd plcyMajorCd jobCd schoolCd
-aplyYmd frstRegDt lastMdfcnDt sbizCd plcyPvsnMthdCd'''.split())
+aplyYmd frstRegDt lastMdfcnDt sbizCd plcyPvsnMthdCd plcyAprvSttsCd pvsnInstGroupCd'''.split())
 MESSAGES = {
     'missing_key': '인증키 파일에 키를 저장하거나 ONTONG_YOUTH_API_KEY를 설정하세요.',
     'invalid_key': '인증키는 공백 없이 한 줄로 입력하세요.',
