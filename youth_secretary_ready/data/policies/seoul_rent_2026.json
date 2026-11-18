@@ -1,0 +1,259 @@
+{
+  "code": "seoul_rent_2026",
+  "version": "2026.1",
+  "name": "2026 서울시 청년월세지원 (검수 대기)",
+  "description": "공식 공고를 바탕으로 수집한 부분 초안. 사람 검수 전이며 실제 판별에 사용하지 않습니다.",
+  "agency": "서울특별시",
+  "region": "서울",
+  "category": "주거",
+  "demo_only": false,
+  "official_url": "https://soco.seoul.go.kr/bos/cmmn/file/fileDown.do?atchFileId=d964a2a457e3421c95f8b3de69846c99&bbsId=&fileSn=1&menuNo=400018",
+  "application": {
+    "open": "2026-05-06",
+    "close": "2026-05-19",
+    "period_note": "공고상 접수: 5월 6일 10:00 ~ 5월 19일 18:00. 현재 모집 종료. 차기 일정 추정 금지.",
+    "open_at": "2026-05-06T10:00:00+09:00",
+    "close_at": "2026-05-19T18:00:00+09:00"
+  },
+  "review": {
+    "status": "draft",
+    "reviewed_by": "",
+    "reviewed_at": null
+  },
+  "sources": [
+    {
+      "ref": "notice",
+      "kind": "notice",
+      "title": "2026 서울시 청년월세지원 (검수 대기) 공식 공고",
+      "url": "https://soco.seoul.go.kr/bos/cmmn/file/fileDown.do?atchFileId=d964a2a457e3421c95f8b3de69846c99&bbsId=&fileSn=1&menuNo=400018",
+      "anchor": "공고 3쪽 주소, 6쪽 제외 조건, 7~9쪽 제출서류",
+      "excerpt": "신청일 기준, 서울에 주민등록이 되어있고 실제 거주하는 청년",
+      "verified": false,
+      "accessed_at": "2026-11-16"
+    },
+    {
+      "ref": "documents",
+      "kind": "notice",
+      "title": "2026-1440호 제출서류",
+      "url": "https://soco.seoul.go.kr/bos/cmmn/file/fileDown.do?atchFileId=d964a2a457e3421c95f8b3de69846c99&bbsId=&fileSn=1&menuNo=400018",
+      "anchor": "공고 7~9쪽",
+      "excerpt": "월차임 납부확인서",
+      "verified": false,
+      "accessed_at": "2026-11-16"
+    }
+  ],
+  "rules": [
+    {
+      "id": "region",
+      "type": "required",
+      "predicate": {
+        "fact": "region",
+        "op": "eq",
+        "value": "서울"
+      },
+      "message": "서울 거주 조건: 신청일 기준 주민등록·실거주 확인이 추가로 필요합니다.",
+      "source_ref": "notice"
+    },
+    {
+      "id": "overlap_national_youth_rent",
+      "type": "exclude",
+      "predicate": {
+        "fact": "benefit_history",
+        "op": "benefit_active_on",
+        "value": {
+          "code": "national_youth_rent",
+          "date_fact": "application_date",
+          "complete_fact": "benefit_history_complete"
+        }
+      },
+      "message": "국토교통부 청년월세지원의 지원 대상 기간이 가상 신청 기준일과 겹치는지 확인합니다. 종료일은 마지막 지원 대상일입니다.",
+      "source_ref": "notice"
+    },
+    {
+      "id": "overlap_seoul_youth_allowance",
+      "type": "exclude",
+      "predicate": {
+        "fact": "benefit_history",
+        "op": "benefit_active_on",
+        "value": {
+          "code": "seoul_youth_allowance",
+          "date_fact": "application_date",
+          "complete_fact": "benefit_history_complete"
+        }
+      },
+      "message": "서울시 청년수당의 지원 대상 기간이 가상 신청 기준일과 겹치는지 확인합니다. 종료일은 마지막 지원 대상일입니다.",
+      "source_ref": "notice"
+    },
+    {
+      "id": "overlap_district_youth_rent",
+      "type": "exclude",
+      "predicate": {
+        "fact": "benefit_history",
+        "op": "benefit_active_on",
+        "value": {
+          "code": "district_youth_rent",
+          "date_fact": "application_date",
+          "complete_fact": "benefit_history_complete"
+        }
+      },
+      "message": "자치구 청년월세지원의 지원 대상 기간이 가상 신청 기준일과 겹치는지 확인합니다. 종료일은 마지막 지원 대상일입니다.",
+      "source_ref": "notice"
+    },
+    {
+      "id": "application_day",
+      "type": "required",
+      "predicate": {
+        "fact": "application_date",
+        "op": "between",
+        "value": [
+          "2026-05-06",
+          "2026-05-19"
+        ]
+      },
+      "message": "검토 기준일은 이 모집의 접수 기간 안이어야 합니다. 실제 접수 가능 시간은 별도 판단합니다.",
+      "source_ref": "notice"
+    }
+  ],
+  "documents": [
+    {
+      "code": "seoul_rent_lease",
+      "title": "임대차계약서 전체 사본",
+      "issuer": "사용자 보관",
+      "source_ref": "documents",
+      "constraints": {
+        "scope": "2026 서울시 공고",
+        "fixed_date_or_alternative": "원문 예외별 검수 필요"
+      },
+      "instructions": "확정일자·대체증빙별 요구사항을 공고와 대조해야 합니다."
+    },
+    {
+      "code": "seoul_rent_payment",
+      "title": "월세 이체확인증",
+      "issuer": "금융기관",
+      "source_ref": "documents",
+      "constraints": {
+        "period": "2026-02~2026-04",
+        "exceptions": "신규 입주 등 원문 예외 추가 검수"
+      },
+      "instructions": "임대인과 납부 이력을 공고상 요건에 따라 확인합니다.",
+      "alternatives": [
+        {
+          "code": "seoul_cash_payment",
+          "title": "월차임 납부확인서",
+          "source_ref": "documents",
+          "when": {
+            "fact": "rent_payment_method",
+            "op": "eq",
+            "value": "cash"
+          },
+          "constraints": {
+            "form": "2026 서울주거포털 제공 양식"
+          },
+          "instructions": "현금 납부 시 공식 양식 및 첨부 요건을 확인합니다. 자동 발급·진위 검증을 하지 않습니다."
+        }
+      ]
+    },
+    {
+      "code": "seoul_rent_family",
+      "title": "가족관계증명서 상세본",
+      "issuer": "공식 증명서 발급기관",
+      "source_ref": "documents",
+      "constraints": {
+        "issued_after": "2026-04-30",
+        "subject": "신청인 본인"
+      },
+      "instructions": "공고 이후 발급한 본인 기준 상세본을 준비합니다."
+    },
+    {
+      "code": "seoul_rent_admin_consent",
+      "title": "행정정보 공동이용 사전동의서",
+      "issuer": "서울주거포털 양식",
+      "source_ref": "documents",
+      "required_when": {
+        "fact": "admin_info_consent",
+        "op": "eq",
+        "value": true
+      },
+      "constraints": {
+        "signature": true,
+        "form": "2026 모집 양식"
+      },
+      "instructions": "공식 신청처에 제출할 양식과 서명을 확인합니다. 이 앱에는 주민등록번호를 입력하지 않습니다."
+    },
+    {
+      "code": "seoul_rent_insurance_status",
+      "title": "건강보험 자격 확인서",
+      "issuer": "공식 증명서 발급기관",
+      "source_ref": "documents",
+      "required_when": {
+        "fact": "admin_info_consent",
+        "op": "eq",
+        "value": false
+      },
+      "constraints": {
+        "condition": "행정정보 공동이용 비동의",
+        "reference_notice": "2026-1440"
+      },
+      "instructions": "공동이용에 동의하지 않는 경우 공고에 정한 기준시점과 발급요건을 대조합니다."
+    },
+    {
+      "code": "seoul_rent_income_certificate",
+      "title": "최근 소득금액증명원",
+      "issuer": "공식 증명서 발급기관",
+      "source_ref": "documents",
+      "required_when": {
+        "fact": "admin_info_consent",
+        "op": "eq",
+        "value": false
+      },
+      "constraints": {
+        "condition": "행정정보 공동이용 비동의",
+        "reference_notice": "2026-1440"
+      },
+      "instructions": "공동이용에 동의하지 않는 경우 공고에 정한 기준시점과 발급요건을 대조합니다."
+    },
+    {
+      "code": "seoul_rent_resident_records",
+      "title": "주민등록등·초본",
+      "issuer": "공식 증명서 발급기관",
+      "source_ref": "documents",
+      "required_when": {
+        "fact": "admin_info_consent",
+        "op": "eq",
+        "value": false
+      },
+      "constraints": {
+        "condition": "행정정보 공동이용 비동의",
+        "reference_notice": "2026-1440"
+      },
+      "instructions": "공동이용에 동의하지 않는 경우 공고에 정한 기준시점과 발급요건을 대조합니다."
+    }
+  ],
+  "manual_checks": [
+    {
+      "id": "coverage",
+      "message": "연령·가구·주택·재산·과거 선정 이력 및 모든 예외를 아직 표현하지 못했습니다. 일부 규칙 통과로 적격을 확정할 수 없습니다.",
+      "source_ref": "notice"
+    },
+    {
+      "id": "age",
+      "message": "출생연도 기준과 군 복무기간에 따른 연령 예외를 검수해야 합니다.",
+      "source_ref": "notice"
+    },
+    {
+      "id": "income",
+      "message": "소득·재산·임차 조건과 가구유형 예외는 수동 검토 대상입니다.",
+      "source_ref": "notice"
+    },
+    {
+      "id": "benefits",
+      "message": "3종 사업의 입력된 수급 기간만 비교합니다. 기타 유사사업, 월 단위 인정, 선정 이력·환수 규정은 별도 검수해야 합니다.",
+      "source_ref": "notice"
+    },
+    {
+      "id": "documents_exceptions",
+      "message": "임차 형태별 증빙 묶음, 신규 입주·군 복무·한부모 등 조건부 추가서류는 원문과 개별 대조해야 합니다.",
+      "source_ref": "documents"
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "code": "ontong-20260724005400213300",
+  "version": "2026.1",
+  "name": "(영종구) 청년 자격증 응시료 지원",
+  "description": "취업에 어려움을 겪고 있는 영종구 청년에게 자격증 응시료 지원을 통한 경제적 부담 경감 및 사회진입 활성화 도모",
+  "agency": "인천광역시 청년정책담당관",
+  "region": "인천광역시",
+  "category": "일자리",
+  "demo_only": false,
+  "official_url": "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&bcd=notice",
+  "application": {
+    "open": "2026-02-01",
+    "close": "2026-11-30",
+    "period_note": "API 기재 날짜. 공고와 대조 전."
+  },
+  "review": {
+    "status": "draft",
+    "reviewed_by": "",
+    "reviewed_at": null
+  },
+  "sources": [
+    {
+      "ref": "api",
+      "kind": "api",
+      "title": "온통청년 API 수집값(공고 원문 아님)",
+      "url": "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&bcd=notice",
+      "anchor": "",
+      "excerpt": "",
+      "verified": false
+    },
+    {
+      "ref": "web1",
+      "kind": "notice",
+      "title": "인천청년포털 · (영종구) 청년 자격증 응시료 지원",
+      "url": "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=467",
+      "anchor": "method",
+      "excerpt": "인천청년포털 온라인 신청 (신청인)",
+      "verified": false
+    }
+  ],
+  "rules": [
+    {
+      "id": "age",
+      "type": "required",
+      "predicate": {
+        "fact": "age",
+        "op": "between",
+        "value": [
+          18,
+          39
+        ]
+      },
+      "message": "API 연령 18~39세. 공고의 기준일과 출생연도 표현을 확인하세요.",
+      "source_ref": "api"
+    },
+    {
+      "id": "region",
+      "type": "required",
+      "predicate": {
+        "fact": "region",
+        "op": "eq",
+        "value": "인천"
+      },
+      "message": "API 지역 코드가 인천광역시입니다. 주민등록 기준일을 확인하세요.",
+      "source_ref": "api"
+    },
+    {
+      "id": "employment",
+      "type": "required",
+      "predicate": {
+        "fact": "employment_status",
+        "op": "eq",
+        "value": "unemployed"
+      },
+      "message": "API 취업 요건: 미취업자. 단기근로·사업자등록 예외를 확인하세요.",
+      "source_ref": "api"
+    }
+  ],
+  "manual_checks": [
+    {
+      "id": "period",
+      "source_ref": "api",
+      "message": "API 신청기간(20260201 ~ 20261130)을 최신 공고의 회차·시작일·마감 시각과 대조하세요."
+    },
+    {
+      "id": "district",
+      "source_ref": "api",
+      "message": "시도 안의 일부 시군구만 등록돼 있습니다(코드 28155). 대상 시군구를 확인하세요."
+    },
+    {
+      "id": "exclusion1",
+      "source_ref": "api",
+      "message": "참여 제한 문장: “건강보험 직장가입자 및 개인사업자는 제외” — 제외 규칙으로 옮길지 검수하세요."
+    },
+    {
+      "id": "documents",
+      "source_ref": "api",
+      "message": "서류 안내 글에서 이름을 찾은 서류만 옮겼습니다. 목록 전체를 공고와 대조하세요."
+    }
+  ],
+  "documents": [
+    {
+      "code": "insurance_status",
+      "title": "건강보험 자격득실확인서",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "국민건강보험공단 누리집·앱 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    },
+    {
+      "code": "business",
+      "title": "사업자등록 관련 서류",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "홈택스 · 등록증인지 사실증명인지는 공고 확인 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    },
+    {
+      "code": "bankbook",
+      "title": "통장 사본",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "은행 앱에서 저장 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    },
+    {
+      "code": "exam",
+      "title": "응시 확인 자료",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "시험 주관기관 누리집 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    },
+    {
+      "code": "receipt",
+      "title": "결제 영수증",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "결제처·시험 주관기관 누리집 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    }
+  ]
+}

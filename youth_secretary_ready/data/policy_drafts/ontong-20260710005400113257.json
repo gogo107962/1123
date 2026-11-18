@@ -1,0 +1,70 @@
+{
+  "code": "ontong-20260710005400113257",
+  "version": "2026.1",
+  "name": "K-패스(K패스)",
+  "description": "○ 국민 교통비 절감 및 대중교통 이용 활성화를 위해 정기적 대중교통 이용시 교통비 지출액의 일정비율 환급\n○ 월15회 이상 K-패스 교통카드 사용 시 청년(19~34세) 대중교통비 30% 환급",
+  "agency": "국토교통부",
+  "region": "전국",
+  "category": "금융･복지･문화",
+  "demo_only": false,
+  "official_url": "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/161300000104",
+  "application": {
+    "period_note": "API 신청기간 구분: rolling. 날짜 없음."
+  },
+  "review": {
+    "status": "draft",
+    "reviewed_by": "",
+    "reviewed_at": null
+  },
+  "sources": [
+    {
+      "ref": "api",
+      "kind": "api",
+      "title": "온통청년 API 수집값(공고 원문 아님)",
+      "url": "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/161300000104",
+      "anchor": "",
+      "excerpt": "",
+      "verified": false
+    },
+    {
+      "ref": "web1",
+      "kind": "notice",
+      "title": "정부24 보조금24 · K-패스 (최종수정 2026.05.08)",
+      "url": "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/161300000104",
+      "anchor": "conditions",
+      "excerpt": "만 19세 이상의 국민",
+      "verified": false
+    }
+  ],
+  "rules": [
+    {
+      "id": "age",
+      "type": "required",
+      "predicate": {
+        "fact": "age",
+        "op": "gte",
+        "value": 19
+      },
+      "message": "만 19세 이상. 청년층 환급률(30%)은 만 19~34세에 적용됩니다. 거주 지자체의 참여 여부를 확인하세요.",
+      "source_ref": "web1"
+    }
+  ],
+  "manual_checks": [
+    {
+      "id": "period",
+      "source_ref": "api",
+      "message": "API 신청기간(기재 없음)을 최신 공고의 회차·시작일·마감 시각과 대조하세요."
+    },
+    {
+      "id": "age",
+      "source_ref": "api",
+      "message": "API 연령이 unspecified 상태입니다(최소 None, 최대 None). 공고에서 연령 기준을 확인하세요."
+    },
+    {
+      "id": "documents",
+      "source_ref": "api",
+      "message": "서류 안내가 없습니다. 서류가 필요 없다는 뜻이 아닙니다."
+    }
+  ],
+  "documents": []
+}

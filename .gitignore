@@ -1,0 +1,17 @@
+# 비밀값·로컬 실행 파일 (API 키, Ollama 모델, 로그)
+.local/
+.env
+# 실행 DB와 그 복사본 (덮어쓰기 방지, 공개 샘플 아님)
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+# 수집 원문 전체(11MB, 공고 담당자 연락처 포함) — 앱은 DB만 읽는다
+youth_secretary_ready/data/exports/
+# 가상환경·캐시
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+# 인계용 묶음과 빌드 임시 폴더
+*.zip
+HANDOFF_2026-11-17/.build/

@@ -1,0 +1,36 @@
+# 청년비서 (Youth Secretary)
+
+2026 대한민국 청년 CAREER FAIR AI 해커톤(대한상공회의소) 제출용 서비스. 제출 마감 **2026-11-23 17:00 KST**, 마감 뒤에는 기능·알고리즘·프롬프트·데이터 변경 금지.
+청년이 고른 정책의 조건·중복 수혜 제한·서류를 공식 공고 근거로 확인하고, 사용자가 승인한 준비 작업을 DB에 저장·관리한다.
+
+**먼저 읽을 것:** `youth_secretary_ready/VALIDATION.md`의 v0.9~v0.20(11/17~18에 한 일과 검증 범위, 가장 최신) → `HANDOFF_2026-11-17/08_ClaudeCode_이어하기.md` → `HANDOFF_2026-11-17/01_상세인계서.md` → `03_이어할작업과검증.md`. 팀원 작업 요약은 `HANDOFF_2026-11-17/팀원_작업공유_2026-11-17.html`.
+
+## 내 역할
+데이터 구조화와 판별 엔진. 화면·배포·제출 문서는 팀원 영역일 수 있으니 손대기 전에 확인한다.
+
+## 구조
+- 앱: `youth_secretary_ready/` — FastAPI + SQLite + Vanilla JS + 로컬 Ollama(`qwen3:4b`). 새 프레임워크 도입·전면 재작성 금지.
+- 화면: `/`·`/desk` 앱 화면(`static/mobile.*`, 팀 프로토타입 기준), `/classic` 이전 소비자 화면, `/lab` 가상 정책 규칙 엔진 시연.
+- 사람 검수 `/review`(`review_service.py`): 초안 `data/policy_drafts/` → 사람이 승인 → `data/policies/`. 운영 안내 `OPERATIONS.md`, 제출 재료 `docs/SUBMISSION_DRAFT.md`.
+- 대화로 찾기 `desk_finder.py`, 신청 계획 `desk_plan.py`, 데이터 점검 `tools/audit_data.py` → `data/DATA_AUDIT.md`, 공식 페이지 보완 기록 `data/supplements.json`(수집 원문과 분리, 사람 검수 전).
+- 데이터: 온통청년 수집 4,020건(`ontong_candidates`), 승인 정책은 가상 3개, 실제 정책 초안 3개는 `draft`.
+- 판별 두 층: `engine.py`(사람 검수로 승인된 정책의 실제 판정) / `screening.py`+`policy_structure.py`(API 기재값 1차 걸러보기, 자격 판정 아님).
+
+## 실행 (Windows PowerShell, `youth_secretary_ready` 안에서)
+```powershell
+.\.venv\Scripts\python.exe -X utf8 -m pytest -q      # 임시 DB 사용, 약 50초
+.\.venv\Scripts\python.exe -X utf8 start.py           # http://127.0.0.1:8000
+.\run_ollama.ps1                                      # AI가 필요할 때만
+```
+
+## 지켜야 할 원칙
+- unknown은 false가 아니다. 빈값·0·미기재를 "제한 없음/상시/서류 불필요"로 바꾸지 않는다.
+- API 수집값은 공고 원문과 다를 수 있다(팀 대조 45건 중 32건 불일치). API 값만으로 자격을 확정하지 않는다.
+- 실제 정책은 사람 검수 없이 `approved`로 올리지 않는다. 검수자·검수일을 지어내지 않는다.
+- A→B 제한을 B→A로 뒤집어 적용하지 않는다. 확인일과 접수일을 섞지 않는다. 다음 모집일을 추정하지 않는다.
+- 준비 작업은 사용자 승인 뒤에만 DB에 저장한다. AI는 자동 저장하지 않는다.
+- AI는 로컬 Ollama만 쓴다. 유료·외부 AI로 자동 전환하지 않는다. 실제 개인정보를 받지 않는다(가상 프로필만).
+- `.local/ontong_api_key.txt`의 내용을 읽거나 출력·로그·Git에 남기지 않는다.
+- `data/youth_secretary.sqlite3`(실행 DB)를 덮어쓰거나 초기화하지 않는다. 4,020건은 다시 수집하지 않고 그대로 쓴다.
+- 검증하지 않은 것을 통과로 적지 않는다. 모의 테스트와 실제 모델·브라우저 검증을 구분해 기록한다.
+- 제출·이메일 발송·Git 푸시는 명시적으로 요청받았을 때만 한다. 저장소는 아직 커밋이 없다.

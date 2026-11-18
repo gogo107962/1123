@@ -1,0 +1,62 @@
+[
+  {
+    "external_id": "20261021005400214208",
+    "policy_code": "seoul_rent_2026",
+    "kind": "period_conflict",
+    "scope": "2026년 모집기간",
+    "summary": "API에는 1월~12월로 입력되어 있으나 공식 공고의 신청 접수는 5월에 종료됐습니다.",
+    "official_period_text": "2026-05-06 10:00 ~ 2026-05-19 18:00 (한국시간)",
+    "official_status": "closed",
+    "source_url": "https://housing.seoul.go.kr/site/main/board/notice/12667",
+    "source_title": "2026년 서울시 청년월세지원 모집공고·첨부 PDF",
+    "checked_on": "2026-11-16",
+    "api_sha256": "ea7e3f7e5ed2fe57418abf9cb0ccfbe76987b97ecd122b7fb3b51b8c7b3e4d35",
+    "api_period_text": "20260101 ~ 20261231",
+    "checked_by": "Codex 원문 대조; 사람 승인 아님"
+  },
+  {
+    "external_id": "20261018005400213994",
+    "policy_code": "seoul_allowance_2026_round2",
+    "kind": "period_match",
+    "scope": "2026년 추가 2차 모집기간",
+    "summary": "API 날짜와 공식 공고 날짜가 일치합니다. 접수 시각은 공식 공고로 보완했습니다. 전체 자격 검수는 미완료입니다.",
+    "official_period_text": "2026-05-27 10:00 ~ 2026-05-29 16:00 (한국시간)",
+    "official_status": "closed",
+    "source_url": "https://youth.seoul.go.kr/bbs/view.do?key=2303300002&pstSn=2605220004",
+    "source_title": "서울시 청년수당 추가 2차 모집공고",
+    "checked_on": "2026-11-16",
+    "api_sha256": "684724931ab01e4f1757d131af0c738dc2b60bb60d24920c9a2cf14fdfe4a819",
+    "api_period_text": "20260527 ~ 20260529",
+    "checked_by": "Codex 원문 대조; 사람 승인 아님"
+  },
+  {
+    "external_id": "20240418005400200013",
+    "policy_code": "seongbuk_exam_2026",
+    "kind": "closure_notice",
+    "scope": "2026년 조기 마감 안내·서류 목록",
+    "summary": "공식 안내에 예산 소진으로 올해 사업 조기 마감이 표시되어 있습니다. API 신청기간은 비어 있습니다.",
+    "official_period_text": "당초 2026-02-01 ~ 12-10, 매월 1~10일. 확인일에는 조기 마감 상태.",
+    "official_status": "closed",
+    "source_url": "https://www.sb.go.kr/yeyak/contents.do?key=6602",
+    "source_title": "성북구 미취업청년 응시료 지원 안내",
+    "checked_on": "2026-11-16",
+    "api_sha256": "4937e3c37d55194f24e44fdd5be65d4303c9c8d85288d5d0d6c9f28be2aabd19",
+    "api_period_text": "",
+    "checked_by": "Codex 원문 대조; 사람 승인 아님"
+  },
+  {
+    "external_id": "20261018005400213991",
+    "policy_code": "",
+    "kind": "period_conflict",
+    "scope": "2026년 참여자 모집기간",
+    "summary": "API에는 3월 1일~12월 31일로 입력돼 있지만, 팀원 원문 대조(2026-11-17)와 서울시 누리집 검색 결과에서 참여자 모집은 3월 27일~4월 7일에 끝난 것으로 나옵니다. 공고 원문 문장은 직접 열어 확인하지 못했습니다.",
+    "official_period_text": "2026-03-27 ~ 2026-04-07 (참여자 모집기간, 검색 요약 기준)",
+    "official_status": "closed",
+    "source_url": "https://news.seoul.go.kr/economy/archives/571649",
+    "source_title": "서울특별시 경제분야 누리집 · 서울형 청년인턴 직무캠프 참여자 모집 (검색 결과로 찾음, 원문 미열람)",
+    "checked_on": "2026-11-18",
+    "api_sha256": "a02f245ede61d43af80cb6bbadfc665654a76dae56ab8d5e326b7d2c8bc6946b",
+    "api_period_text": "20260301 ~ 20261231",
+    "checked_by": "Claude Code 웹 검색 + 팀원 AI 대조; 원문 직접 확인 못 함; 사람 승인 아님"
+  }
+]

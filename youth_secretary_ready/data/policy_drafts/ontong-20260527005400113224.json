@@ -1,0 +1,70 @@
+{
+  "code": "ontong-20260527005400113224",
+  "version": "2026.1",
+  "name": "청년 국가기술자격 응시료 지원 사업",
+  "description": "구직활동을 하거나 경력을 개발하는 청년들의 경제적 부담을 완화하고, 국가기술자격 취득을 통한 취업 경쟁력 강화를 도모",
+  "agency": "고용노동부",
+  "region": "전국",
+  "category": "일자리",
+  "demo_only": false,
+  "official_url": "https://www.q-net.or.kr/man004.do?id=man00402&gSite=Q&gId=",
+  "application": {
+    "period_note": "API 신청기간 구분: rolling. 날짜 없음."
+  },
+  "review": {
+    "status": "draft",
+    "reviewed_by": "",
+    "reviewed_at": null
+  },
+  "sources": [
+    {
+      "ref": "api",
+      "kind": "api",
+      "title": "온통청년 API 수집값(공고 원문 아님)",
+      "url": "https://www.q-net.or.kr/man004.do?id=man00402&gSite=Q&gId=",
+      "anchor": "",
+      "excerpt": "",
+      "verified": false
+    },
+    {
+      "ref": "web1",
+      "kind": "notice",
+      "title": "한국산업인력공단 충남지사 · 청년 국가기술자격시험 응시료 지원사업 안내 (2025년 게시물)",
+      "url": "https://hrdc.hrdkorea.or.kr/hrdc/193642",
+      "anchor": "conditions",
+      "excerpt": "가. 지원대상: 만 34세 이하 청년 누구나(1990. 1. 1. 이후 출생)",
+      "verified": false
+    }
+  ],
+  "rules": [
+    {
+      "id": "age",
+      "type": "required",
+      "predicate": {
+        "fact": "age",
+        "op": "lte",
+        "value": 34
+      },
+      "message": "만 34세 이하. 출생일 기준(2025년 안내문 1990-01-01 이후, 수집 자료 2026년 기준 1991-01-01 이후)을 올해 공고에서 확인하세요.",
+      "source_ref": "web1"
+    }
+  ],
+  "manual_checks": [
+    {
+      "id": "period",
+      "source_ref": "api",
+      "message": "API 신청기간(기재 없음)을 최신 공고의 회차·시작일·마감 시각과 대조하세요."
+    },
+    {
+      "id": "age",
+      "source_ref": "api",
+      "message": "API 연령이 max_only 상태입니다(최소 None, 최대 34). 공고에서 연령 기준을 확인하세요."
+    },
+    {
+      "id": "documents",
+      "source_ref": "api",
+      "message": "서류 안내가 없습니다. 서류가 필요 없다는 뜻이 아닙니다."
+    }
+  ],
+  "documents": []
+}

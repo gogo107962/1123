@@ -1,0 +1,23 @@
+{
+  "code": "demo_exam",
+  "version": "2026.1",
+  "name": "[가상] 자격시험 응시료 지원",
+  "description": "시험종류와 증빙서류 판정을 테스트하는 허구의 정책입니다.",
+  "agency": "가상 청년지원센터",
+  "region": "서울",
+  "category": "교육",
+  "demo_only": true,
+  "official_url": "https://example.org/demo-exam",
+  "application": {"open": "2026-11-01", "close": "2027-02-28"},
+  "review": {"status": "approved", "reviewed_by": "demo_fixture", "reviewed_at": "2026-11-15"},
+  "sources": [{"ref": "notice", "kind": "demo", "title": "가상 공고 - 실제 공고 아님", "url": "https://example.org/demo-exam", "anchor": "데모 문서", "excerpt": "가상 자격시험 지원 규칙입니다.", "verified": false}],
+  "rules": [
+    {"id": "age", "type": "required", "predicate": {"fact": "age", "op": "between", "value": [19, 34]}, "message": "가상 연령 조건: 19~34세", "source_ref": "notice"},
+    {"id": "region", "type": "required", "predicate": {"fact": "region", "op": "eq", "value": "서울"}, "message": "가상 거주 조건: 서울", "source_ref": "notice"},
+    {"id": "test", "type": "required", "predicate": {"fact": "test_type", "op": "eq", "value": "national_skill"}, "message": "가상 시험 조건: 국가기술자격 종류", "source_ref": "notice"}
+  ],
+  "documents": [
+    {"code": "exam_attendance", "title": "시험 응시확인서", "issuer": "시험 주관기관", "source_ref": "notice", "instructions": "가상 조건: 응시 사실을 증명하는 문서를 준비하세요."},
+    {"code": "payment_receipt", "title": "결제 영수증", "issuer": "시험 주관기관", "source_ref": "notice", "instructions": "가상 조건: 시험 응시료 결제 영수증을 준비하세요."}
+  ]
+}

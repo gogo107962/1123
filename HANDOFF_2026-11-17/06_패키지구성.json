@@ -1,0 +1,493 @@
+{
+  "purpose": "Private development continuation, not a public submission package",
+  "source_inventory_count": 6913,
+  "source_inventory_bytes": 6619584598,
+  "category_counts": {
+    "Git 메타데이터: 제외": 211,
+    "소스/문서/데이터: 포함": 78,
+    "로컬 실행/검증/수집 부속 파일: 원본 보존, ZIP 제외": 22,
+    "과거 검증 캡처: evidence/previous_ui에 사본 포함": 9,
+    "로컬 AI 바이너리/모델: 기존 위치 재사용 또는 별도 설치": 85,
+    "비공개 설정: 내용과 해시 제외": 1,
+    "캐시: 제외": 22,
+    "Python 설치 환경: 재생성": 6484,
+    "DB: SQLite backup 사본으로 포함": 1
+  },
+  "inventory_excludes": [
+    "this ZIP",
+    "handoff/.build intermediates",
+    "self-generated inventory and manifest"
+  ],
+  "excluded_contents": [
+    "API key and .env",
+    "models and Ollama binaries",
+    ".venv",
+    "logs and local JSON runs",
+    ".git",
+    "caches"
+  ],
+  "notes": [
+    "No source or active database files modified by packaging.",
+    "DB is a consistent backup and retains development sessions and workspace tokens.",
+    "Previous UI screenshots are historical evidence, not validation of latest UI.",
+    "SHA256 of the inventory covers the CSV as a file; CSV does not inventory itself.",
+    "Manifest is included in ZIP but does not contain its own hash."
+  ],
+  "entries": [
+    {
+      "archive_path": "CODEX_HANDOFF.md",
+      "bytes": 39615,
+      "sha256": "7daab7d2201fd952066c6fe2e5d9cdc26a7b6396bb5d34c135da20a88218fe54"
+    },
+    {
+      "archive_path": "HANDOFF_2026-11-17/00_새채팅_시작프롬프트.md",
+      "bytes": 10327,
+      "sha256": "994e9a0ea818e89d2da85d9c9a9a150ec05330f45ff9092cdfff068751e2ed06"
+    },
+    {
+      "archive_path": "HANDOFF_2026-11-17/01_상세인계서.md",
+      "bytes": 19035,
+      "sha256": "1398f53d068b844511f9a9a3cc7ee80b6c4e915ef2db056e409e702f8752d3ab"
+    },
+    {
+      "archive_path": "HANDOFF_2026-11-17/02_파일지도와실행.md",
+      "bytes": 14183,
+      "sha256": "7adaca50e1855b6c22c02b6ac68c3e0ecbb3a53b7e048283a1550861f4ebb408"
+    },
+    {
+      "archive_path": "HANDOFF_2026-11-17/03_이어할작업과검증.md",
+      "bytes": 7980,
+      "sha256": "7cb58fc7ca51f1dd0f75269185a48a14b061fdfde5bb76ae2bc951b4f5878f84"
+    },
+    {
+      "archive_path": "HANDOFF_2026-11-17/04_현재상태.json",
+      "bytes": 3040,
+      "sha256": "18ea685fee728dcbbfde7248d9ee865fd0c04d2b2132cf8c5440d91e81200d48"
+    },
+    {
+      "archive_path": "HANDOFF_2026-11-17/05_전체파일목록.csv",
+      "bytes": 936625,
+      "sha256": "5cd3de9d0bb29cf2c279a810fc9eddbbc8a1c77efc1083d019b1e2bf4e5ce56a"
+    },
+    {
+      "archive_path": "HANDOFF_2026-11-17/07_이동안내.md",
+      "bytes": 2325,
+      "sha256": "c469fda7bc65a5f3581b9f400a610ac2c85a9f3158243c2cd6e80dc0836f7391"
+    },
+    {
+      "archive_path": "HANDOFF_2026-11-17/build_handoff.py",
+      "bytes": 10437,
+      "sha256": "a5ec6d261e16982caa7c3c565b498050d3719817e0ee85801176ec469a7eb0ec"
+    },
+    {
+      "archive_path": "build_plan_html.py",
+      "bytes": 26770,
+      "sha256": "11a4b0d5a71e5cbae42d4d8a98f348e8228a1c6d49ed31ce0441bca1cd01d2a1"
+    },
+    {
+      "archive_path": "evidence/previous_ui/browser-agent.png",
+      "bytes": 38201,
+      "sha256": "927bdf5e2fb380b1750147d3f902ba9caa5ee4497b17aefd5a60e83f75aed398"
+    },
+    {
+      "archive_path": "evidence/previous_ui/browser-catalog-review.png",
+      "bytes": 198877,
+      "sha256": "68b4bd7cea8a2fb52e532a1475cead96fa98ec473fdbf2f8360ea61b98c4ab9f"
+    },
+    {
+      "archive_path": "evidence/previous_ui/browser-ontong.png",
+      "bytes": 99846,
+      "sha256": "e9045ef26b8cdbbedde8f54160871f8a46bb3e875665d937624115e65b20e49a"
+    },
+    {
+      "archive_path": "evidence/previous_ui/browser-review.png",
+      "bytes": 40985,
+      "sha256": "3656b06e8d83c169658c0de634f9c462248a436c0b18aaa622887bc010e638f5"
+    },
+    {
+      "archive_path": "evidence/previous_ui/browser-smoke.png",
+      "bytes": 457372,
+      "sha256": "2d1ddeefbb76fd5478d5ee0d6ebbfbc2e39322f141da09f7d071e54c2e3540a4"
+    },
+    {
+      "archive_path": "evidence/previous_ui/desk-ai.png",
+      "bytes": 40510,
+      "sha256": "c25beb3914f96da2f3bbf0f73320fb1ca9053636a7a1268dea1430ee4c523008"
+    },
+    {
+      "archive_path": "evidence/previous_ui/desk-desktop.png",
+      "bytes": 198073,
+      "sha256": "89e1299688bf22e21ca439522674ee2c667d96983a83fa6d4cb97fbef9bfc98e"
+    },
+    {
+      "archive_path": "evidence/previous_ui/desk-mobile-detail.png",
+      "bytes": 48130,
+      "sha256": "8f991972b7abd30fe14e47ec0f893be814864d9aa3b81fb7640d2b4b9af5035f"
+    },
+    {
+      "archive_path": "evidence/previous_ui/desk-mobile.png",
+      "bytes": 35654,
+      "sha256": "0c9d585f1a8bdff746362ce513cc5d79353edd04275a0f35f42c65339919bffa"
+    },
+    {
+      "archive_path": "references/API코드정보.xlsx",
+      "bytes": 21213,
+      "sha256": "81cd89ddc7bd49dfa9e53dec4f093bc8372d241505b5e8374cbfaf018245a5ef"
+    },
+    {
+      "archive_path": "references/청년비서_주제제안.html",
+      "bytes": 33579,
+      "sha256": "041c69c286d9ec5bc609261de3542429134496685a6af98574cf22ecccf94524"
+    },
+    {
+      "archive_path": "youth_secretary_ready/.gitignore",
+      "bytes": 92,
+      "sha256": "79360e835e2a510a23c3e04af09847c5f336827365606655cd1fa916a08e38a8"
+    },
+    {
+      "archive_path": "youth_secretary_ready/IMPLEMENTATION_PLAN.md",
+      "bytes": 7140,
+      "sha256": "7f6df84fb22611e320531e15551cc4013095f3bf373a53997ed2b854ac692198"
+    },
+    {
+      "archive_path": "youth_secretary_ready/QUICKSTART.txt",
+      "bytes": 2142,
+      "sha256": "69f33839310192a671bcc83afe9df60a8076a6230e5d5cb0ecc042060be94f1d"
+    },
+    {
+      "archive_path": "youth_secretary_ready/README.md",
+      "bytes": 27215,
+      "sha256": "2a1d390718093dad43e98e423ee024991b059a0ca383ce8c2b1672f9a916920b"
+    },
+    {
+      "archive_path": "youth_secretary_ready/SERVICE_GUIDE.md",
+      "bytes": 4877,
+      "sha256": "b960847105f587e6f7105cfe839a7c8bfe9fdc3d95e94f3c350d93eb913eaab3"
+    },
+    {
+      "archive_path": "youth_secretary_ready/VALIDATION.md",
+      "bytes": 19994,
+      "sha256": "05b7a08f3c91ef4957025825591d9b01a14fc46e4265f93b284379a2c06c7bba"
+    },
+    {
+      "archive_path": "youth_secretary_ready/app.py",
+      "bytes": 17015,
+      "sha256": "3dc5491a35936d07f471ee6ef7d3db5f29b2d2bad00bb74ac2eb1692ac79cc70"
+    },
+    {
+      "archive_path": "youth_secretary_ready/data/COLLECTION_REPORT.md",
+      "bytes": 2585,
+      "sha256": "02c2adff4000404ffb43f660d0521986c1ff43b25cfc16636132fa8b6f7376d5"
+    },
+    {
+      "archive_path": "youth_secretary_ready/data/POLICY_REVIEW.md",
+      "bytes": 6516,
+      "sha256": "f27df5e598ddcb0644312e9e0aba695b49aef8794714c4752735ece9668710e1"
+    },
+    {
+      "archive_path": "youth_secretary_ready/data/exports/ontong_policy_all_2026-11-16.json",
+      "bytes": 11922993,
+      "sha256": "26c62cd07fdb845610ed26865db5bb5f0e8fb0341a234a04995e2f53710e1bad"
+    },
+    {
+      "archive_path": "youth_secretary_ready/data/fact_definitions.json",
+      "bytes": 1800,
+      "sha256": "dec34b5b659487ae803c1685b48663cc32a284dd4b1b298322a8344c7d6af955"
+    },
+    {
+      "archive_path": "youth_secretary_ready/data/ontong_codebook.json",
+      "bytes": 10121,
+      "sha256": "dd4842bc449f0fda8839bba120a2198e998dca5db5de3c9f7452606f83e90245"
+    },
+    {
+      "archive_path": "youth_secretary_ready/data/policies/_REAL_POLICY_TEMPLATE.json",
+      "bytes": 1404,
+      "sha256": "bc49ec8dc47e397a46f6cca3c0a0e838fde22e0012e4a78b42ee148561dcb3d2"
+    },
+    {
+      "archive_path": "youth_secretary_ready/data/policies/demo_allowance.json",
+      "bytes": 1626,
+      "sha256": "55a0216241905e73e4876902b549460521eb6db4b72e9b03a15f60186eafce68"
+    },
+    {
+      "archive_path": "youth_secretary_ready/data/policies/demo_exam.json",
+      "bytes": 1774,
+      "sha256": "4587042269e8cce45e5b75d99dc7f35cc22c3226691200e940826ca6690a1cde"
+    },
+    {
+      "archive_path": "youth_secretary_ready/data/policies/demo_rent.json",
+      "bytes": 2311,
+      "sha256": "483cb231884b80929786d3eb88eb57c1b23111b4b1b0c2cd3a680961228b4f81"
+    },
+    {
+      "archive_path": "youth_secretary_ready/data/policies/seongbuk_exam_2026.json",
+      "bytes": 7510,
+      "sha256": "81dfbb1a890c07cc1df76279a4f5e4f6d1b6dbcb50129835484eb5fa171390f8"
+    },
+    {
+      "archive_path": "youth_secretary_ready/data/policies/seoul_allowance_2026_round2.json",
+      "bytes": 2703,
+      "sha256": "661a99f752128266cbd787da1334374fa4cdd50ea307c23dbbea47879e4657ad"
+    },
+    {
+      "archive_path": "youth_secretary_ready/data/policies/seoul_rent_2026.json",
+      "bytes": 9639,
+      "sha256": "b4de9822ac9d1325bc4542a014b528145808b763ce25bebc0132d138337309d8"
+    },
+    {
+      "archive_path": "youth_secretary_ready/data/source_checks.json",
+      "bytes": 2523,
+      "sha256": "a2c1db0b0b3de00d5375f892993cf995d19124d0ac0686866d507b376dea9a70"
+    },
+    {
+      "archive_path": "youth_secretary_ready/data/youth_secretary.sqlite3",
+      "bytes": 28184576,
+      "sha256": "520e6f2d7dd6db398cea7e24c9b46575de64ac94aef99de953673401d67be15c"
+    },
+    {
+      "archive_path": "youth_secretary_ready/db.py",
+      "bytes": 6839,
+      "sha256": "ce8ea886db5e7fdb9cac7de5cb07740f671fd55aed9907dc9403ac0ef804749b"
+    },
+    {
+      "archive_path": "youth_secretary_ready/db_schema.sql",
+      "bytes": 5924,
+      "sha256": "4203cd19449c24faa26afda3c46fd3940ba5da8acea9d8c3b17cb6afa78ca558"
+    },
+    {
+      "archive_path": "youth_secretary_ready/desk_agent.py",
+      "bytes": 8043,
+      "sha256": "bbf2ebf890ee25aa85d7ef0658d867fa375f39813da5fc9557e1d3a69ac0a114"
+    },
+    {
+      "archive_path": "youth_secretary_ready/desk_service.py",
+      "bytes": 9559,
+      "sha256": "8a9a5d5e184e378013310e2400a2ffad39052bf8be5908bd177c0574fc66257a"
+    },
+    {
+      "archive_path": "youth_secretary_ready/engine.py",
+      "bytes": 11236,
+      "sha256": "7131b58db9172f948c4d6ba060fcc8bc8dde5a70aeff925197e4fe33a5d96019"
+    },
+    {
+      "archive_path": "youth_secretary_ready/import_policies.py",
+      "bytes": 839,
+      "sha256": "c93d3618489012717506b965e2d04fb150259847635b37ca1bf2560ac397d936"
+    },
+    {
+      "archive_path": "youth_secretary_ready/local_agent.py",
+      "bytes": 12310,
+      "sha256": "f4921d2ee62832173da6ef83fb37aff49dd01228fc5e9eee2020be694ab49d0b"
+    },
+    {
+      "archive_path": "youth_secretary_ready/ontong.py",
+      "bytes": 15109,
+      "sha256": "1ec536a8bf2e687ae58598fc9a58455464e0d7e70d04eb7d7088dcd145d8a03c"
+    },
+    {
+      "archive_path": "youth_secretary_ready/policy_codes.py",
+      "bytes": 3231,
+      "sha256": "6f8f12d29f4da7607c968bd1ba1c123837dc2f6401bb22c2d53a70c11a5c0000"
+    },
+    {
+      "archive_path": "youth_secretary_ready/policy_data.py",
+      "bytes": 12342,
+      "sha256": "9f04a57e61c309b2823374f9710a9d77fff1215e10f5c1d41e48f18e4404ff04"
+    },
+    {
+      "archive_path": "youth_secretary_ready/requirements-dev.txt",
+      "bytes": 69,
+      "sha256": "94449ef0fe7d5c4ccfae5acb3e56bdb770084699a9fa272276bfe8345e4cc157"
+    },
+    {
+      "archive_path": "youth_secretary_ready/requirements-lock.txt",
+      "bytes": 524,
+      "sha256": "fa4f40fddd1357af3ceecbf4f4afd63381c7ba001bd673dd61141c0a15dd841b"
+    },
+    {
+      "archive_path": "youth_secretary_ready/requirements.txt",
+      "bytes": 65,
+      "sha256": "8512bfa2d333d949612b4c2013c7c879174f4fca786364d94e21a48d1655a65d"
+    },
+    {
+      "archive_path": "youth_secretary_ready/run_mac_linux.sh",
+      "bytes": 195,
+      "sha256": "77060b77155815dc4aba5d485d4f8848c09f92bb71ca05ce769b8fb981ca2c42"
+    },
+    {
+      "archive_path": "youth_secretary_ready/run_ollama.ps1",
+      "bytes": 1399,
+      "sha256": "a774208e467bd472ad5b457e12863fe93eeaa24bab2142f08882fb7fb501fb81"
+    },
+    {
+      "archive_path": "youth_secretary_ready/run_windows.bat",
+      "bytes": 359,
+      "sha256": "a3d28fb0fef0a7d79ef12d833fde1c00df168b1dbc1b0d0c4212582a1982899a"
+    },
+    {
+      "archive_path": "youth_secretary_ready/start.py",
+      "bytes": 540,
+      "sha256": "4e34984917b65c76c0ebd811a7edd59cf6f6bc0b113ca4a2bf8733f039d9d346"
+    },
+    {
+      "archive_path": "youth_secretary_ready/static/app.js",
+      "bytes": 19656,
+      "sha256": "dc14882322396be562bd4c14069c19a6bfb37871aa051822cc002c72889d970a"
+    },
+    {
+      "archive_path": "youth_secretary_ready/static/desk-app.css",
+      "bytes": 7432,
+      "sha256": "be12a51349aa8407a6ce0fe54ef7e8573b55cc0552ca5b04b011fe6570f526b4"
+    },
+    {
+      "archive_path": "youth_secretary_ready/static/desk.css",
+      "bytes": 11922,
+      "sha256": "57d69fbcaca83caba7e649132b3a04c907f9c01e3993dcd70ee032a46301299b"
+    },
+    {
+      "archive_path": "youth_secretary_ready/static/desk.html",
+      "bytes": 7067,
+      "sha256": "2719eafd5d3b97abca3fda1c9b502224295e827739d2ec5bda07bb19222fa2df"
+    },
+    {
+      "archive_path": "youth_secretary_ready/static/desk.js",
+      "bytes": 15243,
+      "sha256": "711c15c8c0b737062c078a4acf4ac810027254cae03e96d9896b719d8ffa80a3"
+    },
+    {
+      "archive_path": "youth_secretary_ready/static/index.html",
+      "bytes": 10243,
+      "sha256": "05c2804aff09d2346e6b4e92366ae4ed837fd5484ec26f077e934192d507f433"
+    },
+    {
+      "archive_path": "youth_secretary_ready/static/ontong.js",
+      "bytes": 6255,
+      "sha256": "e27c348e809206983e4646a703f56ce25c0c0fdc8518f5591b9a55e8679a49e8"
+    },
+    {
+      "archive_path": "youth_secretary_ready/static/style.css",
+      "bytes": 8344,
+      "sha256": "ad06939efae5d7563497accf2ad68acb8b52c09e8abd646992ad121c9dc4297a"
+    },
+    {
+      "archive_path": "youth_secretary_ready/sync_all_ontong.py",
+      "bytes": 6397,
+      "sha256": "6cb20c7ef4baaea6f1207f5dc378a44f1745ec9aacff638b13fd8bb650906f75"
+    },
+    {
+      "archive_path": "youth_secretary_ready/sync_ontong.py",
+      "bytes": 769,
+      "sha256": "14e55f1aa93285d1805de449db7a218b7c70195a0e30007c729125c59461d4ce"
+    },
+    {
+      "archive_path": "youth_secretary_ready/temporal.py",
+      "bytes": 4933,
+      "sha256": "e24028611c34dcc70f6ebf362be478fb1cee15c3b290258e7c8f415fd921010f"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/browser_agent_smoke.py",
+      "bytes": 2254,
+      "sha256": "c836c3348a85cfbae86afe0d317f7dd012dd5a0d926d34f8cef5931b3744dfd3"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/browser_catalog_smoke.py",
+      "bytes": 3423,
+      "sha256": "20012f7bf2516cd71df75e9ae44f42dc5e47168a794d4ebcf163937fba0453df"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/browser_desk_ai_smoke.py",
+      "bytes": 1605,
+      "sha256": "45ad5ba36e340d787b08331a61d5de7c542eebe8d5abe67341175d1ae23062f2"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/browser_desk_smoke.py",
+      "bytes": 3303,
+      "sha256": "b9e6bf37a467df3c93b84f6bea3147f9a8f2358f785e44ae544b7028bc86d3bc"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/browser_ontong_smoke.py",
+      "bytes": 2767,
+      "sha256": "3327179b7f0f715bf54077f9bfb70ce46a902426f447cd19d70c962664d81c5f"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/browser_review_smoke.py",
+      "bytes": 3282,
+      "sha256": "535753cdd669c1082c4f09d5f5494bed4c13cb68eb32a4ae8bb99f3dde4c3c75"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/browser_smoke.py",
+      "bytes": 3547,
+      "sha256": "0248e722de162dde7a9c7091be75093d906a11b57a9f389128ef565ad496380f"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/live_agent_smoke.py",
+      "bytes": 2446,
+      "sha256": "8e735c57a0b417326766ba01478ef48ea2f83f776aaa2296cd28532173b3197f"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/live_desk_agent_smoke.py",
+      "bytes": 1401,
+      "sha256": "44f915594969da4493346479dcfec9dcf9c9dabe514d0abb4db25de3af1d68f4"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/live_fact_smoke.py",
+      "bytes": 2247,
+      "sha256": "40ae42d3a5eb304a43b2a5671e483958df3b6f208e622fbbb16c36dcf3409816"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/test_catalog_review.py",
+      "bytes": 6570,
+      "sha256": "52c193d452f66ae1b5d191a2eb3d321a77c8c2edce8302b91909ea66c65d3ebd"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/test_desk.py",
+      "bytes": 6413,
+      "sha256": "e12de6b475e58eb5c570bf980ed527abc609122229ad3153e7d7237d768753b0"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/test_ontong.py",
+      "bytes": 7778,
+      "sha256": "49737ebf0d37cb142d7e8fe1bd3be0a5329a5940576154b0b04fddc800ed4eec"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/test_ontong_full.py",
+      "bytes": 3039,
+      "sha256": "5481751da929588053e23c396da37624bab5e878d80883f08451801dd390dced"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/test_project.py",
+      "bytes": 6900,
+      "sha256": "69d7611a020e70860906601f7f310bcfb999885857c89026c34ad689ba8d134b"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/test_temporal.py",
+      "bytes": 6957,
+      "sha256": "a119044c2fd7fe0ce62678f6e18105260f806594cc62f566cee07b31cdea8991"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tests/test_workflow.py",
+      "bytes": 11984,
+      "sha256": "a6539fe3149d598cdbeb8275ba9ae1f793584d48c7e6055744bbec1f8eba56a4"
+    },
+    {
+      "archive_path": "youth_secretary_ready/tools/extract_api_codebook.py",
+      "bytes": 2163,
+      "sha256": "86acd1224d669d99e25cb3aeb51bc78ae27d750d8dba44b9015c7e99f3df2c3d"
+    },
+    {
+      "archive_path": "청년비서_수상전략_및_실행계획.html",
+      "bytes": 98383,
+      "sha256": "3ce3ef449987a9d13e15980780188a810f978318eab56f5ce6c338d81d9ef3c9"
+    },
+    {
+      "archive_path": "청년비서_수상전략_및_실행계획.md",
+      "bytes": 60104,
+      "sha256": "0d41c2802b050fc5618689e7a0e2a05bb26da385ee51717baf8d682f7b2ee527"
+    },
+    {
+      "archive_path": "청년비서_한장_구현계획서.html",
+      "bytes": 13534,
+      "sha256": "bb1c081926917a584916a6e0e99a6a09dfed043f4aed03e338fa1d7dde037ce4"
+    }
+  ]
+}

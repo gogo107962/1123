@@ -1,0 +1,81 @@
+{
+  "as_of_kst": "2026-11-17",
+  "original_root": "C:\\Users\\User\\Documents\\ChatGPT\\대한상공회의소 해커톤",
+  "application": "C:\\Users\\User\\Documents\\ChatGPT\\대한상공회의소 해커톤\\youth_secretary_ready",
+  "database": {
+    "integrity": "ok",
+    "foreign_key_errors": 0,
+    "tables": {
+      "agent_runs": 6,
+      "agent_tool_calls": 14,
+      "demo_sessions": 34,
+      "desk_agent_runs": 4,
+      "desk_bookmarks": 1,
+      "desk_tasks": 3,
+      "desk_workspaces": 6,
+      "document_requirements": 20,
+      "eligibility_checks": 149,
+      "ontong_candidates": 4020,
+      "ontong_snapshots": 4020,
+      "ontong_sync_runs": 7,
+      "policies": 6,
+      "policy_rules": 19,
+      "policy_sources": 7,
+      "policy_versions": 6,
+      "preparation_tasks": 61,
+      "session_documents": 0
+    },
+    "backup_method": "sqlite3.Connection.backup from read-only source",
+    "backup_sha256": "520e6f2d7dd6db398cea7e24c9b46575de64ac94aef99de953673401d67be15c"
+  },
+  "policy_export": {
+    "relative_path": "youth_secretary_ready\\data\\exports\\ontong_policy_all_2026-11-16.json",
+    "bytes": 11922993,
+    "sha256": "26c62cd07fdb845610ed26865db5bb5f0e8fb0341a234a04995e2f53710e1bad"
+  },
+  "codebook": {
+    "groups": 11,
+    "codes": 69,
+    "source_sha256": "81cd89ddc7bd49dfa9e53dec4f093bc8372d241505b5e8374cbfaf018245a5ef",
+    "missing": [
+      "zipCd地域mapping",
+      "income amount unit",
+      "age Y/N semantics"
+    ]
+  },
+  "validation": {
+    "python_ast_files": 32,
+    "python_ast": "passed during handoff",
+    "desk_js_syntax": "Node --check passed during handoff",
+    "last_full_pytest_record": "145 passed before two later desk AI tests",
+    "last_targeted_record": "test_desk.py: 13 passed before codebook/app UI changes",
+    "latest_pytest_attempt": "interrupted; no passing result; exit 1",
+    "latest_codebook_filters": "no dedicated regression tests yet",
+    "latest_app_ui": "not browser-tested; old screenshots must not be reused as new evidence"
+  },
+  "git": "application and parent planning documents were untracked; no commit/tag recorded",
+  "services_running": "not verified at handoff; do not reuse prior PIDs",
+  "secrets": {
+    "ontong_key_present": true,
+    "contents_included": false,
+    "hash_included": false
+  },
+  "external_references": [
+    {
+      "path": "C:\\Users\\User\\Downloads\\API코드정보.xlsx",
+      "exists": true,
+      "bytes": 21213
+    },
+    {
+      "path": "C:\\Users\\User\\Documents\\카카오톡 받은 파일\\청년비서_주제제안.html",
+      "exists": true,
+      "bytes": 33579
+    },
+    {
+      "path": "C:\\Users\\User\\Downloads\\%EC%B2%AD%EB%85%84%EB%B9%84%EC%84%9C_%EC%BD%94%EB%8D%B1%EC%8A%A4_%EC%9D%B8%EA%B3%84%ED%8C%A8%ED%82%A4%EC%A7%80 (2).zip",
+      "exists": false,
+      "bytes": null
+    }
+  ],
+  "next_action": "Read handoff, run regression, validate latest code filters and mobile app UI before further features."
+}

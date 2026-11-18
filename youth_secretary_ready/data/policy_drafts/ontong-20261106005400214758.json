@@ -1,0 +1,113 @@
+{
+  "code": "ontong-20261106005400214758",
+  "version": "2026.1",
+  "name": "청주시 자격증 시험 응시료 지원사업",
+  "description": "미취업 청년의 자립기반 형성 및 역량강화를 위한 자격증 시험 응시 비용을 지원하여 구직활동의 경제적 부담을 완화하고 취업 활동을 장려함으로써 청년 고용 촉진의 발판을 마련",
+  "agency": "충청북도 청주시",
+  "region": "충청북도",
+  "category": "일자리",
+  "demo_only": false,
+  "official_url": "https://www.cheongju.go.kr/www/contents.do?key=24112",
+  "application": {
+    "open": "2026-03-03",
+    "close": "2026-12-15",
+    "period_note": "API 기재 날짜. 공고와 대조 전."
+  },
+  "review": {
+    "status": "draft",
+    "reviewed_by": "",
+    "reviewed_at": null
+  },
+  "sources": [
+    {
+      "ref": "api",
+      "kind": "api",
+      "title": "온통청년 API 수집값(공고 원문 아님)",
+      "url": "https://www.cheongju.go.kr/www/contents.do?key=24112",
+      "anchor": "",
+      "excerpt": "",
+      "verified": false
+    },
+    {
+      "ref": "web1",
+      "kind": "notice",
+      "title": "청주시청 · 자격증 시험 응시료 지원 사업 서비스 안내",
+      "url": "https://www.cheongju.go.kr/www/contents.do?key=24112",
+      "anchor": "documents",
+      "excerpt": "시험을 실제 응시한 이후 응시사실 확인서류 첨부하여 신청 (접수상태 신청 불가),",
+      "verified": false
+    },
+    {
+      "ref": "web2",
+      "kind": "notice",
+      "title": "청주시청 · 자격증 시험 응시료 지원 사업 서비스 안내",
+      "url": "https://www.cheongju.go.kr/www/contents.do?key=24112",
+      "anchor": "method",
+      "excerpt": "시청 홈페이지 접속 (www.cheongju.go.kr)",
+      "verified": false
+    },
+    {
+      "ref": "web3",
+      "kind": "notice",
+      "title": "청주시청 · 자격증 시험 응시료 지원 사업 서비스 안내",
+      "url": "https://www.cheongju.go.kr/www/contents.do?key=24112",
+      "anchor": "conditions",
+      "excerpt": "청주시에 1년 이상 주민등록주소를 두고 있는 자",
+      "verified": false
+    }
+  ],
+  "rules": [
+    {
+      "id": "age",
+      "type": "required",
+      "predicate": {
+        "fact": "age",
+        "op": "between",
+        "value": [
+          19,
+          39
+        ]
+      },
+      "message": "API 연령 19~39세. 공고의 기준일과 출생연도 표현을 확인하세요.",
+      "source_ref": "api"
+    },
+    {
+      "id": "employment",
+      "type": "required",
+      "predicate": {
+        "fact": "employment_status",
+        "op": "eq",
+        "value": "unemployed"
+      },
+      "message": "API 취업 요건: 미취업자. 단기근로·사업자등록 예외를 확인하세요.",
+      "source_ref": "api"
+    }
+  ],
+  "manual_checks": [
+    {
+      "id": "period",
+      "source_ref": "api",
+      "message": "API 신청기간(20260303 ~ 20261215)을 최신 공고의 회차·시작일·마감 시각과 대조하세요."
+    },
+    {
+      "id": "region",
+      "source_ref": "api",
+      "message": "API 지역: 충청북도. 규칙으로 옮기지 못했습니다. 대상 지역을 확인하세요."
+    },
+    {
+      "id": "documents",
+      "source_ref": "web1",
+      "message": "서류 안내 글에서 이름을 찾은 서류만 옮겼습니다. 목록 전체를 공고와 대조하세요."
+    }
+  ],
+  "documents": [
+    {
+      "code": "exam",
+      "title": "응시 확인 자료",
+      "source_ref": "web1",
+      "constraints": {},
+      "instructions": "시험 주관기관 누리집 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    }
+  ]
+}

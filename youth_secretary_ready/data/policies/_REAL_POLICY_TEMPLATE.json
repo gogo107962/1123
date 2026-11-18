@@ -1,0 +1,21 @@
+{
+  "code": "replace_with_unique_policy_code",
+  "version": "2026.1",
+  "name": "정확한 공식 정책명",
+  "description": "해당 정책의 간단한 소개",
+  "agency": "공고 주관기관",
+  "region": "서울",
+  "category": "주거",
+  "demo_only": false,
+  "official_url": "https://공식-공고-주소.example",
+  "application": {"open": "2026-11-01", "close": "2026-11-30"},
+  "review": {"status": "draft", "reviewed_by": "", "reviewed_at": null},
+  "sources": [{"ref": "notice", "kind": "notice", "title": "2026 모집 공고", "url": "https://공식-공고-주소.example", "anchor": "신청자격 2번", "excerpt": "공고 원문에서 확인한 문장을 여기에 짧게 인용", "verified": false}],
+  "rules": [
+    {"id": "age", "type": "required", "predicate": {"fact": "age", "op": "between", "value": [19, 34]}, "message": "공고의 실제 나이 기준을 적으세요", "source_ref": "notice"},
+    {"id": "region", "type": "required", "predicate": {"fact": "region", "op": "eq", "value": "서울"}, "message": "공고의 실제 거주 기준을 적으세요", "source_ref": "notice"}
+  ],
+  "documents": [
+    {"code": "resident_certificate", "title": "공고에 적힌 서류명", "issuer": "정확한 발급처", "source_ref": "notice", "constraints": {}, "instructions": "공고상의 발급일·기재 항목·예외 조건을 기재하세요", "alternatives": []}
+  ]
+}

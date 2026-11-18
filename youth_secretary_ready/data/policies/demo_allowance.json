@@ -1,0 +1,22 @@
+{
+  "code": "demo_allowance",
+  "version": "2026.1",
+  "name": "[가상] 취업준비 청년수당",
+  "description": "중복 제한 관계를 시연하는 데모 정책. 실제 지원금이 아닙니다.",
+  "agency": "가상 청년지원센터",
+  "region": "서울",
+  "category": "구직",
+  "demo_only": true,
+  "official_url": "https://example.org/demo-allowance",
+  "application": {"open": "2026-11-01", "close": "2027-02-28"},
+  "review": {"status": "approved", "reviewed_by": "demo_fixture", "reviewed_at": "2026-11-15"},
+  "sources": [{"ref": "notice", "kind": "demo", "title": "가상 공고 - 실제 공고 아님", "url": "https://example.org/demo-allowance", "anchor": "데모 문서", "excerpt": "실제 공고가 아닌 예시입니다.", "verified": false}],
+  "rules": [
+    {"id": "age", "type": "required", "predicate": {"fact": "age", "op": "between", "value": [19, 34]}, "message": "가상 연령 조건: 19~34세", "source_ref": "notice"},
+    {"id": "region", "type": "required", "predicate": {"fact": "region", "op": "eq", "value": "서울"}, "message": "가상 거주 조건: 서울", "source_ref": "notice"},
+    {"id": "status", "type": "required", "predicate": {"fact": "employment_status", "op": "eq", "value": "unemployed"}, "message": "가상 고용 조건: 미취업", "source_ref": "notice"}
+  ],
+  "documents": [
+    {"code": "resident_certificate", "title": "주민등록등본", "issuer": "공공 발급처", "source_ref": "notice", "constraints": {"issued_within_days": 30}, "instructions": "가상 조건: 최근 30일 이내 발급한 서류를 준비한다고 가정합니다."}
+  ]
+}

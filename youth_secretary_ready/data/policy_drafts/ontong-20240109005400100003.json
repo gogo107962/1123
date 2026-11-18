@@ -1,0 +1,137 @@
+{
+  "code": "ontong-20240109005400100003",
+  "version": "2026.1",
+  "name": "주거안정월세대출",
+  "description": "월세 부담으로 고민인 청년들에게 청년전용 주거안정 월세자금 대출",
+  "agency": "국토교통부 주택기금과",
+  "region": "전국",
+  "category": "주거",
+  "demo_only": false,
+  "official_url": "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020201.jsp",
+  "application": {
+    "period_note": "API 신청기간 구분: rolling. 날짜 없음."
+  },
+  "review": {
+    "status": "draft",
+    "reviewed_by": "",
+    "reviewed_at": null
+  },
+  "sources": [
+    {
+      "ref": "api",
+      "kind": "api",
+      "title": "온통청년 API 수집값(공고 원문 아님)",
+      "url": "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020201.jsp",
+      "anchor": "",
+      "excerpt": "",
+      "verified": false
+    },
+    {
+      "ref": "web1",
+      "kind": "notice",
+      "title": "주택도시기금 · 주거안정월세대출 대출안내",
+      "url": "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020201.jsp",
+      "anchor": "period",
+      "excerpt": "임대차계약서 만기일이내에서 대출신청",
+      "verified": false
+    },
+    {
+      "ref": "web2",
+      "kind": "notice",
+      "title": "주택도시기금 · 주거안정월세대출 대출안내",
+      "url": "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020201.jsp",
+      "anchor": "conditions",
+      "excerpt": "대출접수일 현재 민법상 성년인 세대주",
+      "verified": false
+    }
+  ],
+  "rules": [
+    {
+      "id": "age",
+      "type": "required",
+      "predicate": {
+        "fact": "age",
+        "op": "gte",
+        "value": 19
+      },
+      "message": "대출접수일 현재 민법상 성년(만 19세)인 세대주.",
+      "source_ref": "web2"
+    },
+    {
+      "id": "lease",
+      "type": "required",
+      "predicate": {
+        "fact": "has_lease",
+        "op": "eq",
+        "value": true
+      },
+      "message": "임대차계약을 맺고 보증금의 5% 이상을 낸 사람.",
+      "source_ref": "web2"
+    }
+  ],
+  "manual_checks": [
+    {
+      "id": "period",
+      "source_ref": "api",
+      "message": "API 신청기간(기재 없음)을 최신 공고의 회차·시작일·마감 시각과 대조하세요."
+    },
+    {
+      "id": "age",
+      "source_ref": "api",
+      "message": "API 연령이 unspecified 상태입니다(최소 None, 최대 None). 공고에서 연령 기준을 확인하세요."
+    },
+    {
+      "id": "income",
+      "source_ref": "api",
+      "message": "API 소득: 연소득 · 금액 단위, 개인/가구 기준, 산정 방식을 공고에서 확인하세요."
+    },
+    {
+      "id": "exclusion1",
+      "source_ref": "api",
+      "message": "참여 제한 문장: “대출접수일 현재 공공임대주택에 입주하고 있는 경우 불가” — 제외 규칙으로 옮길지 검수하세요."
+    },
+    {
+      "id": "exclusion2",
+      "source_ref": "api",
+      "message": "참여 제한 문장: “대출신청 물건지가 해당 목적물인 경우 또는 대출신청인 및 배우자가 퇴거하는 경우 대출가능” — 제외 규칙으로 옮길지 검수하세요."
+    },
+    {
+      "id": "exclusion3",
+      "source_ref": "api",
+      "message": "참여 제한 문장: “대출실행 후 매 1년마다 차주로부터 월세금 지급신청서를 제출받고 월세금 납부사실과 거주여부를 확인하며, 계약이 종료된 경우 또는 월세금을 연체한 경우에는 대출금지급을 중단하고 기한의 이익 상실(타목적물 전입하여 보증부 월세가 유지되는 경우 제외)” — 제외 규칙으로 옮길지 검수하세요."
+    },
+    {
+      "id": "exclusion4",
+      "source_ref": "api",
+      "message": "참여 제한 문장: “대출실행 후 2년이 종료되는 시점에서 대출금액을 확정하며, 고객요청 등에 의해 대출금이 지급되지 않은 금액은 소급하여 지급 불가” — 제외 규칙으로 옮길지 검수하세요."
+    },
+    {
+      "id": "exclusion5",
+      "source_ref": "api",
+      "message": "참여 제한 문장: “대출 연체발생으로 인해 지급되지 못한 월세금은 소급하여 지급 불가” — 제외 규칙으로 옮길지 검수하세요."
+    },
+    {
+      "id": "documents",
+      "source_ref": "api",
+      "message": "서류 안내 글에서 이름을 찾은 서류만 옮겼습니다. 목록 전체를 공고와 대조하세요."
+    }
+  ],
+  "documents": [
+    {
+      "code": "resident_register",
+      "title": "주민등록등본",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "정부24에서 발급 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    },
+    {
+      "code": "id_card",
+      "title": "신분증 사본",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "본인 보관 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    }
+  ]
+}

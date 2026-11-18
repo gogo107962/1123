@@ -1,0 +1,7 @@
+.review{max-width:860px;padding:32px 20px 80px}.review h1{font-size:28px;margin:0 0 8px}.review h2{font-size:18px;margin:28px 0 10px}.review h3{font-size:15px;margin:18px 0 8px}
+.rows{display:grid;gap:8px}.rows button{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;text-align:left;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:13px}
+.rows button span{color:var(--muted)}.item{border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px 16px;margin:8px 0;font-size:13px}
+.item textarea{display:block;width:100%;min-height:64px;margin:8px 0;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px}
+.item label{display:flex;gap:8px;align-items:flex-start;font-size:13px}.item code{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.approve{border:2px solid var(--green);border-radius:14px;padding:18px;margin-top:24px;background:#fff}.approve input[type=text]{display:block;width:100%;max-width:320px;margin:6px 0 12px;padding:10px;border:1px solid var(--line);border-radius:8px}
+.note{font-size:12px;color:var(--muted)}

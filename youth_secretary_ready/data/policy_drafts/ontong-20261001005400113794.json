@@ -1,0 +1,112 @@
+{
+  "code": "ontong-20261001005400113794",
+  "version": "2026.1",
+  "name": "게임사 프로젝트 현장교육 프로그램",
+  "description": "ㅇ 게임기업 신규채용 및 현장교육 연계 지원\n- 게임기업이 신규 인력을 직접 채용하여 실제 게임 프로젝트에 배치하고 현장 중심의 교육을 실시할 수 있도록 지원\n  → 기업의 신규채용 부담 완화 + 초기경력 인력의 게임산업 진입기회 확대\nㅇ 프로젝트 기반 실무형 인재양성\n- 기업·프로젝트별 개발도구, 제작방식 및 업무 프로세스가 상이한 게임산업의 특성을 반영하여 실제 프로젝트 수행 중심으로 현장교육 운영\n  → 획일적 교육이 아닌 기업의 개발환경과 직무 특성에 맞춘 실무역량 강화\nㅇ 교육생 인건비 지원을 통한 기업 부담 완화\n- 현장",
+  "agency": "문화체육관광부",
+  "region": "전국",
+  "category": "일자리",
+  "demo_only": false,
+  "official_url": "https://www.kocca.kr/shortUrl/40Cq",
+  "application": {
+    "open": "2026-07-01",
+    "close": "2026-12-31",
+    "period_note": "API 기재 날짜. 공고와 대조 전."
+  },
+  "review": {
+    "status": "draft",
+    "reviewed_by": "",
+    "reviewed_at": null
+  },
+  "sources": [
+    {
+      "ref": "api",
+      "kind": "api",
+      "title": "온통청년 API 수집값(공고 원문 아님)",
+      "url": "https://www.kocca.kr/shortUrl/40Cq",
+      "anchor": "",
+      "excerpt": "",
+      "verified": false
+    }
+  ],
+  "rules": [
+    {
+      "id": "age",
+      "type": "required",
+      "predicate": {
+        "fact": "age",
+        "op": "between",
+        "value": [
+          19,
+          35
+        ]
+      },
+      "message": "API 연령 19~35세. 공고의 기준일과 출생연도 표현을 확인하세요.",
+      "source_ref": "api"
+    },
+    {
+      "id": "employment",
+      "type": "required",
+      "predicate": {
+        "fact": "employment_status",
+        "op": "eq",
+        "value": "unemployed"
+      },
+      "message": "API 취업 요건: 미취업자. 단기근로·사업자등록 예외를 확인하세요.",
+      "source_ref": "api"
+    }
+  ],
+  "manual_checks": [
+    {
+      "id": "period",
+      "source_ref": "api",
+      "message": "API 신청기간(20260701 ~ 20261231)을 최신 공고의 회차·시작일·마감 시각과 대조하세요."
+    },
+    {
+      "id": "exclusion1",
+      "source_ref": "api",
+      "message": "참여 제한 문장: “ㅇ 참여제한 요건” — 제외 규칙으로 옮길지 검수하세요."
+    },
+    {
+      "id": "exclusion2",
+      "source_ref": "api",
+      "message": "참여 제한 문장: “참여기업에 사업 참여 이전부터 재직 중인 기존 근로자” — 제외 규칙으로 옮길지 검수하세요."
+    },
+    {
+      "id": "exclusion3",
+      "source_ref": "api",
+      "message": "참여 제한 문장: “참여기업의 대표자 본인 또는 대표자와 친인척 관계에 있는 자” — 제외 규칙으로 옮길지 검수하세요."
+    },
+    {
+      "id": "exclusion4",
+      "source_ref": "api",
+      "message": "참여 제한 문장: “근로계약을 체결하지 않은 프리랜서·개인사업자 등” — 제외 규칙으로 옮길지 검수하세요."
+    },
+    {
+      "id": "exclusion5",
+      "source_ref": "api",
+      "message": "참여 제한 문장: “게임 프로젝트와 직접적인 관련성이 낮은 단순 행정·보조업무 등에 종사하는 자” — 제외 규칙으로 옮길지 검수하세요."
+    },
+    {
+      "id": "exclusion6",
+      "source_ref": "api",
+      "message": "참여 제한 문장: “동일한 인건비에 대해 정부·지자체 등 다른 재정지원사업의 지원을 받고 있는 자” — 제외 규칙으로 옮길지 검수하세요."
+    },
+    {
+      "id": "exclusion7",
+      "source_ref": "api",
+      "message": "참여 제한 문장: “국민취업지원제도 등 중복지원이 제한되는 사업에 참여 중인 자” — 제외 규칙으로 옮길지 검수하세요."
+    },
+    {
+      "id": "exclusion8",
+      "source_ref": "api",
+      "message": "참여 제한 문장: “사업에서 정한 근무시간, 근무장소, 현장교육 기간 등 필수 참여요건을 충족하지 못하는 자” — 제외 규칙으로 옮길지 검수하세요."
+    },
+    {
+      "id": "documents",
+      "source_ref": "api",
+      "message": "서류 안내가 없습니다. 서류가 필요 없다는 뜻이 아닙니다."
+    }
+  ],
+  "documents": []
+}

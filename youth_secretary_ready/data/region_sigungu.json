@@ -1,0 +1,678 @@
+{
+ "source": {
+  "derived": "2026-11-16 수집본에서 지역 코드가 하나뿐인 정책의 기관 이름으로 유도(2건 이상, 70% 이상 일치)",
+  "derived_single": "같은 방법이지만 근거 정책이 1건뿐인 이름(다른 이름과 겹치지 않을 때만). 신뢰도 낮음",
+  "standard_seoul": "법정동코드 표준 번호의 서울 25개 구. 수집본 유도 결과와 겹치는 4곳(11260, 11290, 11380, 11740)이 모두 일치",
+  "limitations": [
+   "수집본에 나오는 시군구 코드 262개 중 137개만 이름을 정함",
+   "사람 검수 전",
+   "행정구역 개편으로 이름이 바뀐 곳은 반영하지 못했을 수 있음"
+  ]
+ },
+ "sigungu": {
+  "11110": {
+   "name": "종로구",
+   "basis": "standard_seoul"
+  },
+  "11140": {
+   "name": "중구",
+   "basis": "standard_seoul"
+  },
+  "11170": {
+   "name": "용산구",
+   "basis": "standard_seoul"
+  },
+  "11200": {
+   "name": "성동구",
+   "basis": "standard_seoul"
+  },
+  "11215": {
+   "name": "광진구",
+   "basis": "standard_seoul"
+  },
+  "11230": {
+   "name": "동대문구",
+   "basis": "standard_seoul"
+  },
+  "11260": {
+   "name": "중랑구",
+   "basis": "derived",
+   "votes": 6
+  },
+  "11290": {
+   "name": "성북구",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "11305": {
+   "name": "강북구",
+   "basis": "standard_seoul"
+  },
+  "11320": {
+   "name": "도봉구",
+   "basis": "standard_seoul"
+  },
+  "11350": {
+   "name": "노원구",
+   "basis": "standard_seoul"
+  },
+  "11380": {
+   "name": "은평구",
+   "basis": "derived",
+   "votes": 6
+  },
+  "11410": {
+   "name": "서대문구",
+   "basis": "standard_seoul"
+  },
+  "11440": {
+   "name": "마포구",
+   "basis": "standard_seoul"
+  },
+  "11470": {
+   "name": "양천구",
+   "basis": "standard_seoul"
+  },
+  "11500": {
+   "name": "강서구",
+   "basis": "standard_seoul"
+  },
+  "11530": {
+   "name": "구로구",
+   "basis": "standard_seoul"
+  },
+  "11545": {
+   "name": "금천구",
+   "basis": "standard_seoul"
+  },
+  "11560": {
+   "name": "영등포구",
+   "basis": "standard_seoul"
+  },
+  "11590": {
+   "name": "동작구",
+   "basis": "standard_seoul"
+  },
+  "11620": {
+   "name": "관악구",
+   "basis": "standard_seoul"
+  },
+  "11650": {
+   "name": "서초구",
+   "basis": "standard_seoul"
+  },
+  "11680": {
+   "name": "강남구",
+   "basis": "standard_seoul"
+  },
+  "11710": {
+   "name": "송파구",
+   "basis": "standard_seoul"
+  },
+  "11740": {
+   "name": "강동구",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "12110": {
+   "name": "목포시",
+   "basis": "derived",
+   "votes": 4
+  },
+  "12130": {
+   "name": "여수시",
+   "basis": "derived",
+   "votes": 10
+  },
+  "12150": {
+   "name": "순천시",
+   "basis": "derived",
+   "votes": 11
+  },
+  "12190": {
+   "name": "광양시",
+   "basis": "derived",
+   "votes": 40
+  },
+  "12240": {
+   "name": "서구",
+   "basis": "derived",
+   "votes": 11
+  },
+  "12270": {
+   "name": "남구",
+   "basis": "derived",
+   "votes": 2
+  },
+  "12300": {
+   "name": "북구",
+   "basis": "derived",
+   "votes": 18
+  },
+  "12330": {
+   "name": "광산구",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "12720": {
+   "name": "곡성군",
+   "basis": "derived",
+   "votes": 10
+  },
+  "12750": {
+   "name": "보성군",
+   "basis": "derived",
+   "votes": 5
+  },
+  "12760": {
+   "name": "화순군",
+   "basis": "derived",
+   "votes": 2
+  },
+  "12770": {
+   "name": "장흥군",
+   "basis": "derived",
+   "votes": 15
+  },
+  "12780": {
+   "name": "강진군",
+   "basis": "derived",
+   "votes": 12
+  },
+  "12790": {
+   "name": "해남군",
+   "basis": "derived",
+   "votes": 6
+  },
+  "12800": {
+   "name": "영암군",
+   "basis": "derived",
+   "votes": 8
+  },
+  "12820": {
+   "name": "함평군",
+   "basis": "derived",
+   "votes": 3
+  },
+  "12830": {
+   "name": "영광군",
+   "basis": "derived",
+   "votes": 12
+  },
+  "12850": {
+   "name": "완도군",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "26140": {
+   "name": "서구",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "26200": {
+   "name": "영도구",
+   "basis": "derived",
+   "votes": 4
+  },
+  "26230": {
+   "name": "부산진구",
+   "basis": "derived",
+   "votes": 8
+  },
+  "26290": {
+   "name": "남구",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "26320": {
+   "name": "북구",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "26380": {
+   "name": "사하구",
+   "basis": "derived",
+   "votes": 14
+  },
+  "26470": {
+   "name": "연제구",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "26500": {
+   "name": "수영구",
+   "basis": "derived",
+   "votes": 4
+  },
+  "26530": {
+   "name": "사상구",
+   "basis": "derived",
+   "votes": 2
+  },
+  "27170": {
+   "name": "서구",
+   "basis": "derived",
+   "votes": 3
+  },
+  "27230": {
+   "name": "북구",
+   "basis": "derived",
+   "votes": 2
+  },
+  "27290": {
+   "name": "달서구",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "27720": {
+   "name": "군위군",
+   "basis": "derived",
+   "votes": 4
+  },
+  "28140": {
+   "name": "동구",
+   "basis": "derived",
+   "votes": 2
+  },
+  "28155": {
+   "name": "영종구",
+   "basis": "derived",
+   "votes": 4
+  },
+  "28177": {
+   "name": "미추홀구",
+   "basis": "derived",
+   "votes": 7
+  },
+  "28185": {
+   "name": "연수구",
+   "basis": "derived",
+   "votes": 8
+  },
+  "28200": {
+   "name": "남동구",
+   "basis": "derived",
+   "votes": 9
+  },
+  "28237": {
+   "name": "부평구",
+   "basis": "derived",
+   "votes": 9
+  },
+  "28245": {
+   "name": "계양구",
+   "basis": "derived",
+   "votes": 6
+  },
+  "28275": {
+   "name": "서해구",
+   "basis": "derived",
+   "votes": 8
+  },
+  "28710": {
+   "name": "강화군",
+   "basis": "derived",
+   "votes": 4
+  },
+  "28720": {
+   "name": "옹진군",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "31170": {
+   "name": "동구",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "41210": {
+   "name": "광명시",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "41220": {
+   "name": "평택시",
+   "basis": "derived",
+   "votes": 25
+  },
+  "41273": {
+   "name": "안산시",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "41360": {
+   "name": "남양주시",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "41390": {
+   "name": "시흥시",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "41410": {
+   "name": "군포시",
+   "basis": "derived",
+   "votes": 4
+  },
+  "41430": {
+   "name": "의왕시",
+   "basis": "derived",
+   "votes": 7
+  },
+  "41550": {
+   "name": "안성시",
+   "basis": "derived",
+   "votes": 3
+  },
+  "41590": {
+   "name": "화성시",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "41650": {
+   "name": "포천시",
+   "basis": "derived",
+   "votes": 2
+  },
+  "41670": {
+   "name": "여주시",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "41820": {
+   "name": "가평군",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "41830": {
+   "name": "양평군",
+   "basis": "derived",
+   "votes": 3
+  },
+  "43130": {
+   "name": "충주시",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "43150": {
+   "name": "제천시",
+   "basis": "derived",
+   "votes": 11
+  },
+  "43760": {
+   "name": "괴산군",
+   "basis": "derived",
+   "votes": 8
+  },
+  "43770": {
+   "name": "음성군",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "44130": {
+   "name": "천안시",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "44210": {
+   "name": "서산시",
+   "basis": "derived",
+   "votes": 11
+  },
+  "47130": {
+   "name": "경주시",
+   "basis": "derived",
+   "votes": 9
+  },
+  "47150": {
+   "name": "김천시",
+   "basis": "derived",
+   "votes": 6
+  },
+  "47170": {
+   "name": "안동시",
+   "basis": "derived",
+   "votes": 10
+  },
+  "47190": {
+   "name": "구미시",
+   "basis": "derived",
+   "votes": 17
+  },
+  "47230": {
+   "name": "영천시",
+   "basis": "derived",
+   "votes": 11
+  },
+  "47250": {
+   "name": "상주시",
+   "basis": "derived",
+   "votes": 12
+  },
+  "47280": {
+   "name": "문경시",
+   "basis": "derived",
+   "votes": 9
+  },
+  "47290": {
+   "name": "경산시",
+   "basis": "derived",
+   "votes": 9
+  },
+  "47730": {
+   "name": "의성군",
+   "basis": "derived",
+   "votes": 14
+  },
+  "47750": {
+   "name": "청송군",
+   "basis": "derived",
+   "votes": 9
+  },
+  "47760": {
+   "name": "영양군",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "47770": {
+   "name": "영덕군",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "47820": {
+   "name": "청도군",
+   "basis": "derived",
+   "votes": 3
+  },
+  "47830": {
+   "name": "고령군",
+   "basis": "derived",
+   "votes": 10
+  },
+  "47840": {
+   "name": "성주군",
+   "basis": "derived",
+   "votes": 7
+  },
+  "47850": {
+   "name": "칠곡군",
+   "basis": "derived",
+   "votes": 3
+  },
+  "47900": {
+   "name": "예천군",
+   "basis": "derived",
+   "votes": 10
+  },
+  "47920": {
+   "name": "봉화군",
+   "basis": "derived",
+   "votes": 3
+  },
+  "47930": {
+   "name": "울진군",
+   "basis": "derived",
+   "votes": 10
+  },
+  "47940": {
+   "name": "울릉군",
+   "basis": "derived",
+   "votes": 3
+  },
+  "48170": {
+   "name": "진주시",
+   "basis": "derived",
+   "votes": 14
+  },
+  "48220": {
+   "name": "통영시",
+   "basis": "derived",
+   "votes": 8
+  },
+  "48250": {
+   "name": "김해시",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "48330": {
+   "name": "양산시",
+   "basis": "derived",
+   "votes": 9
+  },
+  "48720": {
+   "name": "의령군",
+   "basis": "derived",
+   "votes": 3
+  },
+  "48730": {
+   "name": "함안군",
+   "basis": "derived",
+   "votes": 6
+  },
+  "48740": {
+   "name": "창녕군",
+   "basis": "derived",
+   "votes": 3
+  },
+  "48840": {
+   "name": "남해군",
+   "basis": "derived",
+   "votes": 2
+  },
+  "48850": {
+   "name": "하동군",
+   "basis": "derived",
+   "votes": 2
+  },
+  "48860": {
+   "name": "산청군",
+   "basis": "derived",
+   "votes": 3
+  },
+  "48870": {
+   "name": "함양군",
+   "basis": "derived",
+   "votes": 2
+  },
+  "48890": {
+   "name": "합천군",
+   "basis": "derived",
+   "votes": 7
+  },
+  "50110": {
+   "name": "제주시",
+   "basis": "derived",
+   "votes": 9
+  },
+  "50130": {
+   "name": "서귀포시",
+   "basis": "derived",
+   "votes": 18
+  },
+  "51130": {
+   "name": "원주시",
+   "basis": "derived",
+   "votes": 21
+  },
+  "51150": {
+   "name": "강릉시",
+   "basis": "derived",
+   "votes": 2
+  },
+  "51170": {
+   "name": "동해시",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "51210": {
+   "name": "속초시",
+   "basis": "derived",
+   "votes": 2
+  },
+  "51230": {
+   "name": "삼척시",
+   "basis": "derived",
+   "votes": 8
+  },
+  "51730": {
+   "name": "횡성군",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "51750": {
+   "name": "영월군",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "51820": {
+   "name": "고성군",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "52130": {
+   "name": "군산시",
+   "basis": "derived",
+   "votes": 3
+  },
+  "52140": {
+   "name": "익산시",
+   "basis": "derived",
+   "votes": 40
+  },
+  "52180": {
+   "name": "정읍시",
+   "basis": "derived",
+   "votes": 26
+  },
+  "52210": {
+   "name": "김제시",
+   "basis": "derived",
+   "votes": 11
+  },
+  "52710": {
+   "name": "완주군",
+   "basis": "derived",
+   "votes": 19
+  },
+  "52720": {
+   "name": "진안군",
+   "basis": "derived",
+   "votes": 5
+  },
+  "52730": {
+   "name": "무주군",
+   "basis": "derived_single",
+   "votes": 1
+  },
+  "52740": {
+   "name": "장수군",
+   "basis": "derived",
+   "votes": 12
+  },
+  "52770": {
+   "name": "순창군",
+   "basis": "derived",
+   "votes": 5
+  }
+ }
+}

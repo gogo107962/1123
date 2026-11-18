@@ -1,0 +1,135 @@
+{
+  "code": "ontong-20260527005400113223",
+  "version": "2026.1",
+  "name": "전세보증금반환보증 보증료 지원",
+  "description": "전세사기, 역전세 등 임차인이 전세보증금을 돌려받지 못하는 전세 피해를 예방하고, 상대적으로 주거 취약계층인 청년 및 저소득층의 주거 안정을 도모",
+  "agency": "국토교통부",
+  "region": "전국",
+  "category": "주거",
+  "demo_only": false,
+  "official_url": "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/161300000103",
+  "application": {
+    "period_note": "API 신청기간 구분: rolling. 날짜 없음."
+  },
+  "review": {
+    "status": "draft",
+    "reviewed_by": "",
+    "reviewed_at": null
+  },
+  "sources": [
+    {
+      "ref": "api",
+      "kind": "api",
+      "title": "온통청년 API 수집값(공고 원문 아님)",
+      "url": "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/161300000103",
+      "anchor": "",
+      "excerpt": "",
+      "verified": false
+    },
+    {
+      "ref": "web1",
+      "kind": "notice",
+      "title": "정부24 보조금24 · 국토교통부 전세보증금반환보증 보증료 지원 (최종수정 2026.05.08)",
+      "url": "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/161300000103",
+      "anchor": "conditions",
+      "excerpt": "전세보증금 3억원 이하, 연소득 기준 이하(청년 5천만원, 신혼부부 7.5천만원, 청년 외 6천만원)인 무주택 임차인이 납입한 전세보증금반환보증 보증료(40만원 상한)",
+      "verified": false
+    }
+  ],
+  "rules": [
+    {
+      "id": "lease",
+      "type": "required",
+      "predicate": {
+        "fact": "has_lease",
+        "op": "eq",
+        "value": true
+      },
+      "message": "무주택 임차인이 대상입니다. 보증금 3억원 이하와 연소득 기준(청년 5천만원)은 규칙으로 옮기지 못했으니 공고에서 확인하세요.",
+      "source_ref": "web1"
+    }
+  ],
+  "manual_checks": [
+    {
+      "id": "period",
+      "source_ref": "api",
+      "message": "API 신청기간(기재 없음)을 최신 공고의 회차·시작일·마감 시각과 대조하세요."
+    },
+    {
+      "id": "age",
+      "source_ref": "api",
+      "message": "API 연령이 unspecified 상태입니다(최소 None, 최대 None). 공고에서 연령 기준을 확인하세요."
+    },
+    {
+      "id": "documents",
+      "source_ref": "api",
+      "message": "서류 안내 글에서 이름을 찾은 서류만 옮겼습니다. 목록 전체를 공고와 대조하세요."
+    }
+  ],
+  "documents": [
+    {
+      "code": "resident_register",
+      "title": "주민등록등본",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "정부24에서 발급 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    },
+    {
+      "code": "insurance_status",
+      "title": "건강보험 자격득실확인서",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "국민건강보험공단 누리집·앱 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    },
+    {
+      "code": "income",
+      "title": "소득금액증명",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "홈택스 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    },
+    {
+      "code": "lease",
+      "title": "임대차계약서",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "보관 중인 계약서 사본 · 확정일자 필요 여부는 공고 확인 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    },
+    {
+      "code": "bankbook",
+      "title": "통장 사본",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "은행 앱에서 저장 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    },
+    {
+      "code": "id_card",
+      "title": "신분증 사본",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "본인 보관 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    },
+    {
+      "code": "receipt",
+      "title": "결제 영수증",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "결제처·시험 주관기관 누리집 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    },
+    {
+      "code": "application",
+      "title": "신청서",
+      "source_ref": "api",
+      "constraints": {},
+      "instructions": "공고의 서식을 내려받아 작성 · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.",
+      "alternatives": []
+    }
+  ]
+}

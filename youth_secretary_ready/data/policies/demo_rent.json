@@ -1,0 +1,25 @@
+{
+  "code": "demo_rent",
+  "version": "2026.1",
+  "name": "[가상] 청년 월세 준비 지원",
+  "description": "데모를 위해 만든 허구의 월세 지원 정책. 실제 신청할 수 없습니다.",
+  "agency": "가상 청년지원센터",
+  "region": "서울",
+  "category": "주거",
+  "demo_only": true,
+  "official_url": "https://example.org/demo-rent",
+  "application": {"open": "2026-11-01", "close": "2027-02-28"},
+  "review": {"status": "approved", "reviewed_by": "demo_fixture", "reviewed_at": "2026-11-15"},
+  "sources": [{"ref": "notice", "kind": "demo", "title": "가상 공고 - 실제 공고 아님", "url": "https://example.org/demo-rent", "anchor": "데모 문서", "excerpt": "가상 정책의 학습용 조건입니다. 실제 정책 규정이 아닙니다.", "verified": false}],
+  "rules": [
+    {"id": "age", "type": "required", "predicate": {"fact": "age", "op": "between", "value": [19, 39]}, "message": "가상 연령 조건: 19~39세", "source_ref": "notice"},
+    {"id": "region", "type": "required", "predicate": {"fact": "region", "op": "eq", "value": "서울"}, "message": "가상 거주 조건: 서울 거주", "source_ref": "notice"},
+    {"id": "conflict", "type": "exclude", "predicate": {"fact": "active_benefits", "op": "contains", "value": "demo_allowance"}, "message": "가상 충돌 예시: 현재 데모 청년수당을 받으면 동시 신청 제외", "source_ref": "notice"}
+  ],
+  "documents": [
+    {"code": "lease", "title": "임대차계약서", "issuer": "사용자 보관", "source_ref": "notice", "constraints": {"signed": true}, "instructions": "가상 조건: 계약서 사본을 준비하고 기재사항을 확인하세요."},
+    {"code": "bank_rent_proof", "title": "월세 이체내역", "issuer": "은행", "source_ref": "notice", "constraints": {"months": 3}, "instructions": "가상 조건: 월세 이체내역을 준비하세요.",
+      "alternatives": [{"code": "cash_rent_confirmation", "title": "[가상] 월차임 납부확인서", "source_ref": "notice", "when": {"fact": "rent_payment_method", "op": "eq", "value": "cash"}, "constraints": {"landlord_signature": true}, "instructions": "가상 조건: 월세를 현금으로 냈다면 확인서를 작성하고 임대인의 서명을 받아야 한다고 가정합니다."}]
+    }
+  ]
+}
