@@ -63,3 +63,20 @@ $env:APP_URL='http://127.0.0.1:8000'; .\.venv\Scripts\python.exe -X utf8 tests\b
 ```
 
 모든 도구는 실행 DB를 읽기 전용으로 열거나 복사해서 쓴다. 마감(2026-11-23 17:00) 뒤에는 기능·규칙·프롬프트·데이터를 바꾸지 않는다.
+
+## 5. 저장소를 새로 받았을 때
+
+2026-11-18에 GitHub 저장소를 빈 폴더에 받아 확인한 내용이다.
+
+```powershell
+cd youth_secretary_ready
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt "pytest>=8,<10"
+.\.venv\Scripts\python.exe -X utf8 -m pytest -q        # 351개 통과
+.\.venv\Scripts\python.exe -X utf8 start.py
+```
+
+- **정책이 0건으로 나온다.** 저장소에는 실행 DB(`data/youth_secretary.sqlite3`)와 API 키가 없다. 앱은 빈 DB를 새로 만들고 뜬다. 정책 4,020건을 보려면 팀에서 DB 파일을 받아 `data/` 폴더에 넣는다(서버를 끈 상태에서).
+- **브라우저 테스트 도구는 따로 설치한다.** `requirements-dev.txt`에는 `playwright`가 들어 있는데, 폴더 경로가 길면 Windows 경로 길이 제한(260자) 때문에 설치가 실패한다(실제로 겪음). 짧은 경로(예: `C:\work\1123`)에 받거나 위처럼 `pytest`만 설치한다. 단위 테스트에는 `playwright`가 필요 없다.
+- AI 챗봇은 로컬 Ollama와 `qwen3:4b` 모델이 있어야 한다. 없어도 낱말 일치로 찾기는 동작한다.
+
