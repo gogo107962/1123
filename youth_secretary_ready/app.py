@@ -148,7 +148,7 @@ def ontong_regions():
     from policy_structure import SIDO
     from screening import BENEFITS
     from policy_structure import SIGUNGU,TARGETS
-    return {'sido':SIDO,'sigungu':SIGUNGU,'benefits':list(BENEFITS),'groups':list(TARGETS),'notice':'시군구는 이름을 정한 코드만 제공합니다(수집본 유도 + 서울 표준 번호, 사람 검수 전).'}
+    return {'sido':SIDO,'sigungu':SIGUNGU,'benefits':list(BENEFITS),'groups':list(TARGETS),'notice':'시군구 이름은 행정표준코드관리시스템에서 2026-11-18에 확인한 표입니다(사람 검수 전). 폐지된 코드는 고를 수 없습니다.'}
 
 # 가상 프로필과 API 기재값을 비교하는 읽기 전용 걸러보기. 자격 판정·저장을 하지 않는다.
 @app.post('/api/integrations/ontong/screen')
@@ -285,7 +285,7 @@ def policy_catalog():
              'period_status':application_period(p['application'])} for p in (json.loads(r['payload_json']) for r in rows)]
 
 @app.get('/api/fact-definitions')
-def fact_definitions():return get_fact_definitions()
+def fact_definitions():return {k:v for k,v in get_fact_definitions().items() if not v.get('internal')}
 
 @app.post('/api/policy-review/preview')
 def review_policy(payload:PolicyReviewRequest):

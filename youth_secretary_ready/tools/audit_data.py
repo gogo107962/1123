@@ -116,6 +116,12 @@ def main():
         flags['open_long_rows'] += status == 'open' and st['application']['long_window']
         flags['residence_rows'] += bool(st['region']['residence_min_months'])
         flags['exclusion_rows'] += bool(st['exclusions']['sentences'])
+        flags['exclusion_none_rows'] += st['exclusions']['explicit_none']
+        flags['exclusion_kind_rows'] += bool(st['exclusions']['kinds'])
+        flags['annual_income_rows'] += bool(inc['annual'])
+        flags['age_no_limit_rows'] += st['age']['kind'] == 'unspecified' and st['age']['no_limit']
+        flags['age_conflict_rows'] += st['age']['kind'] != 'unspecified' and st['age']['no_limit']
+        flags['no_method_but_link'] += not (st['access']['has_method'] or st['access']['has_apply_url']) and st['access']['has_reference_url']
         flags['age_flag_' + (st['age']['limit_flag_raw'] or '빈값') + ('_범위없음' if st['age']['kind'] == 'unspecified' else '_범위있음')] += 1
         flags['income_unrelated_but_amount'] += inc['code'] == '0043001' and bool(amounts)
         flags['income_text_rows'] += bool(inc['text'].strip())
@@ -157,6 +163,12 @@ def main():
         ['거주 기간 조건이 글에 있음', f"{flags['residence_rows']:,}", '지역이 맞아도 확인 필요'],
         ['지원 내용에 금액 표현이 있음', f"{flags['amount_rows']:,}", '표현 그대로 보여 주고 합산하지 않는다'],
         ['신청 방법에서 경로가 읽힘', f"{flags['channel_rows']:,}", '온라인·방문·우편·이메일·전화로 표시'],
+        ["참여 제한 칸에 '해당 없음'만 적힘", f"{flags['exclusion_none_rows']:,}", "제한 문장으로 세지 않고 '맞아요'(원문 확인 문구)로 본다. 빈칸은 여기에 들지 않는다"],
+        ['참여 제한 문장의 종류가 읽힘', f"{flags['exclusion_kind_rows']:,}", '확인할 항목 이름(중복·취업·주택 등)으로 보여 준다. 재직자·사업자 제외 문장만 내 취업 상태와 견준다'],
+        ["나이 범위 없이 '제한없음(Y)' 표기", f"{flags['age_no_limit_rows']:,}", "온통청년 누리집 표시 기준으로 '맞아요'(원문 확인 문구)"],
+        ["나이 범위와 '제한없음(Y)'이 함께 적힘", f"{flags['age_conflict_rows']:,}", "범위 안이면 '맞아요', 밖이면 '달라요'가 아니라 '확인 필요'"],
+        ['연소득 구분에 최대 금액이 있음', f"{flags['annual_income_rows']:,}", '월 소득×12를 만원 단위로 견준다(경계 ±5%는 확인 필요)'],
+        ['신청 방법은 없지만 참고 주소가 있음', f"{flags['no_method_but_link']:,}", "조건은 비교하고 신청 방법을 '확인 필요'로 남긴다"],
         ['미등록 코드', f'{sum(unknown.values()):,}', 'unknown_codes로 보존'],
         ['원문 대조 기록 / 그 뒤 API 내용 변경', f"{flags['source_check_rows']} / {flags['source_check_changed']}", '바뀌면 공식 종료 표시를 쓰지 않는다']])
 
@@ -174,7 +186,7 @@ def main():
         ['둘 다 0·빈값', f"{ages['unspecified']:,}", "확인 필요(제한 없음으로 보지 않음)"],
         ['최소 > 최대', f"{ages['invalid']:,}", '확인 필요']])
     out += [f"- 범위가 15세 미만 또는 49세 초과까지 걸친 정책 {flags['age_range_wide']:,}건(청년 범위를 벗어난 기재).",
-            f"- 연령 제한 여부(Y/N)와 나이 범위 기재: {', '.join(f'{k[9:]} {v:,}' for k, v in sorted(flags.items()) if k.startswith('age_flag_') and '_범위' in k)}. Y는 범위가 없는 정책에 몰려 있지만 뜻이 코드표에 없어 판정에 쓰지 않는다.",
+            f"- 연령 제한 여부(Y/N)와 나이 범위 기재: {', '.join(f'{k[9:]} {v:,}' for k, v in sorted(flags.items()) if k.startswith('age_flag_') and '_범위' in k)}. 명세에는 Y/N의 뜻이 없지만 온통청년 누리집이 Y를 '제한없음'으로 보여 준다(data/api_field_notes.json). 범위 없이 Y면 '제한없음 표기'로, 범위와 Y가 함께 있으면 어긋난 값으로 다룬다.",
             f"- 최소 > 최대 예: {'; '.join(examples['age_invalid'][:5]) or '없음'}", '']
 
     out += ['## 4. 지역', '']

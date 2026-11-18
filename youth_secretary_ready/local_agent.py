@@ -39,6 +39,7 @@ def model_status():
 def tool_definitions():
     fields={}
     for key,spec in get_fact_definitions().items():
+        if spec.get('internal'):continue
         typ=spec['type']
         field={'type':{'enum':'string','string_list':'array'}.get(typ,typ),'description':spec.get('label',key)}
         if typ=='date':field.update(type='string',format='date')

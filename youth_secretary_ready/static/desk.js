@@ -6,7 +6,7 @@ const RESULT_LABEL={match:['rolling','맞아요'],unknown:['unknown','확인 필
 const TOOL_NAMES={search_policies:'정책 검색',screen_profile:'내 정보와 조건 비교'};
 const CHAT_STARTERS=['자격증 시험 쳤는데 지원받을 수 있어?','월세 지원 받을 수 있어?','나에게 맞는 정책 찾아줘'];
 const PROFILE_KEY='youth-desk-profile',DEMO={name:'민지',age:26,sido:'11',job_code:'0013003',school_code:''};
-const CRITERIA={period:'신청기간',age:'나이',region:'지역',income:'소득',job:'취업 상태',school:'학력',major:'전공',marriage:'결혼',exclusion:'참여 제한',target:'대상'};
+const CRITERIA={period:'신청기간',age:'나이',region:'지역',income:'소득',job:'취업 상태',school:'학력',major:'전공',marriage:'결혼',exclusion:'참여 제한',target:'대상',apply:'신청 방법'};
 let profile=null,finder=null,chat=[],chatBusy=false,names={sido:{},job_code:{},school_code:{}},space=null,results=[],page=1,tab='explore',activePolicy=null,activePlan=null,dialogVersion=0,loading=false,health=null,toastTimer;
 async function api(path,method='GET',body){
  const response=await fetch(path,{method,headers:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});

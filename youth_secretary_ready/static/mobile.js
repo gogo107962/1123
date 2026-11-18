@@ -8,7 +8,7 @@ const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch{re
 const DEMO={name:'민지',age:26,sido:'11',region_code:'11305',job_code:'0013003',school_code:''};
 const OUT={api_match:['조건 맞아요','ok'],needs_check:['확인 필요','warn'],api_mismatch:['조건 달라요','bad']};
 const RES={match:['맞아요','ok'],unknown:['확인 필요','warn'],mismatch:['달라요','bad']};
-const CRIT={period:'신청기간',age:'나이',region:'거주지',income:'소득',job:'취업 상태',school:'학력',major:'전공',marriage:'결혼',exclusion:'참여 제한',target:'대상'};
+const CRIT={period:'신청기간',age:'나이',region:'거주지',income:'소득',job:'취업 상태',school:'학력',major:'전공',marriage:'결혼',exclusion:'참여 제한',target:'대상',apply:'신청 방법'};
 const PERIOD={open:'접수 중(API)',rolling:'상시(API)',upcoming:'시작 전(API)',unknown:'기간 확인 필요',ended:'API 기간 지남',closed_code:'마감(API)',closed_official:'공식 공고 종료'};
 const REASON={closed:'마감됐어요',no_application_route:'신청 방법 정보가 없어요',no_region_code:'지역 정보가 없어요'};
 const TOPICS={'자격증 응시료':'자격증 시험 쳤는데 응시료 지원받을 수 있어?','월세 지원':'월세 지원 받을 수 있어?','구직 수당':'취업 준비 중인데 구직 수당 받을 수 있어?','교통비':'교통비 지원 받을 수 있어?'};
@@ -69,13 +69,14 @@ function cond(key,d){const st=d.bundle.structured,p=d.bundle.public_fields,a=st.
  if(key==='period')return p.aplyYmd||PERIOD[d.bundle.period_status];
  const found=key==='age'&&d.bundle.supplements.flatMap(x=>x.rules||[]).find(r=>r.predicate.fact==='age');
  if(found){const v=found.predicate.value,op=found.predicate.op;return (op==='gte'?`${v}세 이상`:op==='lte'?`${v}세 이하`:`${v[0]}~${v[1]}세`)+' (공식 페이지)'}
- if(key==='age')return a.kind==='range'?(a.max>=99?`${a.min}세 이상 (상한 ${a.max}로 기재)`:`${a.min}~${a.max}세`):a.kind==='min_only'?`${a.min}세 이상`:a.kind==='max_only'?`${a.max}세 이하`:'기재 없음';
+ if(key==='age')return a.kind==='range'?(a.max>=99?`${a.min}세 이상 (상한 ${a.max}로 기재)`:`${a.min}~${a.max}세`):a.kind==='min_only'?`${a.min}세 이상`:a.kind==='max_only'?`${a.max}세 이하`:a.no_limit?'제한없음으로 기재':'기재 없음';
  if(key==='region')return st.region.nationwide?'전국(시도 16곳 등록)':st.region.sido_names.join(', ')||'기재 없음';
- if(key==='exclusion')return `안내 ${st.exclusions.count}건`;
+ if(key==='exclusion')return st.exclusions.explicit_none?'해당 없음으로 기재':`안내 ${st.exclusions.count}건`+(st.exclusions.kinds.length?` (${st.exclusions.kinds.join(', ')})`:'');
+ if(key==='apply')return '기재 없음';
  if(key==='target')return st.targets.join(', ');
- if(key==='income')return st.income.labels.concat(st.income.median_pct.map(x=>`중위소득 ${x}%`)).join(', ')||'기재 없음';
+ if(key==='income')return st.income.labels.concat(st.income.annual?[`${st.income.annual.max.toLocaleString()}만원 이하`]:[],st.income.median_pct.map(x=>`중위소득 ${x}%`)).join(', ')||'기재 없음';
  return st[key].labels.join(', ')||'기재 없음';}
-function myValue(key){const p=mine();return {period:'오늘 기준',age:p.age!=null?p.age+'세':'',region:area(p),target:p.groups?.length?p.groups.join(', '):'해당 항목 선택 안 함',income:p.income_monthly!=null&&p.household?`월 ${p.income_monthly}만원 · ${p.household}인 가구`:'소득 입력 안 함',exclusion:p.benefits?.length?'받는 지원: '+p.benefits.join(', '):p.benefits?'받는 지원 없음':'받는 지원 입력 안 함',job:S.names.job_code[p.job_code],school:S.names.school_code[p.school_code]}[key]||'입력 안 함'}
+function myValue(key){const p=mine();return {period:'오늘 기준',apply:'공고에서 확인',age:p.age!=null?p.age+'세':'',region:area(p),target:p.groups?.length?p.groups.join(', '):'해당 항목 선택 안 함',income:p.income_monthly!=null&&p.household?`월 ${p.income_monthly}만원 · ${p.household}인 가구`:'소득 입력 안 함',exclusion:p.benefits?.length?'받는 지원: '+p.benefits.join(', '):p.benefits?'받는 지원 없음':'받는 지원 입력 안 함',job:S.names.job_code[p.job_code],school:S.names.school_code[p.school_code]}[key]||'입력 안 함'}
 const rows=d=>d.cmp?.screen?d.cmp.screen.criteria.filter(c=>c.result!=='skipped'):[];
 
 const V={

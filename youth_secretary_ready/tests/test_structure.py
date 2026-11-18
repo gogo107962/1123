@@ -153,11 +153,18 @@ def test_coded_criteria(key, field):
     assert check(other, {}) == 'skipped'
 
 
-def test_income_is_never_compared():
+def test_income_amount_is_compared_only_for_annual_income_code():
     assert verdict(made(), {})[1]['income'] == 'match'  # API '무관' 표기
     assert verdict(made(earnCndSeCd=''), {})[1]['income'] == 'unknown'
     limited = made(earnCndSeCd='0043002', earnMinAmt='0', earnMaxAmt='5000')
-    assert limited['income']['comparable'] is False and limited['income']['unit'] is None
+    assert limited['income']['annual'] == {'min': 0, 'max': 5000} and limited['income']['unit'] == '만원/년'
+    other = made(earnCndSeCd='0043003', earnMinAmt='0', earnMaxAmt='5000')        # '기타' 구분의 숫자는 단위 근거가 없어 쓰지 않는다
+    assert other['income']['annual'] is None and other['income']['comparable'] is False and other['income']['unit'] is None
+    assert made(earnCndSeCd='0043002', earnMaxAmt='0')['income']['annual'] is None     # 최대 금액 0은 '상한 0원'이 아니라 미기재
+    for pay, expected in [(200, 'match'), (410, 'unknown'), (430, 'unknown'), (450, 'mismatch')]:   # 연 2,400 / 4,920 / 5,160 / 5,400만원
+        assert verdict(limited, {'income_monthly': pay})[1]['income'] == expected
+    floor = made(earnCndSeCd='0043002', earnMinAmt='2400', earnMaxAmt='5000')
+    assert [verdict(floor, {'income_monthly': x})[1]['income'] for x in (100, 200, 300)] == ['mismatch', 'unknown', 'match']
     assert (limited['income']['min_raw'], limited['income']['max_raw']) == ('0', '5000')
     assert verdict(limited, {})[1]['income'] == 'unknown'
 
@@ -480,16 +487,18 @@ def test_ask_asks_one_missing_fact_in_order(ctx, monkeypatch):
     ask = lambda profile, message='월세': ctx.post(ASK, json={'message': message, 'profile': profile, 'on': '2026-11-17'}).json()['question']
     first = ask({})
     assert first['key'] == 'sido' and len(first['options']) == 16
-    # 시도 다음에는 이름표가 있는 시도에 한해 시군구를 묻는다(서울 25개 구). 이름표가 없는 시도(울산)는 건너뛴다.
+    # 시도 다음에는 시군구를 묻는다(서울 25개 구). 공식 이름표가 모든 시도를 덮으므로 울산도 묻는다. 시군구가 하나뿐인 세종은 건너뛴다.
     area = ask({'sido': '11'})
     assert area['key'] == 'region_code' and len(area['options']) == 25 and {'value': '11305', 'label': '강북구'} in area['options']
-    assert ask({'sido': '31'})['key'] == 'age' and ask({'sido': '31'})['options'] == []
+    assert [o['label'] for o in ask({'sido': '31'})['options']] == ['남구', '동구', '북구', '울주군', '중구']
+    assert ask({'sido': '36'})['key'] == 'age' and ask({'sido': '36'})['options'] == []
+    assert '중구' not in [o['label'] for o in ask({'sido': '28'})['options']]      # 폐지된 인천 중구는 고르게 하지 않는다
     job = ask({'region_code': '11305', 'age': 26})
     assert job['key'] == 'job_code' and '0013010' not in [o['value'] for o in job['options']]
     benefits = ask({'region_code': '11305', 'age': 26, 'job_code': '0013003'})
     assert benefits['key'] == 'benefits' and benefits['options'][-1] == {'value': '', 'label': '없어요'}
     # '없어요'([])도 답한 것으로 보고 다시 묻지 않는다.
-    assert ask({'sido': '31', 'age': 26, 'job_code': '0013003', 'benefits': []}) is None
+    assert ask({'region_code': '31710', 'age': 26, 'job_code': '0013003', 'benefits': []}) is None
     assert ask({'region_code': '11305', 'age': 0, 'job_code': '0013003', 'benefits': ['청년수당']}) is None  # 0세도 '입력함', 시군구가 있으면 시도를 묻지 않음
     # 방금 말에서 읽은 지역은 제안으로 가고, 다음으로 모르는 나이를 묻는다.
     assert ask({}, '부산 살아')['key'] == 'age'
@@ -699,7 +708,7 @@ def test_draft_policy_is_valid_unapproved_and_keeps_unknowns_as_checks():
     with pytest.raises(ValueError):
         draft({**payload, 'refUrlAddr1': 'http://example.go.kr'})          # https 출처가 없으면 만들지 않는다
     with pytest.raises(ValueError):
-        draft({**payload, 'sprtTrgtMinAge': '0', 'sprtTrgtMaxAge': '0', 'zipCd': '47130', 'jobCd': '0013010'})  # 옮길 규칙이 없으면 만들지 않는다
+        draft({**payload, 'sprtTrgtMinAge': '0', 'sprtTrgtMaxAge': '0', 'zipCd': '', 'jobCd': '0013010'})  # 옮길 규칙이 없으면 만들지 않는다
 
 
 # ── 실제 데이터·실제 모델 검증에서 찾아 고친 것 ──────────────────────
@@ -935,3 +944,134 @@ def test_amounts_and_channels_are_structured_without_summing(ctx):
     assert by_id['AM1']['amounts'][0]['text'] == '연 최대 10만원' and by_id['AM1']['channels'] == ['온라인'] and by_id['AM2']['amounts'] == []
     plan = plan_of(ctx, ['AM1', 'AM2'])[1].json()
     assert plan['policies'][0]['amounts'][0]['krw'] == 100000 and 'total_amount' not in plan      # 합산 값은 만들지 않는다
+
+
+# ── v0.22: 참여 제한 분류, 연령 제한 표기, 신청 방법 없는 정책, 엔진 규칙 확장 ──────────
+def test_participation_limit_none_is_kept_apart_from_blank_and_sentences_are_classified():
+    assert made(ptcpPrpTrgtCn='-')['exclusions']['explicit_none'] is False     # 줄표는 빈칸과 같다. '없음'이라고 읽지 않는다
+    for text in ('해당 없음', '해당없음', '제한없음', '- 해당사항 없음.'):
+        item = made(ptcpPrpTrgtCn=text)
+        assert item['exclusions'] == {'sentences': [], 'count': 0, 'explicit_none': True, 'kinds': []}, text
+        assert verdict(item, PROFILE)[1]['exclusion'] == 'match'
+    blank = made(ptcpPrpTrgtCn='')
+    assert blank['exclusions']['explicit_none'] is False and 'exclusion' not in verdict(blank, PROFILE)[1]   # 빈칸은 '없음'이 아니다
+    mixed = made(ptcpPrpTrgtCn='해당 없음', addAplyQlfcCndCn='주택 소유자는 제외')
+    assert mixed['exclusions']['explicit_none'] is False and mixed['exclusions']['kinds'] == ['주택']
+    assert verdict(mixed, PROFILE)[1]['exclusion'] == 'unknown'
+    item = made(ptcpPrpTrgtCn='건강보험 직장가입자 및 개인사업자는 제외\n타 지자체 유사사업 참여자\n지방세 체납자')
+    assert item['exclusions']['kinds'] == ['다른 지원과 중복', '취업·사업자', '체납·연체']
+    out, results = verdict(item, PROFILE)
+    assert results['exclusion'] == 'unknown' and '확인할 것: 다른 지원과 중복, 취업·사업자, 체납·연체' in out['criteria'][-1]['basis']
+
+
+def test_job_limit_sentence_is_compared_one_way_and_hedged_sentences_are_left_alone():
+    item = made(ptcpPrpTrgtCn='건강보험 직장가입자 및 개인사업자는 제외')
+    for job, expected in [('0013001', 'mismatch'), ('0013002', 'mismatch'), ('0013003', 'unknown'), ('0013004', 'unknown'), (None, 'unknown')]:
+        out, results = verdict(item, {'age': 26, 'job_code': job})
+        assert results['exclusion'] == expected, job
+    assert '내 취업 상태(재직자)' in verdict(item, {'job_code': '0013001'})[0]['criteria'][-1]['basis']
+    for hedged in ('재직자가 아닌 자는 제외', '재직자 우대', '단, 재직자는 주 30시간 미만이면 참여 가능'):
+        assert verdict(made(ptcpPrpTrgtCn=hedged), {'job_code': '0013001'})[1]['exclusion'] == 'unknown', hedged
+
+
+def test_age_no_limit_flag_follows_operator_site_and_conflicts_stay_unknown():
+    free = made(sprtTrgtMinAge='0', sprtTrgtMaxAge='0', sprtTrgtAgeLmtYn='Y')
+    assert free['age']['no_limit'] is True and free['age']['limit_flag_verified'] is False
+    out, results = verdict(free, {'age': 45})
+    assert results['age'] == 'match' and '제한없음' in out['criteria'][1]['basis'] and '원문 확인' in out['criteria'][1]['basis']
+    assert verdict(made(sprtTrgtMinAge='0', sprtTrgtMaxAge='0', sprtTrgtAgeLmtYn='N'), {'age': 45})[1]['age'] == 'unknown'
+    both = made(sprtTrgtAgeLmtYn='Y')                      # 19~34세와 '제한없음'이 함께 적힌 어긋난 값
+    assert [verdict(both, {'age': a})[1]['age'] for a in (26, 45)] == ['match', 'unknown']
+    assert verdict(made(sprtTrgtAgeLmtYn='N'), {'age': 45})[1]['age'] == 'mismatch'
+    assert verdict(made(sprtTrgtMinAge='34', sprtTrgtMaxAge='19', sprtTrgtAgeLmtYn='Y'), {'age': 26})[1]['age'] == 'unknown'   # 뒤집힌 범위는 그대로 모름
+
+
+def test_policy_without_application_method_is_compared_when_it_has_a_notice_link():
+    item = made(plcyAplyMthdCn='', refUrlAddr1='https://example.go.kr/notice')
+    assert tier(item, 'open') == {'tier': 'screenable', 'reasons': []}
+    out, results = verdict(item, PROFILE)
+    assert results['apply'] == 'unknown' and out['outcome'] == 'needs_check' and 'apply' in out['to_confirm']   # '맞아요'로 올라가지 않는다
+    assert 'apply' not in verdict(made(), PROFILE)[1]
+    assert tier(made(plcyAplyMthdCn='', refUrlAddr1='example.go.kr'), 'open')['reasons'] == ['no_application_route']
+
+
+def test_policies_without_application_method_sort_after_those_with_one(ctx):
+    seed([good('ZZ9', plcyAplyMthdCn='', refUrlAddr1='https://example.go.kr/n'), good('AA1', earnCndSeCd='0043003')])
+    items = post(ctx).json()['items']
+    assert [(x['external_id'], x['screen']['outcome']) for x in items] == [('AA1', 'needs_check'), ('ZZ9', 'needs_check')]
+
+
+def test_whole_sido_policy_registered_with_the_other_code_set_is_not_a_mismatch():
+    from policy_structure import SIDO_SETS
+    old, new = sorted(SIDO_SETS['28'], key=len)            # 인천: 행정구역 개편 전·후 묶음
+    mine = sorted(new - old)[0]
+    item = made(zipCd=','.join(sorted(old)))
+    assert item['region']['full_sido'] == ['28'] and mine not in item['region']['codes']
+    assert verdict(item, {'region_code': mine})[1]['region'] == 'match'
+    part = made(zipCd=','.join(sorted(old)[:3]))
+    assert verdict(part, {'region_code': mine})[1]['region'] == 'mismatch'     # 일부 시군구만 등록된 정책은 그대로
+
+
+def test_special_requirement_and_provision_codes_are_structured_when_collected():
+    item = made(sbizCd='0014005,0014008', plcyPvsnMthdCd='0042003', mclsfNm='취업', plcyKywdNm='인턴, 중소기업')
+    assert item['targets'] == ['장애', '지역인재'] and item['special']['labels'] == ['장애인', '지역인재']
+    assert item['provision'] == {'code': '0042003', 'label': '직접대출', 'loan': True}
+    assert (item['subcategory'], item['keywords']) == ('취업', ['인턴', '중소기업'])
+    assert [verdict(item, {'groups': g})[1]['target'] for g in (['장애'], ['예술인'], [])] == ['match', 'unknown', 'unknown']
+    free = made(sbizCd='0014010', plcyPvsnMthdCd='0042006')
+    assert free['targets'] == [] and free['special']['unrestricted'] and free['provision']['loan'] is False
+    none = made()                                           # 2026-11-16 수집본에는 두 코드가 없다. 없는 것을 '제한없음'이나 '대출 아님'으로 보지 않는다
+    assert none['special']['missing'] and none['provision'] == {'code': '', 'label': '', 'loan': None}
+    assert {'sbizCd', 'plcyPvsnMthdCd'} <= ontong.FIELDS
+    assert made(plcyNm='여성 청년 창업 지원')['targets'] == ['여성', '창업(예비 포함)']
+
+
+def test_draft_moves_coded_conditions_into_engine_rules_and_the_engine_judges_them(ctx):
+    import sys
+    sys.path.insert(0, str(Path(ontong.BASE) / 'tools'))
+    from draft_policy import draft
+    from screening import engine_view
+    payload = {**BASE, 'plcyNo': 'DR-9', 'plcyNm': '경북 재직 청년 지원', 'refUrlAddr1': 'https://example.go.kr/notice', 'zipCd': '47130,47150',
+               'jobCd': '0013001,0013004', 'schoolCd': '0049007,0049008', 'mrgSttsCd': '0055003', 'sprtTrgtAgeLmtYn': 'Y',
+               'ptcpPrpTrgtCn': '해당 없음', 'plcyAplyMthdCn': '', 'earnCndSeCd': '0043002', 'earnMaxAmt': '5000'}
+    policy = draft(payload)
+    rules = {r['id']: r['predicate'] for r in policy['rules']}
+    assert rules['region'] == {'fact': 'sido_code', 'op': 'in', 'value': ['47']}
+    assert rules['employment'] == {'fact': 'job_code', 'op': 'in', 'value': ['0013001', '0013004']}
+    assert rules['school'] == {'fact': 'school_code', 'op': 'in', 'value': ['0049007', '0049008']} and 'marriage' not in rules
+    checks = {c['id']: c['message'] for c in policy['manual_checks']}
+    assert {'district', 'age_flag', 'apply', 'exclusion', 'income', 'major'} <= set(checks) and '5,000만원' in checks['income']
+    me = {'age': 26, 'region_code': '47130', 'job_code': '0013001', 'school_code': '0049007'}
+    effects = lambda profile: {f['rule_id']: f['effect'] for f in engine_view(policy, profile, DAY)['findings']}
+    assert [effects(me)[k] for k in ('age', 'region', 'employment', 'school')] == ['pass'] * 4
+    assert effects({**me, 'region_code': '11305'})['region'] == 'block' and effects({**me, 'job_code': '0013003'})['employment'] == 'block'
+    assert effects({'age': 26})['school'] == 'unknown'                       # 넣지 않은 값은 통과도 탈락도 아니다
+    assert engine_view(policy, me, DAY)['status'] == 'needs_review'            # 사람이 볼 항목이 남아 있으면 '신청 검토 가능'이 아니다
+    served = ctx.get('/api/fact-definitions').json()
+    assert 'age' in served and not {'sido_code', 'job_code', 'school_code'} & set(served)   # 내부용 사실 값은 /lab 화면에 내보내지 않는다
+
+
+def test_district_names_come_from_the_official_code_list_and_cover_every_collected_code():
+    from policy_structure import ABOLISHED, PARENT, SIGUNGU, SIGUNGU_COMPLETE, SIDO_SETS
+    table = json.loads((Path(ontong.BASE) / 'data/region_sigungu_official.json').read_text(encoding='utf-8'))
+    assert len(table['sigungu']) == 261 and 'code.go.kr' in table['source']['url'] and '사람 검수 아님' in table['source']['checked_by']
+    assert ABOLISHED == {'28110': '중구', '28140': '동구', '28260': '서구'} and not set(ABOLISHED) & set(SIGUNGU)
+    every = {c for sets in SIDO_SETS.values() for group in sets for c in group}
+    assert every <= set(SIGUNGU) | set(ABOLISHED)                     # 수집본에 나오는 시군구 코드에 이름 없는 것이 없다
+    assert SIGUNGU_COMPLETE == set(SIDO)                              # 그래서 모든 시도에서 시군구를 되물을 수 있다
+    assert (SIGUNGU['41273'], SIGUNGU['28125'], SIGUNGU['12170'], SIGUNGU['41597']) == ('안산시 단원구', '제물포구', '나주시', '화성시 동탄구')
+    assert PARENT['41591'] == '41590' and PARENT['44131'] == '44130' and '43745' not in PARENT   # 증평군은 영동군의 구가 아니다
+
+
+def test_region_match_understands_city_and_ward_codes_and_abolished_codes():
+    region_of = lambda zips, mine: verdict(made(zipCd=zips), {'region_code': mine})[1]['region']
+    assert region_of('41590', '41591') == 'match'                     # 정책은 '화성시', 나는 '화성시 만세구'
+    assert region_of('41591,41593', '41590') == 'unknown'             # 정책은 일부 구, 나는 '화성시'까지만
+    assert region_of('41591', '41593') == 'mismatch'
+    assert region_of('43740', '43745') == 'mismatch'                  # 영동군 정책에 증평군은 다르다
+    out, results = verdict(made(zipCd='28110,28140'), {'region_code': '28125'})
+    assert results['region'] == 'unknown' and '개편 전 시군구 코드(중구, 동구)' in out['criteria'][2]['basis']
+    assert region_of('28185', '28125') == 'mismatch'                  # 폐지 코드가 없으면 그대로 다르다
+    with pytest.raises(ValueError):
+        validate_profile({'region_code': '99110'})
+

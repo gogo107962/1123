@@ -78,5 +78,30 @@
   "business_registered": {
     "label": "신청일 현재 사업자등록 여부 (가상)",
     "type": "boolean"
+  },
+  "sido_code": {
+    "label": "거주 시도 코드 (온통청년 코드, 내 정보에서 자동 전달)",
+    "type": "string",
+    "internal": true
+  },
+  "job_code": {
+    "label": "취업 상태 코드 (온통청년 코드, 내 정보에서 자동 전달)",
+    "type": "string",
+    "internal": true
+  },
+  "school_code": {
+    "label": "학력 코드 (온통청년 코드, 내 정보에서 자동 전달)",
+    "type": "string",
+    "internal": true
+  },
+  "major_code": {
+    "label": "전공 코드 (온통청년 코드, 내 정보에서 자동 전달)",
+    "type": "string",
+    "internal": true
+  },
+  "marriage_code": {
+    "label": "결혼 상태 코드 (온통청년 코드, 내 정보에서 자동 전달)",
+    "type": "string",
+    "internal": true
   }
 }

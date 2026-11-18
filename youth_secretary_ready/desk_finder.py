@@ -57,7 +57,7 @@ def next_question(profile, suggestion):
     sido = profile.get('sido') or (profile.get('region_code') or '')[:2]
     if not sido and missing('sido'):
         key, text, options = QUESTIONS[0]
-    elif sido in SIGUNGU_COMPLETE and missing('region_code'):
+    elif sido in SIGUNGU_COMPLETE and missing('region_code') and sum(c[:2] == sido for c in SIGUNGU) > 1:   # 세종은 시군구가 하나라 묻지 않는다
         key, text = 'region_code', '어느 구·시·군에 사세요? 같은 시도 안에서도 정책이 달라서 여쭤봐요.'
         options = {c: n for c, n in sorted(SIGUNGU.items(), key=lambda x: x[1]) if c[:2] == sido}
     else:

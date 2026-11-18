@@ -58,7 +58,7 @@
     {
       "id": "age",
       "source_ref": "api",
-      "message": "API 연령이 unspecified 상태입니다(최소 None, 최대 None). 공고에서 연령 기준을 확인하세요."
+      "message": "API에 연령 '제한없음'으로 적혀 있습니다(온통청년 누리집 표시 기준). 실제로 연령 제한이 없는지 공고에서 확인하세요."
     },
     {
       "id": "documents",

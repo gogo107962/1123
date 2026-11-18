@@ -6,11 +6,12 @@
 사람 검수를 통과한 정책의 실제 판정은 engine.py가 맡는다.
 """
 import json
+import re
 from pathlib import Path
 import db
 from db import connect
 from policy_codes import CODEBOOK
-from policy_structure import CLOSED, PROFILE_FIELDS, RANK, SIDO, TARGETS, period_status, structure, tier, timing
+from policy_structure import ABOLISHED, CLOSED, PARENT, PROFILE_FIELDS, RANK, SIDO, TARGETS, period_status, structure, tier, timing
 
 NOTICE = 'API에 적힌 값으로 걸러본 결과입니다. 자격 판정이 아니며, 신청 전 공고 원문을 확인해야 합니다.'
 ORDER = {'api_match': 0, 'needs_check': 1, 'api_mismatch': 2}
@@ -19,6 +20,11 @@ ORDER = {'api_match': 0, 'needs_check': 1, 'api_mismatch': 2}
 BENEFITS = {'국민취업지원제도': ('국민취업지원제도', '국취제'), '청년수당': ('청년수당',),
             '실업급여(구직급여)': ('실업급여', '구직급여'), '기초생활수급(생계·주거급여)': ('기초생활수급', '생계급여', '주거급여'),
             '청년도약계좌': ('청년도약계좌',), '청년내일채움공제': ('내일채움공제',)}
+
+
+# 참여 제한 문장이 '재직자·사업자는 제외'일 때 내 취업 상태와 견줄 낱말. 부정·예외 표현이 섞인 문장은 견주지 않는다.
+JOB_LIMIT = {'0013001': ('재직자', r'재직자|직장가입자|재직 ?중|취업자'), '0013002': ('자영업자', r'개인사업자|자영업자|사업자등록')}
+_HEDGE = re.compile(r'아닌|않|미취업|우대|가능|단,|다만|예외')
 
 
 def provided(profile):
@@ -77,8 +83,12 @@ def _age(item, value, rule=None):
         return ('match' if fits else 'mismatch'), f"공식 페이지 기준(사람 검수 전): “{rule['quote']}” — {rule['message']}"
     low, high, kind = item['min'], item['max'], item['kind']
     if kind in ('unspecified', 'invalid'):
+        if kind == 'unspecified' and item['no_limit']:
+            return 'match', "API에 연령 '제한없음'으로 적혀 있습니다(온통청년 누리집 표시 기준). 공고와 다른 사례가 있어 원문 확인이 필요합니다."
         return 'unknown', 'API에 연령 범위가 없습니다. 제한이 없다는 뜻은 아닙니다.'
     if (low and value < low) or (high and value > high):
+        if item['no_limit']:   # 범위와 '제한없음'이 함께 적힌 어긋난 값. 어느 쪽도 믿지 않는다.
+            return 'unknown', f"API에 연령 {low or '?'}~{high or '?'}세와 '제한없음' 표기가 함께 적혀 있습니다. 어느 쪽이 맞는지 공고에서 확인하세요."
         return 'mismatch', f'API 연령 {low or "?"}~{high or "?"}세 밖입니다.'
     if kind == 'range':
         if high >= 99:  # 실제 수집본에 99·100·120·999가 100건 있다. 숫자를 그대로 보여 주면 '19~999세'가 된다.
@@ -101,7 +111,15 @@ def _area(item, profile):
         return 'skipped', '지역을 입력하지 않았습니다.'
     if not item['codes']:
         return 'unknown', 'API에 지역 코드가 없습니다.'
-    if sido not in item['sido'] or (code and code not in item['codes']):
+    if sido not in item['sido']:
+        return 'mismatch', 'API 지역 코드에 해당 지역이 없습니다.'
+    # 시도 전체가 등록된 정책, 내가 사는 구의 '시' 코드로 등록된 정책은 내 코드가 목록에 없어도 다르다고 하지 않는다.
+    if code and code not in item['codes'] and sido not in item['full_sido'] and PARENT.get(code) not in item['codes']:
+        if any(PARENT.get(c) == code for c in item['codes']):
+            return 'unknown', '같은 시의 일부 구만 등록돼 있습니다. 내가 사는 구가 대상인지 공고에서 확인하세요.'
+        old = [ABOLISHED[c] for c in item['codes'] if c in ABOLISHED and c[:2] == sido]
+        if old:   # 폐지 코드가 어느 새 구로 이어지는지는 공식 코드 목록에 없다
+            return 'unknown', f"행정구역 개편 전 시군구 코드({', '.join(old)})로 등록돼 있어 지금의 시군구와 견줄 수 없습니다. 대상 지역을 공고에서 확인하세요."
         return 'mismatch', 'API 지역 코드에 해당 지역이 없습니다.'
     if item['nationwide'] and item['local_agency_hint']:
         return 'unknown', '전국으로 등록됐지만 주관기관이 지자체로 보입니다. 실제 지원 지역을 확인하세요.'
@@ -152,6 +170,18 @@ def _income(item, profile):
         if any(abs(pct - b['pct']) <= b['pct'] * 0.05 for b in bounds):
             return 'unknown', head + '경계(±5%)에 가까워 확인이 필요합니다.'
         return 'match', head + '기준 안으로 보입니다. 산정 방식(소득금액증명·건강보험료)과 가구 기준은 공고에서 확인하세요.'
+    annual = item['annual']
+    if annual:
+        text = f"연 {annual['min']:,}만원 이상 ~ {annual['max']:,}만원 이하" if annual['min'] else f"연 {annual['max']:,}만원 이하"
+        if pay is None:
+            return 'unknown', f'API 소득 기준은 {text}입니다(단위는 온통청년 누리집 표시 기준). 월 소득을 넣으면 견줘 봅니다.'
+        yearly = pay * 12
+        head = f'입력한 월 소득으로 본 연소득은 약 {yearly:,}만원이고, API 소득 기준은 {text}입니다(단위는 온통청년 누리집 표시 기준). '
+        if yearly > annual['max'] * 1.05 or yearly < annual['min'] * 0.95:
+            return 'mismatch', head + '기준 밖으로 보입니다. 개인·가구 기준과 산정 방식은 공고에서 확인하세요.'
+        if yearly >= annual['max'] * 0.95 or (annual['min'] and yearly <= annual['min'] * 1.05):
+            return 'unknown', head + '경계(±5%)에 가까워 확인이 필요합니다.'
+        return 'match', head + '기준 안으로 보입니다. 개인·가구 기준과 산정 방식은 공고에서 확인하세요.'
     if item['median_pct']:
         return 'unknown', ('API 소득 글에 중위소득 ' + '·'.join(f'{x}%' for x in item['median_pct'])
                            + ' 기준이 적혀 있습니다. 가구원 수와 산정 방식을 공고에서 확인하세요.')
@@ -170,17 +200,26 @@ def screen(structured, profile, status, rule=None):
             rows.append(('target', 'match', f'정책 이름의 대상({names})에 내가 고른 항목이 있습니다.'))
         else:
             rows.append(('target', 'unknown', f'정책 이름에 특정 대상({names})이 있습니다. 해당하는지 공고에서 확인하세요.'))
+    if not (structured['access']['has_method'] or structured['access']['has_apply_url']):
+        rows.append(('apply', 'unknown', 'API에 신청 방법과 신청 주소가 없습니다. 참고 주소의 공고에서 신청 방법을 확인하세요.'))
     # 참여 제한(제외·중복 수혜) 안내가 있으면 해당 여부를 알 수 없으므로 확인 필요로 남긴다.
     limits = structured['exclusions']
+    if limits['explicit_none']:
+        rows.append(('exclusion', 'match', "API 참여 제한 칸에 '해당 없음'으로 적혀 있습니다. 공고와 다른 사례가 있어 원문 확인이 필요합니다."))
     if limits['sentences']:
         more = f" 외 {limits['count'] - 1}건" if limits['count'] > 1 else ''
         # 정책의 제한 문장이 '내가 받고 있는 지원'을 가리키는 방향만 본다(반대 방향으로 뒤집지 않는다).
         held = next(((name, s) for name in profile.get('benefits') or [] for s in limits['sentences']
                      if any(word in s.replace(' ', '') for word in BENEFITS[name])), None)
+        label, pattern = JOB_LIMIT.get(profile.get('job_code'), ('', None))
+        job = next((s for s in limits['sentences'] if pattern and re.search(pattern, s) and not _HEDGE.search(s)), None)
         if held:
             rows.append(('exclusion', 'mismatch', f"API 참여 제한 안내에 받고 있는 지원({held[0]})이 나옵니다: “{held[1]}”. 함께 받을 수 있는지 기관에 확인하세요."))
+        elif job:
+            rows.append(('exclusion', 'mismatch', f"API 참여 제한 안내에 내 취업 상태({label})가 나옵니다: “{job}”. 해당하는지 공고에서 확인하세요."))
         else:
-            rows.append(('exclusion', 'unknown', f"API에 참여 제한 안내가 있습니다: “{limits['sentences'][0]}”{more}. 해당하는지는 공고에서 확인하세요."))
+            kinds = f" 확인할 것: {', '.join(limits['kinds'])}." if limits['kinds'] else ''
+            rows.append(('exclusion', 'unknown', f"API에 참여 제한 안내가 있습니다: “{limits['sentences'][0]}”{more}.{kinds} 해당하는지는 공고에서 확인하세요."))
     results = {r[1] for r in rows}
     outcome = 'api_mismatch' if 'mismatch' in results else 'needs_check' if 'unknown' in results else 'api_match'
     return {'outcome': outcome, 'qualification_determined': False,
@@ -203,6 +242,8 @@ def engine_view(policy, profile, on):
         facts['region'] = REGION_FACT.get(sido, '기타')
     if profile.get('job_code'):
         facts['employment_status'] = JOB_FACT.get(profile['job_code'], 'other')
+    # 초안 도구가 API 코드 조건을 그대로 옮긴 규칙(sido_code in [...], job_code in [...])에 쓸 값
+    facts.update({k: v for k, v in [('sido_code', sido), *((key, profile.get(key)) for key in PROFILE_FIELDS)] if v})
     out = status_policy(policy, facts, on)
     return {'policy_code': policy['code'], 'status': out['status'], 'missing_facts': out['missing_facts'],
             'reviewed_by': out['reviewed_by'], 'reviewed_at': out['reviewed_at'],
@@ -244,7 +285,7 @@ def screen_catalog(profile, on, query='', outcome='', only_tier='', page=1, page
         found.append({'external_id': row['external_id'], 'name': row['name'], 'agency': row['agency'], 'deadline': deadline, 'period_label': label,
                       'long_window': item['application']['long_window'],
                       'category': item['category'], 'period_status': status, 'engine': engine_view(policy, profile, on) if policy else None, 'name_hit': any(w in row['name'] for w in words), **placed, 'screen': result,
-                      'amounts': item['amounts'], 'channels': item['access']['channels'],
+                      'amounts': item['amounts'], 'channels': item['access']['channels'], 'provision': item['provision']['label'],
                       'age': item['age'], 'sido_names': item['region']['sido_names'], 'nationwide': item['region']['nationwide'],
                       # 전국 대상은 시군구 묶음이 두 벌이라(행정구역 개편) 코드가 달라도 같은 지역으로 본다.
                       '_same': (row['name'].strip(), 'nationwide' if item['region']['nationwide'] else ','.join(sorted(item['region']['codes'])))})
@@ -254,6 +295,8 @@ def screen_catalog(profile, on, query='', outcome='', only_tier='', page=1, page
     # 사람이 승인한 정책 가운데 신청을 검토할 수 있는 것은 맨 앞에 둔다.
     found.sort(key=lambda x: (bool(words) and not x['name_hit'], not (x['engine'] and x['engine']['status'] == 'review_possible'),
                               ORDER[x['screen']['outcome']] if x['screen'] else 3,
+                              # 신청 방법이 비어 있는 정책(제도·과제 성격이 섞여 있다)은 같은 결과 안에서 뒤에 둔다.
+                              bool(x['screen']) and 'apply' in x['screen']['to_confirm'],
                               RANK[x['period_status']] + (1.5 if x['long_window'] and x['period_status'] == 'open' else 0), x['deadline'] or ''))
     # 같은 이름·같은 지역 코드로 여러 번 등록된 정책(지난 회차·재등록, 실제 4,020건 중 292건)은 하나로 묶는다.
     # 정렬 뒤 첫 항목(비교 가능한 것, 그다음 최신 등록)을 남기고 몇 건이 등록돼 있는지 알려 준다.

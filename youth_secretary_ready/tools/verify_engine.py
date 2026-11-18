@@ -51,7 +51,7 @@ def main():
     import desk_finder
     from app import app
     from draft_policy import draft
-    from policy_structure import RANK, structure, period_status, tier, timing
+    from policy_structure import PARENT, RANK, structure, period_status, tier, timing
     from screening import provided, screen, screen_catalog
     client, report = TestClient(app), {}
     rows = [json.loads(p) for (p,) in sqlite3.connect(work).execute('SELECT payload_json FROM ontong_candidates')]
@@ -90,10 +90,12 @@ def main():
             check((got['region'] == 'skipped') != has_area, f'region skip {eid}', profile)
             code = profile.get('region_code')
             if code and st['region']['codes'] and code not in st['region']['codes']:
-                check(got['region'] == 'mismatch', f'region code {eid}', got['region'])
+                # 목록에 없는 코드가 '맞아요'가 되는 것은 시도 전체 등록이거나 내 구의 '시' 코드로 등록된 경우뿐이다.
+                check(got['region'] != 'match' or code[:2] in st['region']['full_sido'] or PARENT.get(code) in st['region']['codes'], f'region code {eid}', got['region'])
             age, a = profile.get('age'), st['age']
             if age is not None and a['kind'] == 'range':
-                check(got['age'] == ('match' if a['min'] <= age <= a['max'] else 'mismatch'), f'age range {eid}', (age, a))
+                # 범위 밖인데 '제한없음' 표기가 함께 있으면 어긋난 값이라 '확인 필요'다.
+                check(got['age'] == ('match' if a['min'] <= age <= a['max'] else 'unknown' if a['no_limit'] else 'mismatch'), f'age range {eid}', (age, a))
             # 빈 프로필은 어떤 정책에서도 '달라요'가 나올 수 없다(기간 제외).
             if not provided(profile):
                 check(all(r != 'mismatch' for k, r in got.items() if k != 'period'), f'empty profile {eid}', got)
