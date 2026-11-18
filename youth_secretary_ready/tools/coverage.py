@@ -18,7 +18,7 @@ from policy_structure import CLOSED, period_status, structure, tier  # noqa: E40
 from screening import age_rule, screen  # noqa: E402
 
 FULL = {'age': 26, 'region_code': '11305', 'job_code': '0013003', 'school_code': '0049007', 'major_code': '0011003',
-        'marriage_code': '0055002', 'income_monthly': 180, 'household': 1, 'benefits': [], 'groups': []}
+        'marriage_code': '0055002', 'income_monthly': 180, 'household': 1, 'income_bracket': 5, 'residence_months': 24, 'benefits': [], 'groups': []}
 NAMES = {'period': '신청기간', 'age': '나이', 'region': '거주지', 'income': '소득', 'job': '취업 상태', 'school': '학력', 'major': '전공',
          'marriage': '결혼', 'target': '대상 집단', 'exclusion': '참여 제한', 'apply': '신청 방법'}
 
@@ -50,9 +50,12 @@ def measure(on):
         c['period_dated'] += app['kind'] == 'fixed' and bool(app['windows'])
         c['period_known_kind'] += app['kind'] != 'unknown'
         c['region_ok'] += bool(st['region']['codes']) and not st['region']['invalid_codes'] and not st['region']['unknown_sido']
-        c['income_ok'] += inc['code'] == '0043001' or bool(inc['annual']) or (bool(inc['median_bounds']) and all(b['kind'] != '?' for b in inc['median_bounds']))
+        # 비교할 수 있는 소득 기준: 연소득 상한 하나, 중위소득·도시근로자 월평균소득 %(방향까지), 학자금 지원구간 하나
+        clear = lambda bounds: bool(bounds) and all(b['kind'] != '?' for b in bounds)
+        readable = bool(inc['annual'] and not inc['annual']['min']) or clear(inc['median_bounds']) or clear(inc['urban_bounds']) or inc['bracket_max'] is not None
+        c['income_ok'] += inc['code'] == '0043001' or readable
         c['income_cond'] += inc['code'] != '0043001'
-        c['income_cond_ok'] += inc['code'] != '0043001' and (bool(inc['annual']) or (bool(inc['median_bounds']) and all(b['kind'] != '?' for b in inc['median_bounds'])))
+        c['income_cond_ok'] += inc['code'] != '0043001' and readable
         for key in ('job', 'school', 'major', 'marriage'):
             c[key + '_ok'] += not st[key]['missing'] and not st[key]['unknown_codes']
         c['excl_filled'] += bool(ex['sentences']) or ex['explicit_none']
@@ -93,7 +96,7 @@ def main(on):
            f"| 신청기간 구분 | {pct(c['period_known_kind'], n)} | 특정기간·상시·마감 코드가 읽힘 |",
            f"| 신청기간 날짜 | {pct(c['period_dated'], c['period_fixed'])} | 특정기간인 정책 중 날짜가 읽힘 |",
            f"| 지역 코드 | {pct(c['region_ok'], n)} | 5자리 코드이고 시도·시군구 이름이 모두 있음 |",
-           f"| 소득(전체) | {pct(c['income_ok'], n)} | 무관 표기이거나 비교할 수 있는 기준(연소득 만원, 중위소득 %)이 읽힘 |",
+           f"| 소득(전체) | {pct(c['income_ok'], n)} | 무관 표기이거나 비교할 수 있는 기준(연소득 상한, 중위소득 %, 도시근로자 월평균소득 %, 학자금 지원구간)이 읽힘 |",
            f"| 소득(조건이 있는 정책) | {pct(c['income_cond_ok'], c['income_cond'])} | 조건이 있는 정책 중 비교할 수 있는 기준이 읽힘. 나머지는 글로만 보여 준다 |",
            *[f"| {NAMES[k]} 코드 | {pct(c[k + '_ok'], n)} | 코드표로 풀림 |" for k in ('job', 'school', 'major', 'marriage')],
            f"| 참여 제한 | {pct(c['excl_ok'], c['excl_filled'])} | 칸에 내용이 있는 정책 중 '해당 없음'이거나 문장 종류가 읽힘 |",

@@ -1222,7 +1222,7 @@ def test_limit_and_income_kinds_name_what_to_check_without_judging():
     assert kinds('융자제외 업종 등') == ['업종'] and kinds('참여 제외 대상 조건은 사업 공고 시 확인') == ['공고에서 확인']
     assert kinds('금융기관으로부터 채무불이행 또는 불량거래자로 규제 중인 자') == ['채무·신용']
     assert verdict(made(ptcpPrpTrgtCn='융자제외 업종 등'), PROFILE)[1]['exclusion'] == 'unknown'      # 종류를 읽어도 판정은 하지 않는다
-    item = made(earnCndSeCd='0043003', earnEtcCn='도시근로자 월평균 소득 100% 이하, 건강보험료 기준')
+    item = made(earnCndSeCd='0043003', earnEtcCn='도시근로자 월평균소득 기준, 건강보험료 기준')
     assert item['income']['kinds'] == ['도시근로자 월평균소득', '건강보험료'] and item['income']['comparable'] is False
     out, results = verdict(item, {'income_monthly': 180, 'household': 1})
     assert results['income'] == 'unknown' and '기준 방식: 도시근로자 월평균소득, 건강보험료' in out['criteria'][3]['basis']
@@ -1266,4 +1266,46 @@ def test_question_picker_can_ask_school_and_residence_when_they_split_most(ctx, 
     assert lived['key'] == 'residence_months' and lived['options'][0] == {'value': '0', 'label': '6개월 미만'}
     assert ask({'school_code': '0049007', 'residence_months': 12}) is None
     assert post(ctx, {'region_code': '11305', 'residence_months': '12'}).status_code == 200     # 챗봇 답은 글자로 온다
+
+
+# ── v0.25: 학자금 지원구간(소득분위), 도시근로자 월평균소득, 상한이 여럿인 글 ──────────────
+def test_income_bracket_is_compared_only_when_one_bracket_is_stated(ctx):
+    item = made(earnCndSeCd='0043003', earnEtcCn='기초생활수급자, 차상위계층, 한국장학재단 학자금 지원 4구간 이하')
+    assert item['income']['bracket_max'] == 4
+    result = lambda bracket: verdict(item, {'income_bracket': bracket})
+    assert [result(b)[1]['income'] for b in (None, 0, 4, 5, 10)] == ['unknown', 'match', 'match', 'mismatch', 'mismatch']
+    assert '4구간(소득분위) 이하' in result(None)[0]['criteria'][3]['basis'] and '기초·차상위' in result(0)[0]['criteria'][3]['basis']
+    assert made(earnCndSeCd='0043003', earnEtcCn='소득 8분위 이하')['income']['bracket_max'] == 8
+    for unclear in ('학부생 학자금지원8구간 이하(긴급생계곤란자는 9구간 이하), 대학원생 학자금지원6구간이하',      # 대상마다 다른 구간
+                    '한국장학재단 학자금지원구간(복지자격 우선 선발)', '소득 5분위별 자산 및 부채현황 중 소득 4분위 전체가구 평균값'):
+        assert made(earnCndSeCd='0043003', earnEtcCn=unclear)['income']['bracket_max'] is None, unclear
+    seed([good('IB1', earnCndSeCd='0043003', earnEtcCn='학자금 지원구간 9구간 이하')])
+    assert post(ctx, {**PROFILE, 'income_bracket': 10}).json()['items'][0]['screen']['outcome'] == 'api_mismatch'
+    assert post(ctx, PROFILE).json()['splits']['income_bracket'] == 1 and post(ctx, {**PROFILE, 'income_bracket': 11}).status_code == 422
+
+
+def test_urban_worker_income_ratio_uses_the_household_table_and_small_household_addition(monkeypatch):
+    import screening
+    monkeypatch.setattr(screening, 'URBAN', {'year_label': '시험용', 'monthly': {'1': 3000000, '3': 7000000}, 'small_household_addition': {'1': 20, '2': 10}})
+    item = made(earnCndSeCd='0043003', earnEtcCn='도시근로자 가구당 월평균 소득의 100% 이하 무주택자')
+    assert item['income']['urban_bounds'] == [{'pct': 100, 'kind': 'max'}]
+    result = lambda pay, size: verdict(item, {'income_monthly': pay, 'household': size})[1]['income']
+    assert [result(p, 3) for p in (600, 680, 720, 760)] == ['match', 'unknown', 'unknown', 'mismatch']      # 86% / 97% / 103% / 109%
+    # 1인 가구는 가산(20%p)만큼은 '달라요'로 보지 않는다: 110%·120% → 확인 필요, 130% → 달라요
+    assert [result(p, 1) for p in (250, 330, 360, 390)] == ['match', 'unknown', 'unknown', 'mismatch']
+    assert result(None, 3) == 'unknown' and result(600, 4) == 'unknown'                                     # 표에 없는 가구원 수는 견주지 않는다
+    monkeypatch.setattr(screening, 'URBAN', {})
+    assert result(600, 3) == 'unknown'                                                                      # 기준표가 없으면 견주지 않는다
+    assert made(earnCndSeCd='0043003', earnEtcCn='월평균소득 100%')['income']['urban_bounds'] == [{'pct': 100, 'kind': '?'}]
+
+
+def test_several_caps_in_one_text_need_the_highest_to_mismatch_and_the_lowest_to_match(monkeypatch):
+    import screening
+    monkeypatch.setattr(screening, 'URBAN', {'year_label': '시험용', 'monthly': {'3': 7000000}})
+    housing = made(earnCndSeCd='0043003', addAplyQlfcCndCn='행복주택은 월평균소득 100% 이하, 매입임대는 월평균소득 70% 이하, 장기전세는 월평균소득 130% 이하')
+    result = lambda pay: verdict(housing, {'income_monthly': pay, 'household': 3})[1]['income']
+    assert [result(p) for p in (400, 600, 800, 1000)] == ['match', 'unknown', 'unknown', 'mismatch']         # 57% / 86% / 114% / 143%
+    tiers = made(earnCndSeCd='0043003', earnEtcCn='중위소득 100% 이하 우선 선발, 중위소득 150% 이하까지 신청 가능')
+    median = lambda pay: verdict(tiers, {'income_monthly': pay, 'household': 1})[1]['income']              # 1인 기준 중위소득 약 256만원
+    assert [median(p) for p in (200, 300, 420)] == ['match', 'unknown', 'mismatch']                          # 78% / 117% / 164%
 

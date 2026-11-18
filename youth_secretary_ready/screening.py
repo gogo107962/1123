@@ -69,6 +69,9 @@ def provided(profile):
 
 # 2026년 기준 중위소득(월, 원). 출처와 한계는 파일 안에 적혀 있다.
 MEDIAN = json.loads((Path(__file__).parent / 'data/median_income_2026.json').read_text(encoding='utf-8'))['monthly']
+# 도시근로자 가구원수별 가구당 월평균소득(월, 원). 파일이 없으면 이 기준은 비교하지 않는다. 출처와 한계는 파일 안에 있다.
+_URBAN_FILE = Path(__file__).parent / 'data/urban_worker_income_2026.json'
+URBAN = json.loads(_URBAN_FILE.read_text(encoding='utf-8')) if _URBAN_FILE.exists() else {}
 # 승인된 정책(engine.py)에 넘길 사실 값으로 바꾸는 표. fact_definitions.json 의 선택지에 맞춘다.
 REGION_FACT = {'11': '서울', '41': '경기', '28': '인천', '26': '부산'}
 JOB_FACT = {'0013003': 'unemployed', '0013001': 'employed'}
@@ -200,21 +203,57 @@ def _period(status, long_window=False, scale=None):
             'closed_official': ('mismatch', '대조한 공식 공고가 접수 종료 상태였습니다.')}[status]
 
 
+def _side(pct, bounds, extra=0):
+    """소득 비율이 기준 안인지. 상한이 여럿 적힌 글(유형별 70%·100%·130% 이하)은 가장 높은 상한을 넘어야 '달라요',
+    가장 낮은 상한 안이어야 '맞아요'이고 그 사이는 '확인 필요'다. 경계 ±5%도 '확인 필요'다."""
+    tops, floors = [b['pct'] for b in bounds if b['kind'] == 'max'], [b['pct'] for b in bounds if b['kind'] == 'min']
+    if (tops and pct > (max(tops) + extra) * 1.05) or (floors and pct < min(floors) * 0.95):
+        return 'mismatch'
+    if (tops and pct > min(tops) * 0.95) or (floors and pct < max(floors) * 1.05):
+        return 'unknown'
+    return 'match'
+
+
 def _income(item, profile):
     if item['code'] == '0043001':
         return 'match', 'API 소득 무관 표기입니다. 공고와 다른 사례가 있어 원문 확인이 필요합니다.'
     if item['missing']:
         return 'unknown', 'API에 소득 구분이 없습니다.'
     pay, size, bounds = profile.get('income_monthly'), profile.get('household'), item['median_bounds']
+    top, mine = item['bracket_max'], profile.get('income_bracket')
+    if top is not None:
+        if mine is None:
+            return 'unknown', f'API 소득 글에 학자금 지원 {top}구간(소득분위) 이하 기준이 있습니다. 내 정보에 구간을 넣으면 견줘 봅니다.'
+        mark = '기초·차상위' if mine == 0 else f'{mine}구간'
+        if mine <= top:
+            return 'match', f'입력한 학자금 지원구간({mark})이 API 소득 글의 {top}구간 이하 안입니다. 어느 학기 구간을 보는지와 예외는 공고에서 확인하세요.'
+        return 'mismatch', f'입력한 학자금 지원구간({mark})이 API 소득 글의 {top}구간 이하 밖입니다. 다자녀·긴급 사유 같은 예외는 공고에서 확인하세요.'
+    city = item['urban_bounds']
+    if city and not bounds and all(b['kind'] != '?' for b in city):
+        text = ', '.join(f"{b['pct']}% {'이하' if b['kind'] == 'max' else '이상'}" for b in city)
+        table = URBAN.get('monthly', {})
+        if pay is None or not size or str(size) not in table:
+            return 'unknown', f'API 글에 도시근로자 월평균소득 {text} 기준이 있습니다. 월 소득과 가구원 수를 넣으면 견줘 봅니다.'
+        pct = pay * 10000 / table[str(size)] * 100
+        # 1·2인 가구에 기준을 더 얹어 주는 정책이 있어(표 파일의 small_household_addition), 그만큼은 '달라요'로 보지 않는다.
+        extra = URBAN.get('small_household_addition', {}).get(str(size), 0)
+        head = f"입력한 월 소득은 {URBAN['year_label']} 도시근로자 월평균소득({size}인 가구)의 약 {pct:.0f}%이고, API 글의 기준은 {text}입니다. "
+        side = _side(pct, city, extra)
+        if side == 'mismatch':
+            return 'mismatch', head + '기준 밖으로 보입니다. 가구 소득 합산 범위와 산정 방식은 공고에서 확인하세요.'
+        if side == 'unknown':
+            return 'unknown', head + ('경계에 가깝거나 1·2인 가구 가산이 적용될 수 있어 확인이 필요합니다.' if extra else '경계(±5%)에 가깝거나 여러 기준 사이에 있어 확인이 필요합니다.')
+        return 'match', head + '기준 안으로 보입니다. 가구 소득 합산 범위(부모·배우자)와 자산 기준은 공고에서 확인하세요.'
     if pay is not None and size and bounds and all(b['kind'] != '?' for b in bounds):
         # 기준 중위소득 대비 비율로만 비교한다. 경계 ±5%는 산정 방식에 따라 뒤집힐 수 있어 확인 필요로 둔다.
         pct = pay * 10000 / MEDIAN[str(size)] * 100
         text = ', '.join(f"{b['pct']}% {'이하' if b['kind'] == 'max' else '이상'}" for b in bounds)
         head = f'입력한 월 소득은 2026년 기준 중위소득({size}인 가구)의 약 {pct:.0f}%이고, API 소득 글의 기준은 {text}입니다. '
-        if any(pct > b['pct'] * 1.05 if b['kind'] == 'max' else pct < b['pct'] * 0.95 for b in bounds):
+        side = _side(pct, bounds)
+        if side == 'mismatch':
             return 'mismatch', head + '기준 밖으로 보입니다. 소득 산정 방식은 공고에서 확인하세요.'
-        if any(abs(pct - b['pct']) <= b['pct'] * 0.05 for b in bounds):
-            return 'unknown', head + '경계(±5%)에 가까워 확인이 필요합니다.'
+        if side == 'unknown':
+            return 'unknown', head + '경계(±5%)에 가깝거나 여러 기준 사이에 있어 확인이 필요합니다.'
         return 'match', head + '기준 안으로 보입니다. 산정 방식(소득금액증명·건강보험료)과 가구 기준은 공고에서 확인하세요.'
     annual = item['annual']
     if annual:
@@ -255,8 +294,10 @@ def restricts(item):
         keys.add('benefits')
     if item['targets']:
         keys.add('groups')
-    if item['income']['annual'] or item['income']['median_bounds']:
+    if item['income']['annual'] or item['income']['median_bounds'] or item['income']['urban_bounds']:
         keys.add('income_monthly')
+    if item['income']['bracket_max'] is not None:
+        keys.add('income_bracket')
     if area['residence_min_months']:
         keys.add('residence_months')
     return keys

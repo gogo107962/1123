@@ -129,6 +129,7 @@ class ScreenProfile(BaseModel):
     # 월 소득(만원)과 가구원 수. 기준 중위소득 대비 비율로만 쓴다.
     income_monthly: int | None=Field(default=None,ge=0,le=10000)
     residence_months: int | None=Field(default=None,ge=0,le=600)
+    income_bracket: int | None=Field(default=None,ge=0,le=10)   # 학자금 지원구간(0=기초·차상위)
     # 내가 해당하는 대상 집단. None=묻지 않음. 이름은 policy_structure.TARGETS에서 검증한다.
     groups: list[Annotated[str,Field(min_length=1,max_length=30)]] | None=Field(default=None,max_length=12)
     household: int | None=Field(default=None,ge=1,le=6)

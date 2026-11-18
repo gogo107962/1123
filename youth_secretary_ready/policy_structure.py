@@ -123,6 +123,10 @@ CHANNELS = {'온라인': r'온라인|누리집|홈페이지|인터넷|사이트|
 # 실제 접수는 2주였던 사례(서울 청년월세, 청년인턴 직무캠프)가 이 형태였고, '접수 중' 237건 중 169건이 300일 이상이다.
 LONG_WINDOW_DAYS = 300
 _MEDIAN = re.compile(r'중위\s*소득')
+# '학자금 지원 8구간 이하', '소득 8분위 이하'. 학자금 지원구간은 옛 소득분위를 이어받은 10단계 구간이다.
+_BRACKET = re.compile(r'(\d{1,2})\s*(?:구간|분위)\s*(?:이하|이내)')
+# '도시근로자 가구당 월평균 소득의 100% 이하', '월평균소득 140%이하'
+_URBAN = re.compile(r'(?:도시근로자[^%\d]{0,25}|월평균\s?소득[^%\d]{0,14})(\d{2,3})\s*%\s*(이하|이내|미만|초과|이상)?')
 _PERCENT = re.compile(r'(\d{2,3})\s*%\s*(이하|이내|미만|초과|이상)?')
 
 
@@ -253,6 +257,10 @@ def income(payload):
             'min_raw': str(payload.get('earnMinAmt') or ''), 'max_raw': str(payload.get('earnMaxAmt') or ''),
             'text': str(payload.get('earnEtcCn') or '')[:300],
             'kinds': [k for k, pattern in INCOME_KINDS.items() if re.search(pattern, _text(payload, 'earnEtcCn'))],
+            # 소득 칸에 구간이 하나만 적혀 있을 때만 비교에 쓴다(학부·대학원이 다른 구간, 긴급 예외가 함께 적힌 글은 쓰지 않는다).
+            'bracket_max': (lambda found: int(found.pop()) if len(found) == 1 else None)(set(_BRACKET.findall(_text(payload, 'earnEtcCn')))),
+            # 도시근로자 월평균소득 대비 %. 소득 칸과 추가 조건 칸에서 읽고, 방향이 없는 숫자는 '?'로 남긴다.
+            'urban_bounds': _urban(' '.join(_text(payload, f) for f in ('earnEtcCn', 'addAplyQlfcCndCn'))),
             # 소득 글에 적힌 '중위소득 N%'. 가구원 수·산정 방식(소득금액증명/건강보험료)을 몰라 비교에는 쓰지 않는다.
             'median_pct': sorted({b['pct'] for b in _median(str(payload.get('earnEtcCn') or ''))}),
             # 방향까지 읽힌 기준만 비교에 쓴다. 방향이 없는 숫자가 하나라도 섞이면('?') 비교하지 않는다.
@@ -275,6 +283,15 @@ def exclusions(payload):
             # '해당 없음'만 적혀 있고 다른 제한 문장이 없을 때만 참. 빈칸은 여기에 들지 않는다.
             'explicit_none': none and not found,
             'kinds': [k for k, pattern in LIMIT_KINDS.items() if any(re.search(pattern, s) for s in found[:8])]}
+
+
+def _urban(text):
+    found = []
+    for pct, word in _URBAN.findall(text):
+        bound = {'pct': int(pct), 'kind': 'max' if word in ('이하', '이내', '미만') else 'min' if word else '?'}
+        if bound not in found:
+            found.append(bound)
+    return found
 
 
 def _median(text):
