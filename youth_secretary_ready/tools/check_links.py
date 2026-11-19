@@ -23,7 +23,7 @@ import httpx
 
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
-from ontong import safe_url  # noqa: E402
+from ontong import CURRENT, safe_url  # noqa: E402
 
 FIELDS = {'refUrlAddr1': 'notice', 'refUrlAddr2': 'notice', 'aplyUrlAddr': 'apply'}
 HEADERS = {'User-Agent': 'youth-desk-link-check/1.0', 'Accept': 'text/html,*/*', 'Accept-Language': 'ko'}
@@ -56,7 +56,7 @@ def fetch(url):
 def main():
     con = sqlite3.connect(f'file:{(BASE / "data/youth_secretary.sqlite3").as_posix()}?mode=ro', uri=True)
     uses = defaultdict(list)   # 주소 → [(정책번호, 종류)]
-    for eid, raw in con.execute('SELECT external_id,payload_json FROM ontong_candidates'):
+    for eid, raw in con.execute('SELECT external_id,payload_json FROM ontong_candidates' + ' WHERE ' + CURRENT):
         p = json.loads(raw)
         for field, kind in FIELDS.items():
             url = safe_url(p.get(field, ''))
@@ -89,6 +89,8 @@ def main():
                'policies_apply_listed': sum(1 for kinds in per.values() if 'apply' in kinds),
                'tls_unverified': sum(1 for r in results.values() if r.get('tls')),
                'redirected_to_other_host': sum(1 for r in results.values() if r.get('final_host'))}
+    if '--retry' in sys.argv:   # 열렸던 주소는 다시 열지 않아 이 두 값은 알 수 없다
+        summary.pop('tls_unverified'), summary.pop('redirected_to_other_host')
     out = {'checked_on': date.today().isoformat(),
            'method': '공개 주소를 한 번씩 열어 응답 코드만 확인(자동). 내용이 그 정책의 공고인지는 보지 않는다. 사람 검수 아님.',
            # 열린 주소는 건수만 남기고, 열리지 않은 주소만 적는다.

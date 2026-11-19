@@ -40,6 +40,28 @@ def conflicts(policies):
     return found
 
 
+GRANT = ('0042006', '0042010')   # 정책제공 방법코드: 보조금, 바우처
+# 이보다 큰 금액은 더하지 않는다. 수집 글에서 1,000만원이 넘는 금액은 대부분 창업 사업화자금·기업 인건비·기관 지원금이었다(2026-11-19 확인).
+SUM_MAX = 10_000_000
+
+
+def estimate(policies):
+    """예상 지원 금액. 제공 방법이 보조금·바우처로 등록된 정책만, 지원 내용 글의 금액 표현 하나씩(기간이나 '최대'가 붙은 첫 표현)을 더한다.
+    대출 한도·보증금·예산·팀당 같은 말이 앞에 붙은 금액과 1,000만원이 넘는 금액은 고르지 않는다.
+    매달 받는 금액과 그 밖의 금액은 따로 더한다. 대출·보증은 한도라서 더하지 않고, 제공 방법이 다른 정책은 지원금인지 알 수 없어 더하지 않는다."""
+    used, loans, unsure = [], [], []
+    for p in policies:
+        pick = next((a for a in p['amounts'] if (a['period'] or a['max']) and not a['other'] and a['krw'] <= SUM_MAX), None)
+        if p['provision']['loan']:
+            loans.append(p['external_id'])
+        elif p['provision']['code'] in GRANT and pick:
+            used.append({'external_id': p['external_id'], 'text': pick['text'], 'krw': pick['krw'], 'monthly': pick['period'] in ('월', '매월')})
+        elif p['amounts']:
+            unsure.append(p['external_id'])
+    return {'monthly_krw': sum(x['krw'] for x in used if x['monthly']), 'other_krw': sum(x['krw'] for x in used if not x['monthly']),
+            'used': used, 'loans': loans, 'unsure': unsure}
+
+
 def build(wid, external_ids, profile, on):
     from desk_service import evidence, preview
     ids = list(dict.fromkeys(external_ids))
@@ -66,7 +88,7 @@ def build(wid, external_ids, profile, on):
         policies.append({
             'external_id': eid, 'name': fields['plcyNm'], 'agency': fields.get('sprvsnInstCdNm', ''),
             'period_status': status, 'period_label': label, 'deadline': deadline, 'documents_text': text,
-            'amounts': item['amounts'], 'channels': item['access']['channels'], 'documents_source': source,
+            'amounts': item['amounts'], 'provision': item['provision'], 'channels': item['access']['channels'], 'documents_source': source,
             # 서류 칸에 '해당없음'이라고 적힌 경우와, 목록 없이 붙임파일만 가리키는 경우를 빈칸과 구분해 알린다.
             'documents_note': ("API 서류 칸에 '해당없음'으로 적혀 있습니다. 실제로 서류가 없는지 공고에서 확인하세요." if docs['stated_none'] and not text
                                else '서류 목록이 글에 없고 붙임파일·공고문을 보라고만 적혀 있습니다.' if docs['pointer_only'] and source == 'api' else ''),
@@ -81,5 +103,5 @@ def build(wid, external_ids, profile, on):
     order = [p['external_id'] for p in sorted(policies, key=lambda p: (RANK[p['period_status']] + (1.5 if '연중' in p['period_label'] else 0), p['deadline'] or ''))]
     return {'as_of': on.isoformat(), 'policies': policies, 'order': order,
             'documents': [found[key] for key, *_ in DOCS if key in found], 'documents_unlisted': unlisted,
-            'conflicts': conflicts(policies), 'overlap_checked': False, 'saved': False,
+            'conflicts': conflicts(policies), 'overlap_checked': False, 'saved': False, 'estimate': estimate(policies),
             'notice': NOTICE + ' 서류는 API 서류 안내 글에서 이름을 찾은 것이며, 중복 수혜 제한은 검수하지 않았습니다.'}

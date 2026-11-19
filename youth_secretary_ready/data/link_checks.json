@@ -3,19 +3,17 @@
  "method": "공개 주소를 한 번씩 열어 응답 코드만 확인(자동). 내용이 그 정책의 공고인지는 보지 않는다. 사람 검수 아님.",
  "summary": {
   "urls": {
-   "ok": 3086,
-   "unreachable": 67,
-   "gone": 49,
-   "error": 28
+   "ok": 3073,
+   "unreachable": 66,
+   "gone": 48,
+   "error": 27
   },
-  "policies_with_link": 3386,
-  "policies_all_links_dead": 86,
-  "policies_notice_ok": 2901,
-  "policies_apply_ok": 1151,
-  "policies_notice_listed": 2980,
-  "policies_apply_listed": 1196,
-  "tls_unverified": 40,
-  "redirected_to_other_host": 276
+  "policies_with_link": 3361,
+  "policies_all_links_dead": 84,
+  "policies_notice_ok": 2879,
+  "policies_apply_ok": 1148,
+  "policies_notice_listed": 2956,
+  "policies_apply_listed": 1190
  },
  "urls": {
   "http://2025jobara.com/main/index.html": {
@@ -187,10 +185,6 @@
    "state": "error",
    "status": 403
   },
-  "https://saha.go.kr/job/main.do": {
-   "state": "unreachable",
-   "reason": "timeout"
-  },
   "https://sanhak.kongju.ac.kr/M00015/14157/subview.do": {
    "state": "unreachable",
    "reason": "connect"
@@ -301,10 +295,6 @@
    "state": "error",
    "status": 503
   },
-  "https://www.egbiz.or.kr/index.do": {
-   "state": "gone",
-   "status": 404
-  },
   "https://www.fablab-jeju.org": {
    "state": "unreachable",
    "reason": "connect"
@@ -312,10 +302,6 @@
   "https://www.fill4young.kinfa.or.kr": {
    "state": "unreachable",
    "reason": "connect"
-  },
-  "https://www.gbsa.or.kr/mobile/pages/rise_support.do": {
-   "state": "gone",
-   "status": 404
   },
   "https://www.gc.go.kr/design/main/index.html": {
    "state": "gone",
@@ -343,15 +329,15 @@
   },
   "https://www.gn.go.kr/welfare/contents.do?key=6645": {
    "state": "unreachable",
-   "reason": "connect"
+   "reason": "timeout"
   },
   "https://www.gn.go.kr/www/selectBbsNttView.do?key=258&bbsNo=12&nttNo=178860": {
    "state": "unreachable",
-   "reason": "timeout"
+   "reason": "connect"
   },
   "https://www.gn.go.kr/yeyak/index.do": {
    "state": "unreachable",
-   "reason": "timeout"
+   "reason": "connect"
   },
   "https://www.gn.go.kr/yeyak/selectUserOnlineReceptionView.do?key=5540&programKey=19": {
    "state": "unreachable",
@@ -427,8 +413,8 @@
    "reason": "connect"
   },
   "https://www.mma.go.kr/byjr/01/index.do": {
-   "state": "error",
-   "status": 403
+   "state": "gone",
+   "status": 404
   },
   "https://www.modoo.or.kr/": {
    "state": "error",
@@ -456,7 +442,7 @@
   },
   "https://www.socialservice.or.kr": {
    "state": "unreachable",
-   "reason": "connect"
+   "reason": "timeout"
   },
   "https://www.socialservice.or.kr/": {
    "state": "unreachable",
@@ -528,7 +514,7 @@
   },
   "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20250421CT000000000002267": {
    "state": "unreachable",
-   "reason": "RemoteProtocolError"
+   "reason": "ReadError"
   },
   "https://youth.chungnam.go.kr/web/main/customSupp/M030-02/view?bizId=A20250415CT000000000002209": {
    "state": "unreachable",

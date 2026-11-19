@@ -26,6 +26,10 @@ refUrlAddr1 refUrlAddr2 sprtSclCnt sprtSclLmtYn sprtArvlSeqYn sprtTrgtMinAge
 sprtTrgtMaxAge sprtTrgtAgeLmtYn mrgSttsCd earnCndSeCd earnMinAmt earnMaxAmt
 earnEtcCn addAplyQlfcCndCn ptcpPrpTrgtCn zipCd plcyMajorCd jobCd schoolCd
 aplyYmd frstRegDt lastMdfcnDt sbizCd plcyPvsnMthdCd plcyAprvSttsCd pvsnInstGroupCd'''.split())
+# 가장 최근 전체 수집 뒤로 보이지 않은 정책은 온통청년 API에서 사라진 것이다. 목록·건수에서는 빼고, 번호로 여는 것은 그대로 둔다.
+# 전체 수집 기록이 없으면(시험용 DB 등) 모두 지금 있는 정책으로 본다. 화면의 가져오기는 한 번에 30건까지라 received>30 이면 전체 수집이다.
+CURRENT = ("last_seen_at >= COALESCE((SELECT max(finished_at) FROM ontong_sync_runs "
+           "WHERE status='success' AND keyword='' AND has_more=0 AND received>30),'')")
 MESSAGES = {
     'missing_key': '인증키 파일에 키를 저장하거나 ONTONG_YOUTH_API_KEY를 설정하세요.',
     'invalid_key': '인증키는 공백 없이 한 줄로 입력하세요.',
@@ -194,7 +198,7 @@ def status():
     try: read_key(); configured = True
     except OntongError: configured = False
     with connect() as con:
-        count = con.execute('SELECT count(*) FROM ontong_candidates').fetchone()[0]
+        count = con.execute('SELECT count(*) FROM ontong_candidates WHERE ' + CURRENT).fetchone()[0]
         last = con.execute('SELECT * FROM ontong_sync_runs ORDER BY started_at DESC LIMIT 1').fetchone()
     return {'configured': configured, 'candidate_count': count, 'last_run': dict(last) if last else None,
             'busy': LOCK.locked(), 'notice': 'API 수집 정보는 검수 대기 상태이며 자격 판별에 사용하지 않습니다.'}
@@ -233,7 +237,7 @@ def supplements(external_id):
 
 def search_candidates(query='',category='',quality='',page=1,page_size=20,application_code='',job_code='',income_code=''):
     from policy_codes import application_hint
-    clauses=[];params=[]
+    clauses=[CURRENT];params=[]
     query=query.strip()
     if query:
         escaped=query.replace('\\','\\\\').replace('%','\\%').replace('_','\\_')
@@ -271,7 +275,7 @@ def review_bundle(external_id):
     from policy_codes import describe,questions,application_hint
     from policy_structure import structure,period_status,tier,timing
     with connect() as con:
-        row = con.execute('SELECT * FROM ontong_candidates WHERE external_id=?', (external_id,)).fetchone()
+        row = con.execute('SELECT *, (' + CURRENT + ') AS listed FROM ontong_candidates WHERE external_id=?', (external_id,)).fetchone()
     if not row: return None
     payload=json.loads(row['payload_json'])
     check=source_check(external_id,row['sha256'])
@@ -281,6 +285,8 @@ def review_bundle(external_id):
             # 화면에 보여 줄 기간 표시(D-day 등). 목록과 같은 함수로 만든다.
             'period_label':timing(structured['application'],status,korean_now().date())[1],
             'decoded':describe(payload),'questions':questions(payload),'application_hint':application_hint(payload,check),
+            # 가장 최근 전체 수집에 이 정책이 있었는가. 아니면 온통청년 API에서 사라진 정책이다.
+            'listed': bool(row['listed']),
             'fetched_at': row['last_seen_at'], 'sha256': row['sha256'], 'public_fields': json.loads(row['payload_json']),
             'source_check':source_check(external_id,row['sha256']),'supplements':supplements(external_id),
             'checklist': ['공식 모집 공고·첨부 문서 대조', '신청 시작·마감 시각 및 기준일 확인',

@@ -353,13 +353,26 @@ def provision(payload):
     return {'code': code, 'label': known[code]['label'] if code in known else '', 'loan': code in LOAN if code in known else None}
 
 
+def _label(payload, field):
+    """코드 하나짜리 칸의 코드와 이름. 수집되지 않았거나 코드표에 없으면 이름은 빈 값이다."""
+    code = str(payload.get(field) or '').strip()
+    return {'code': code, 'label': CODEBOOK['groups'][field]['codes'].get(code, {}).get('label', '')}
+
+
+# 금액 바로 앞에 이런 말이 있으면 개인이 받는 지원금이 아닐 수 있다(대출 한도, 보증금 조건, 사업 예산, 팀·기업 단위 금액).
+_NOT_PERSONAL = re.compile(r'대출|융자|보증금|보증 ?공급|예산|사업비|자금|팀당|기업당|업체당|개소당|기관당|학교당|개사|개소')
+
+
 def amounts(payload):
     """지원 내용 글에 적힌 금액 표현(앞 3개). 지원금인지 대출 한도인지는 구분하지 않으므로 합산하지 않는다."""
     found = []
-    for m in _AMOUNT.finditer(str(payload.get('plcySprtCn') or '')):
+    text = str(payload.get('plcySprtCn') or '')
+    for m in _AMOUNT.finditer(text):
         period, cap, number, scale, unit = m.groups()
         krw = float(number.replace(',', '')) * {'천': 1000, '백': 100, None: 1}[scale] * (10 ** 8 if unit == '억' else 10 ** 4)
-        item = {'text': ' '.join(m.group(0).split()), 'krw': int(krw), 'period': (period or '').strip() or None, 'max': bool(cap) or (period or '').strip() == '최대'}
+        item = {'text': ' '.join(m.group(0).split()), 'krw': int(krw), 'period': (period or '').strip() or None, 'max': bool(cap) or (period or '').strip() == '최대',
+                # 앞 14자 안에 대출·보증금·예산·팀당 같은 말이 있는가. 예상 지원 금액을 더할 때 이런 표현은 고르지 않는다.
+                'other': bool(_NOT_PERSONAL.search(text[max(0, m.start() - 14):m.start()]))}
         if item['text'] not in [x['text'] for x in found]:
             found.append(item)
     return found[:3]
@@ -373,6 +386,8 @@ def structure(payload):
             'income': income(payload), 'exclusions': exclusions(payload), 'targets': targets(payload), 'amounts': amounts(payload), 'summary': summary(payload),
             'exam': exam(payload), 'housing': housing(payload),
             'special': _codes(payload, 'sbizCd'), 'provision': provision(payload),
+            # 정책 승인 상태(수집본은 모두 '승인')와 제공 기관 구분(중앙부처·지자체)
+            'approval': _label(payload, 'plcyAprvSttsCd'), 'provider_group': _label(payload, 'pvsnInstGroupCd'),
             'subcategory': CATEGORY_ALIAS.get(str(payload.get('mclsfNm') or '').strip(), str(payload.get('mclsfNm') or '').strip()), 'operator': str(payload.get('operInstCdNm') or '').strip(),
             'scale': scale(payload), 'project': project(payload, application(payload)), 'documents': documents(payload),
             'selection': selection(payload), 'updated': updated(payload), 'notes': _text(payload, 'etcMttrCn')[:300],

@@ -1458,3 +1458,38 @@ def test_gone_links_are_dropped_but_blocked_or_unreachable_ones_stay(ctx, monkey
     monkeypatch.setattr(desk_service, 'LINK_CHECKS', tmp_path / 'missing.json')      # 점검 파일이 없으면 아무것도 빼지 않는다
     assert len(urls()) == 3
 
+
+# ── v0.34: 재수집 뒤 사라진 정책, 지원금·대출을 구분한 예상 금액 ───────────────────
+def test_policies_missing_from_latest_full_collection_leave_the_list_but_still_open(ctx):
+    seed([good('OLD1'), good('NEW1')])
+    assert post(ctx).json()['total'] == 2                                   # 전체 수집 기록이 없으면 모두 지금 있는 정책
+    with connect() as con:
+        seen = con.execute("SELECT last_seen_at FROM ontong_candidates WHERE external_id='NEW1'").fetchone()[0]
+        con.execute("UPDATE ontong_candidates SET last_seen_at='2000-01-01T00:00:00+09:00' WHERE external_id='OLD1'")
+        con.execute("INSERT INTO ontong_sync_runs(id,keyword,status,started_at,finished_at,received,matched_total,has_more) VALUES('full','','success',?,?,31,31,0)", (seen, seen))
+    assert [x['external_id'] for x in post(ctx).json()['items']] == ['NEW1']
+    assert ontong.review_bundle('OLD1')['listed'] is False and ontong.review_bundle('NEW1')['listed'] is True   # 번호로는 계속 열린다
+    assert ontong.search_candidates()['total'] == 1 and ontong.status()['candidate_count'] == 1
+
+
+def test_estimate_adds_grants_only_and_keeps_loans_apart():
+    from desk_plan import estimate
+    policy = lambda eid, code, text: {'external_id': eid, 'amounts': made(plcySprtCn=text)['amounts'], 'provision': made(plcyPvsnMthdCd=code)['provision']}
+    out = estimate([policy('G1', '0042006', '보증금 5천만원 이하 주택에 사는 청년에게 월 20만원씩 최대 12개월(총 240만원)'),   # 조건 금액(5천만원)은 고르지 않는다
+                    policy('G2', '0042010', '응시료 실비, 연 최대 10만원'), policy('L1', '0042003', '최대 4,500만원 대출'),
+                    policy('X1', '0042013', '월 30만원'), policy('G3', '0042006', '보증금 3억원 이하'), policy('N1', '', '월 50만원'), policy('E1', '0042006', '상담 지원')])
+    assert out['monthly_krw'] == 200000 and out['other_krw'] == 100000
+    assert [x['external_id'] for x in out['used']] == ['G1', 'G2'] and out['loans'] == ['L1']
+    assert out['unsure'] == ['X1', 'G3', 'N1']        # 제공 방법이 지원금이 아니거나, 수집되지 않았거나, 고를 금액 표현이 없는 정책
+    # 보조금으로 등록됐어도 대출 한도·팀당 금액·큰 사업 자금은 더하지 않는다(실제 수집 글의 표현)
+    for text in ('□ 대출한도 : 최대 1억원(주택임차보증금의 90% 이내)', '대출금 최대 1억원의 최대 연 3.5% 이자지원', '팀당 최대 400만원 활동비 지원', '사업화자금(최대3억원)', '1인당 최대 1억원(2년 분할)'):
+        out = estimate([policy('B1', '0042006', text)])
+        assert out['used'] == [] and out['unsure'] == ['B1'], text
+    assert estimate([policy('B2', '0042006', '대출한도 최대 1억원, 이자 연 최대 120만원 지원')])['other_krw'] == 1200000   # 뒤의 지원 금액은 고른다
+
+
+def test_approval_and_provider_group_are_read():
+    st = made(plcyAprvSttsCd='0044002', pvsnInstGroupCd='0054001')
+    assert st['approval'] == {'code': '0044002', 'label': '승인'} and st['provider_group']['label'] == '중앙부처'
+    assert made()['approval'] == {'code': '', 'label': ''} and made(pvsnInstGroupCd='9999999')['provider_group']['label'] == ''   # 없는 값을 지어내지 않는다
+

@@ -10,9 +10,10 @@
     "source_url": "https://housing.seoul.go.kr/site/main/board/notice/12667",
     "source_title": "2026년 서울시 청년월세지원 모집공고·첨부 PDF",
     "checked_on": "2026-11-16",
-    "api_sha256": "ea7e3f7e5ed2fe57418abf9cb0ccfbe76987b97ecd122b7fb3b51b8c7b3e4d35",
+    "api_sha256": "67b3417748f17009f698b98468f1d89abf52320a35131c51381539caf95b47f5",
     "api_period_text": "20260101 ~ 20261231",
-    "checked_by": "Codex 원문 대조; 사람 승인 아님"
+    "checked_by": "Codex 원문 대조; 사람 승인 아님",
+    "api_sha256_note": "2026-11-19 재수집으로 코드 칸 4개가 더해져 해시가 바뀌었다. 기존 칸과 신청기간 글은 그대로여서 해시만 새 값으로 바꿨다(대조 내용·확인일은 그대로)."
   },
   {
     "external_id": "20261018005400213994",
@@ -25,9 +26,10 @@
     "source_url": "https://youth.seoul.go.kr/bbs/view.do?key=2303300002&pstSn=2605220004",
     "source_title": "서울시 청년수당 추가 2차 모집공고",
     "checked_on": "2026-11-16",
-    "api_sha256": "684724931ab01e4f1757d131af0c738dc2b60bb60d24920c9a2cf14fdfe4a819",
+    "api_sha256": "36b873536a39710720ca7b6ae6415fe997c33634f0490ce38318d1e892a8fe53",
     "api_period_text": "20260527 ~ 20260529",
-    "checked_by": "Codex 원문 대조; 사람 승인 아님"
+    "checked_by": "Codex 원문 대조; 사람 승인 아님",
+    "api_sha256_note": "2026-11-19 재수집으로 코드 칸 4개가 더해져 해시가 바뀌었다. 기존 칸과 신청기간 글은 그대로여서 해시만 새 값으로 바꿨다(대조 내용·확인일은 그대로)."
   },
   {
     "external_id": "20240418005400200013",
@@ -40,9 +42,10 @@
     "source_url": "https://www.sb.go.kr/yeyak/contents.do?key=6602",
     "source_title": "성북구 미취업청년 응시료 지원 안내",
     "checked_on": "2026-11-16",
-    "api_sha256": "4937e3c37d55194f24e44fdd5be65d4303c9c8d85288d5d0d6c9f28be2aabd19",
+    "api_sha256": "81cd9bc1967a3a43f318a7e75eba35b6dfedf5ae01c5d18b4b7d8b2925913493",
     "api_period_text": "",
-    "checked_by": "Codex 원문 대조; 사람 승인 아님"
+    "checked_by": "Codex 원문 대조; 사람 승인 아님",
+    "api_sha256_note": "2026-11-19 재수집으로 코드 칸 4개가 더해져 해시가 바뀌었다. 기존 칸과 신청기간 글은 그대로여서 해시만 새 값으로 바꿨다(대조 내용·확인일은 그대로)."
   },
   {
     "external_id": "20261018005400213991",
@@ -55,8 +58,9 @@
     "source_url": "https://news.seoul.go.kr/economy/archives/571649",
     "source_title": "서울특별시 경제분야 누리집 · 서울형 청년인턴 직무캠프 참여자 모집 (검색 결과로 찾음, 원문 미열람)",
     "checked_on": "2026-11-18",
-    "api_sha256": "a02f245ede61d43af80cb6bbadfc665654a76dae56ab8d5e326b7d2c8bc6946b",
+    "api_sha256": "2932befdae02ab1a5589c5101a3347337e7d0bcbd6c68cd9603c1397161a339e",
     "api_period_text": "20260301 ~ 20261231",
-    "checked_by": "Claude Code 웹 검색 + 팀원 AI 대조; 원문 직접 확인 못 함; 사람 승인 아님"
+    "checked_by": "Claude Code 웹 검색 + 팀원 AI 대조; 원문 직접 확인 못 함; 사람 승인 아님",
+    "api_sha256_note": "2026-11-19 재수집으로 코드 칸 4개가 더해져 해시가 바뀌었다. 기존 칸과 신청기간 글은 그대로여서 해시만 새 값으로 바꿨다(대조 내용·확인일은 그대로)."
   }
 ]

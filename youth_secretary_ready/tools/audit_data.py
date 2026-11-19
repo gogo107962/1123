@@ -19,6 +19,7 @@ from policy_codes import CODEBOOK, api_field  # noqa: E402
 from policy_structure import SIDO, UNRESTRICTED, period_status, structure, tier  # noqa: E402
 from screening import screen  # noqa: E402
 from desk_plan import DOCS  # noqa: E402
+from ontong import CURRENT  # noqa: E402
 
 ON = date.fromisoformat(sys.argv[1]) if len(sys.argv) > 1 else date(2026, 11, 17)
 PROFILES = {'민지(26세·서울·미취업자)': {'age': 26, 'sido': '11', 'job_code': '0013003'},
@@ -34,7 +35,7 @@ def table(head, rows):
 def main():
     con = sqlite3.connect(f'file:{(BASE / "data/youth_secretary.sqlite3").as_posix()}?mode=ro', uri=True)
     con.row_factory = sqlite3.Row
-    rows = con.execute('SELECT external_id,name,agency,sha256,source_url,payload_json FROM ontong_candidates').fetchall()
+    rows = con.execute('SELECT external_id,name,agency,sha256,source_url,payload_json FROM ontong_candidates' + ' WHERE ' + CURRENT).fetchall()
     total = len(rows)
     integrity = con.execute('PRAGMA integrity_check').fetchone()[0]
     checks = {x['external_id']: x for x in json.loads((BASE / 'data/source_checks.json').read_text(encoding='utf-8'))}

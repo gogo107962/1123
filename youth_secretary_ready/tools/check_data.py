@@ -16,13 +16,11 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
-from ontong import FIELDS, safe_url  # noqa: E402
+from ontong import CURRENT, FIELDS, safe_url  # noqa: E402
 from policy_data import get_fact_definitions, validate_policy  # noqa: E402
 from policy_structure import ABOLISHED, SIDO, SIDO_SETS, SIGUNGU, structure  # noqa: E402
 
 DATA, TODAY = BASE / 'data', date.today().isoformat()
-# 2026-11-16 수집 뒤에 수집 목록에 더한 코드 칸. 다시 수집하지 않아 수집본에는 없다(알려진 빈칸이라 세기만 한다).
-ADDED_LATER = {'sbizCd', 'plcyPvsnMthdCd', 'plcyAprvSttsCd', 'pvsnInstGroupCd'}
 load = lambda name: json.loads((DATA / name).read_text(encoding='utf-8'))
 problems, report = [], {}
 
@@ -34,7 +32,9 @@ def check(ok, label, detail=''):
 
 def main():
     con = sqlite3.connect(f'file:{(DATA / "youth_secretary.sqlite3").as_posix()}?mode=ro', uri=True)
-    rows = con.execute('SELECT external_id,name,agency,payload_json,sha256 FROM ontong_candidates').fetchall()
+    # 가장 최근 전체 수집에 있던 정책만 본다. 그 뒤로 보이지 않는 정책(API에서 사라짐)은 번호만 따로 센다.
+    rows = con.execute('SELECT external_id,name,agency,payload_json,sha256 FROM ontong_candidates WHERE ' + CURRENT).fetchall()
+    everything = {e for (e,) in con.execute('SELECT external_id FROM ontong_candidates')}
     db = {}
     # 1) 수집 DB: 건수, 번호 중복, 원문과 해시, 필드 빠짐
     for eid, name, agency, raw, sha in rows:
@@ -42,9 +42,8 @@ def main():
         db[eid] = (p, sha)
         check(p.get('plcyNo') == eid and p.get('plcyNm') == name, 'db 번호·이름', eid)
         check(hashlib.sha256(raw.encode()).hexdigest() == sha, 'db 해시', eid)
-        for f in FIELDS - ADDED_LATER - set(p):   # API가 칸 자체를 주지 않은 정책. 엔진은 '미기재(확인 필요)'로 다룬다. 세기만 한다.
+        for f in FIELDS - set(p):   # API가 칸 자체를 주지 않은 정책. 엔진은 '미기재(확인 필요)'로 다룬다. 세기만 한다.
             report.setdefault('records_missing_field', {})[f] = report.get('records_missing_field', {}).get(f, 0) + 1
-        report['records_without_later_fields'] = report.get('records_without_later_fields', 0) + bool(ADDED_LATER - set(p))
         for key in ('aplyUrlAddr', 'refUrlAddr1', 'refUrlAddr2'):   # 주소 칸에 값이 있는데 쓸 수 없는 모양인 것은 세기만 한다
             report['unusable_url'] = report.get('unusable_url', 0) + bool(str(p.get(key) or '').strip() and not safe_url(p.get(key)))
         st = structure(p)
@@ -54,7 +53,9 @@ def main():
             check(w['start'] <= w['end'], 'db 신청기간 순서', f"{eid} {w['start']}~{w['end']}")
         unknown = [c for c in st['region']['codes'] if c not in SIGUNGU and c not in ABOLISHED and not (c.endswith('000') and c[:2] in SIDO)]
         report['unknown_region_codes'] = report.get('unknown_region_codes', 0) + len(unknown)
-    check(len(rows) == len(db) == 4020, 'db 건수', len(rows))
+    full = con.execute("SELECT received FROM ontong_sync_runs WHERE status='success' AND keyword='' AND has_more=0 AND received>30 ORDER BY finished_at DESC LIMIT 1").fetchone()
+    check(len(rows) == len(db) and (not full or full[0] == len(db)), 'db 건수', f'{len(rows)} / 마지막 전체 수집 {full}')
+    report['withdrawn_from_api'] = len(everything) - len(db)
     snaps = {(e, s) for e, s in con.execute('SELECT external_id,sha256 FROM ontong_snapshots')}
     check(all((e, s) in snaps for e, (_, s) in db.items()), 'db 스냅샷 빠짐')
     report['records'] = len(db)
@@ -76,7 +77,8 @@ def main():
     seen = set()
     for x in notes:
         key = (x['external_id'], x['field'], x['quotes'][0] if x.get('quotes') else '')
-        check(x['external_id'] in db, 'supp 없는 정책', x['external_id'])
+        check(x['external_id'] in everything, 'supp 없는 정책', x['external_id'])
+        report['supplements_on_withdrawn'] = report.get('supplements_on_withdrawn', 0) + (x['external_id'] not in db)
         check(x['field'] in ('documents', 'period', 'method', 'conditions'), 'supp 항목', x['field'])
         # 인용에는 '마감'·'접수중' 같은 짧은 상태 표시도 있다. 첫 인용(자동 대조의 열쇠)은 문장이어야 한다.
         check(x.get('quotes') and all(isinstance(q, str) and q.strip() for q in x['quotes']) and len(x['quotes'][0].strip()) >= 4, 'supp 인용 없음', key[:2])
@@ -110,7 +112,7 @@ def main():
         check(not (real and status == 'approved') or (policy['review'].get('reviewed_by') and all(s['verified'] for s in policy['sources'])), 'policy 검수 없는 승인', path.name)
         report.setdefault('policies', {})[path.name] = ('실제' if real else '가상') + ' · ' + status
     for c in load('source_checks.json'):
-        check(c['external_id'] in db, 'source_check 없는 정책', c['external_id'])
+        check(c['external_id'] in everything, 'source_check 없는 정책', c['external_id'])
         check(not c['policy_code'] or c['policy_code'] in codes, 'source_check 없는 정책 코드', c['policy_code'])   # 빈 값은 정책 파일과 잇지 않은 대조 기록
         report.setdefault('source_checks_api_changed', []).extend([c['external_id']] if c['external_id'] in db and db[c['external_id']][1] != c['api_sha256'] else [])
     # 5) 초안: 승인·검수 표시가 없어야 하고, 가리키는 수집 정책이 있어야 한다
@@ -118,7 +120,8 @@ def main():
     for path in drafts:
         d = json.loads(path.read_text(encoding='utf-8'))
         check(d['review']['status'] == 'draft' and not d['review'].get('reviewed_by') and not any(s['verified'] for s in d['sources']), 'draft 검수 표시', path.name)
-        check(path.stem.replace('ontong-', '') in db, 'draft 없는 정책', path.name)
+        check(path.stem.replace('ontong-', '') in everything, 'draft 없는 정책', path.name)
+        report['drafts_on_withdrawn'] = report.get('drafts_on_withdrawn', 0) + (path.stem.replace('ontong-', '') not in db)
         check(all(r['predicate']['fact'] in facts for r in d['rules']), 'draft 정의 없는 값', path.name)
     report['drafts'] = len(drafts)
 

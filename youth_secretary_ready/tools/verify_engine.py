@@ -55,7 +55,8 @@ def main():
     from policy_structure import PARENT, RANK, structure, period_status, tier, timing
     from screening import provided, screen, screen_catalog
     client, report = TestClient(app), {}
-    rows = [json.loads(p) for (p,) in sqlite3.connect(work).execute('SELECT payload_json FROM ontong_candidates')]
+    from ontong import CURRENT   # API에서 사라진 정책은 앱 목록에 없으므로 검증 대상에서도 뺀다
+    rows = [json.loads(p) for (p,) in sqlite3.connect(work).execute('SELECT payload_json FROM ontong_candidates WHERE ' + CURRENT)]
     report['records'] = len(rows)
 
     # 1) 모든 정책 × 모든 프로필: 멈추지 않고, 결과가 스스로 일관되는가
@@ -177,7 +178,7 @@ def main():
         if r.status_code == 200:
             check(r.json()['ai'] == 'unavailable' and r.json()['answer'].startswith('로컬 AI가 꺼져'), 'fallback label')
     report['ask_fallback'] = dict(asked)
-    check(sqlite3.connect(work).execute('SELECT count(*) FROM ontong_candidates').fetchone()[0] == len(rows), 'data intact')
+    check(sqlite3.connect(work).execute('SELECT count(*) FROM ontong_candidates WHERE ' + CURRENT).fetchone()[0] == len(rows), 'data intact')
 
     report['failures'] = len(failures)
     print(json.dumps(report, ensure_ascii=False, indent=1))

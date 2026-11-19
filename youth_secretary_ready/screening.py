@@ -83,9 +83,10 @@ _CACHE = {'key': None, 'rows': []}
 def _catalog():
     """수집 정책과 그 구조화 결과. 수집 내용이 바뀌면(건수·마지막 수집 시각·원문 길이 합) 다시 만든다."""
     with connect() as con:
-        key = (str(db.DB_PATH), *con.execute('SELECT count(*), max(last_seen_at), total(length(payload_json)) FROM ontong_candidates').fetchone())
+        from ontong import CURRENT   # API에서 사라진 정책은 목록에 넣지 않는다
+        key = (str(db.DB_PATH), *con.execute('SELECT count(*), max(last_seen_at), total(length(payload_json)) FROM ontong_candidates WHERE ' + CURRENT).fetchone())
         if _CACHE['key'] != key:
-            rows = con.execute('SELECT external_id,name,agency,sha256,payload_json FROM ontong_candidates').fetchall()
+            rows = con.execute('SELECT external_id,name,agency,sha256,payload_json FROM ontong_candidates WHERE ' + CURRENT).fetchall()
             _CACHE.update(key=key, rows=[(dict(r), structure(json.loads(r['payload_json']))) for r in rows])
     return _CACHE['rows']
 

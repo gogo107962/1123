@@ -14,6 +14,7 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 import ontong  # noqa: E402
+from ontong import CURRENT  # noqa: E402
 from policy_structure import CLOSED, period_status, structure, tier  # noqa: E402
 from screening import age_rule, screen  # noqa: E402
 
@@ -29,7 +30,7 @@ def pct(part, whole):
 
 def measure(on):
     con = sqlite3.connect(f'file:{(BASE / "data/youth_secretary.sqlite3").as_posix()}?mode=ro', uri=True)
-    rows = [json.loads(p) for (p,) in con.execute('SELECT payload_json FROM ontong_candidates')]
+    rows = [json.loads(p) for (p,) in con.execute('SELECT payload_json FROM ontong_candidates' + ' WHERE ' + CURRENT)]
     notes = json.loads((BASE / 'data/supplements.json').read_text(encoding='utf-8'))
     c, verdicts, used = Counter(), Counter(), set()
     by_policy = {}
