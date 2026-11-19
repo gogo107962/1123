@@ -261,7 +261,7 @@ def search_candidates(query='',category='',quality='',page=1,page_size=20,applic
 
 def review_bundle(external_id):
     from policy_codes import describe,questions,application_hint
-    from policy_structure import structure,period_status,tier
+    from policy_structure import structure,period_status,tier,timing
     with connect() as con:
         row = con.execute('SELECT * FROM ontong_candidates WHERE external_id=?', (external_id,)).fetchone()
     if not row: return None
@@ -270,6 +270,8 @@ def review_bundle(external_id):
     structured=structure(payload);status=period_status(structured['application'],korean_now().date(),check)
     return {'source': '온통청년 정책 API', 'external_id': external_id, 'review_status': 'unreviewed',
             'structured':structured,'period_status':status,'tier':tier(structured,status),
+            # 화면에 보여 줄 기간 표시(D-day 등). 목록과 같은 함수로 만든다.
+            'period_label':timing(structured['application'],status,korean_now().date())[1],
             'decoded':describe(payload),'questions':questions(payload),'application_hint':application_hint(payload,check),
             'fetched_at': row['last_seen_at'], 'sha256': row['sha256'], 'public_fields': json.loads(row['payload_json']),
             'source_check':source_check(external_id,row['sha256']),'supplements':supplements(external_id),

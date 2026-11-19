@@ -37,6 +37,10 @@ const ym=m=>m?`${+m.slice(0,4)}년 ${+m.slice(5,7)}월`:'';
 const mine=(p=S.profile)=>({age:p?.birth?ageOf(p.birth):p?.age??null,sido:p?.sido||null,region_code:p?.region_code||null,job_code:p?.job_code||null,school_code:p?.school_code||null,benefits:p?.benefits??null,groups:p?.groups??null,income_monthly:p?.income_monthly??null,income_band:p?.income_band||null,household:p?.household||null,residence_months:p?.moved?stayed(p.moved):p?.residence_months??null,income_bracket:p?.income_bracket??null});
 // '받는 지원 없음'만으로는 비교했다고 하지 않는다(서버의 provided와 같은 기준).
 const compared=()=>Object.values(mine()).some(v=>v!==null&&!(Array.isArray(v)&&!v.length));
+const short=t=>String(t).replace(/\s*\(.*?\)/g,'');   // 'D-2 (API 마감일)' → 'D-2'
+// 내 신청에 저장해 둔 정책(최대 5개). 고른 정책이 없을 때 내 신청 탭은 이 정책들의 서류와 순서를 보여 준다.
+const savedIds=()=>[...new Set((S.space?.tasks||[]).filter(t=>!t.outdated).map(t=>t.external_id))].slice(0,5);
+const planIds=()=>selIds().length?selIds():S.planTab?savedIds():[];
 const money=x=>x.amounts?.length?'글에 적힌 금액: '+x.amounts.map(a=>a.text).join(', '):'';
 const area=p=>[S.names.sido[p?.sido||p?.region_code?.slice(0,2)],S.names.sigungu[p?.region_code]].filter(Boolean).join(' ');
 const chips=(p=mine())=>[p.age!=null?p.age+'세':'',area(p),S.names.job_code[p.job_code],S.names.school_code[p.school_code],p.income_monthly!=null?`월 ${p.income_monthly}만원`:'',p.household?`${p.household}인 가구`:'',...(p.groups||[]),...(p.benefits||[])].filter(Boolean);
@@ -71,7 +75,10 @@ async function run(fn){try{await fn()}catch(e){toast(e.message)}}
 
 // ── 조건 대조에 쓰는 표시 값 ──
 function cond(key,d){const st=d.bundle.structured,p=d.bundle.public_fields,a=st.age;
- if(key==='period')return p.aplyYmd||PERIOD[d.bundle.period_status];
+ // 긴 문장은 앞부분만 보여 주고, 전체 문장과 출처는 '더 보기'의 보완 정보에 있다.
+ const said=(field,word)=>{const q=d.bundle.supplements.filter(x=>x.field===field).flatMap(x=>x.quotes).find(q=>!word||q.includes(word));return q&&q.length>64?q.slice(0,62)+'…':q};
+ if(key==='period')return said('period')?said('period')+' (공식 페이지)':p.aplyYmd||PERIOD[d.bundle.period_status];
+ if(key==='income'&&said('conditions','소득'))return said('conditions','소득')+' (공식 페이지)';
  const found=key==='age'&&d.bundle.supplements.flatMap(x=>x.rules||[]).find(r=>r.predicate.fact==='age');
  if(found){const v=found.predicate.value,op=found.predicate.op;return (op==='gte'?`${v}세 이상`:op==='lte'?`${v}세 이하`:`${v[0]}~${v[1]}세`)+' (공식 페이지)'}
  if(key==='age')return a.kind==='range'?(a.max>=99?`${a.min}세 이상 (상한 ${a.max}로 기재)`:`${a.min}~${a.max}세`):a.kind==='min_only'?`${a.min}세 이상`:a.kind==='max_only'?`${a.max}세 이하`:a.no_limit?'제한없음으로 기재':'기재 없음';
@@ -96,7 +103,7 @@ home:()=>{const p=S.profile||{},t=tasks(),done=t.filter(x=>x.status==='done').le
 <section class="balance-card"><div class="row"><h2>내가 준비 중인 지원</h2><span class="small-tag">저장한 정책</span></div><div class="balance-value">${groups}<span>건</span></div><p class="balance-caption">찾아둔 지원, 신청까지 차근차근</p>
 <div class="account-actions"><button data-a="tab" data-s="browse">지원 더 찾기 ${ms('add')}</button><button data-a="tab" data-s="plan">내 신청 보기 ${chev}</button></div></section>
 <section class="feed-card"><button class="section-heading" data-a="tab" data-s="plan">이어서 준비하기 ${chev}</button>
-${t.length?`<div class="policy-line"><span class="soft-icon yellow">${ms('description')}</span><div class="policy-copy"><strong>${esc(t[0].policy_name)}</strong><span>공고에서 확인할 일 ${t.length}개</span></div></div>
+${t.length?`<div class="policy-line"><span class="soft-icon yellow">${ms('description')}</span><div class="policy-copy"><strong>${esc(t[0].policy_name)}</strong><span>${S.next?esc((S.next.nationwide?'전국':S.next.sido_names[0]||S.next.agency||'')+' · '):''}공고에서 확인할 일 ${t.length}개</span></div>${S.next?pill(esc(short(S.next.period_label)),S.next.period_status==='open'?'warn':'gray'):''}</div>
 <div class="prep-count"><span>확인한 일</span><strong>${done}<em> / ${t.length}</em></strong></div><div class="prog"><div style="width:${done/t.length*100}%"></div></div>
 <button class="next-row" data-a="tab" data-s="plan"><span>${esc(next?.title||'모두 확인했어요')}</span><span>확인하기 ${chev}</span></button>`
  :`<button class="next-row" style="margin-top:22px" data-a="tab" data-s="browse"><span>첫 지원 찾아보기</span>${chev}</button>`}</section>
@@ -143,10 +150,10 @@ ${tab?(sel?`<div class="act floating"><span class="b s14">${sel}개 선택</span
 detail:()=>{const d=S.detail;if(!d)return wait('정책 상세');
  const p=d.bundle.public_fields,check=d.bundle.source_check,r=rows(d),out=d.cmp?.screen?.outcome,link=d.sources[0];
  const field=(title,value,empty)=>`<div class="card"><h3>${title}</h3><p class="pre">${esc(value||empty)}</p></div>`;
- return bar('정책 상세','b')+`<main class="pad"><div><p class="tiny">${esc(p.sprvsnInstCdNm||'기관 확인 필요')}</p><h2 class="h20">${esc(p.plcyNm)}</h2><div class="pills">${out?pill(...OUT[out]):d.cmp?pill('원문 링크만'):''}${pill(PERIOD[d.bundle.period_status])}</div></div>
+ return bar('정책 상세','b')+`<main class="pad"><div><p class="tiny">${esc(p.sprvsnInstCdNm||'기관 확인 필요')}</p><h2 class="h20">${esc(p.plcyNm)}</h2><div class="pills">${out?pill(...OUT[out]):d.cmp?pill('원문 링크만'):''}${pill(esc(short(d.bundle.period_label||PERIOD[d.bundle.period_status])))}</div></div>
 ${check?`<div class="warnbox" role="status"><strong>${check.api_changed_since_check?'수집 자료가 바뀌어 다시 대조해야 해요.':check.official_status==='closed'?'확인한 공식 공고는 접수가 끝났어요.':'공식 안내 대조 기록'}</strong> ${esc(check.summary)} ${esc(check.official_period_text)} · 확인일 ${esc(check.checked_on)}</div>`:''}
 ${d.cmp?.engine?`<div class="card"><div class="row"><h3>검수된 규칙으로 본 결과</h3>${pill(...ENGINE[d.cmp.engine.status])}</div><p class="tiny">사람이 공고 원문과 대조해 승인한 규칙이에요. 검수 ${esc(d.cmp.engine.reviewed_by)} · ${esc(d.cmp.engine.reviewed_at)}</p><ul class="list">${d.cmp.engine.findings.map(f=>`<li class="rowbtn"><span class="s13">${esc(f.message)}</span>${pill(...EFFECT[f.effect])}</li>`).join('')}</ul><p class="tiny">최종 선정은 주관기관이 정해요.</p></div>`:''}
-<div class="card"><h3>조건 대조</h3>${r.length?`<ul class="list">${r.map((c,i)=>`<li><button class="rowbtn" data-a="sheet" data-i="${i}"><span><span class="b">${CRIT[c.key]}</span><span class="sub s13 blk">기준: ${esc(cond(c.key,d))}</span><span class="s13 blk">내 정보: ${esc(myValue(c.key))}</span></span>${pill(...RES[c.result])}</button></li>`).join('')}</ul><p class="tiny">조건을 누르면 근거가 열려요. API에 적힌 값과 비교한 결과이고, 전체 조건은 사람 검수 전이에요.</p>`
+<div class="card"><h3>조건 대조</h3>${r.length?`<ul class="list">${r.map((c,i)=>`<li><button class="rowbtn" data-a="sheet" data-i="${i}"><span><span class="b">${CRIT[c.key]}</span><span class="sub s13 blk">지원 조건: ${esc(cond(c.key,d))}</span><span class="s13 blk">내 정보: ${esc(myValue(c.key))}</span></span>${pill(...RES[c.result])}</button></li>`).join('')}</ul><p class="tiny">조건을 누르면 근거가 열려요. API에 적힌 값과 비교한 결과이고, 전체 조건은 사람 검수 전이에요.</p>`
   :d.cmp?'<p class="sub">마감됐거나 API 정보가 부족해 조건을 비교하지 않았어요. 공고 원문에서 확인해 주세요.</p>'
   :`${['period','age','region','income','job'].map(k=>prow(CRIT[k],cond(k,d))).join('')}<p class="tiny" style="margin-top:8px">내 정보를 입력하면 조건을 비교해 드려요.</p>`}</div>
 ${field('지원 내용',p.plcySprtCn||p.plcyExplnCn,'수집 자료에 없어요. 공식 공고를 확인해 주세요.')}
@@ -162,7 +169,7 @@ ${d.bundle.structured.selection.text?field('심사 · 발표 (API)',d.bundle.str
 <p class="tiny mt">최종 선정은 심사와 예산에 따라 달라질 수 있어요. API 수집 정보이며 공고와 다를 수 있어요.</p></main>
 <div class="act">${link?`<a class="btn line" href="${esc(link.url)}" target="_blank" rel="noopener noreferrer">공식 공고</a>`:'<button class="btn line" data-a="nolink">공식 공고</button>'}<button class="btn f1" data-a="prep">이 정책 준비하기</button></div>`;},
 
-plan:()=>{const ids=selIds(),P=S.plan,saved=S.space?.tasks||[],tab=S.planTab;
+plan:()=>{const picked=selIds(),ids=planIds(),P=S.plan,saved=S.space?.tasks||[],tab=S.planTab;
  const head=bar(tab?'내 신청':'신청 계획',tab?null:'b'),foot=tab?dock('plan'):'';
  if(!ids.length&&!saved.length)return head+`<main class="pad"><div class="card"><h3>준비 중인 신청이 없어요</h3><p class="sub">챗봇에게 받고 싶은 지원을 물어보고, 결과에서 정책을 골라 주세요.</p><button class="btn w" style="margin-top:12px" data-a="openchat">챗봇에게 물어보기</button></div></main>`+foot;
  let draft='';
@@ -172,11 +179,11 @@ plan:()=>{const ids=selIds(),P=S.plan,saved=S.space?.tasks||[],tab=S.planTab;
 <div class="card"><div class="row"><h3>${many?'통합 서류':'필요한 서류'}</h3><span class="tiny">${P.documents.length}종 중 ${have}종 준비</span></div>
 ${P.documents.length?`<ul class="list">${P.documents.map(d=>{const tag=!many?'':d.policies.length===P.policies.length?'공통':d.policies.map(num).sort().join('·')+'번만';return `<li class="doc"><input type="checkbox" class="cb" data-a="doc" data-k="${esc(d.key)}" ${S.docs[d.key]?'checked':''} aria-label="${esc(d.name)} 보유"><div><div class="pills"><span class="b">${esc(d.name)}</span>${tag?pill(tag):''}${S.docs[d.key]?pill('보유','ok'):pill('부족','bad')}</div><p class="sub s13">${esc(d.kind)} · ${esc(d.how)}</p></div></li>`}).join('')}</ul>`:'<p class="sub">서류 안내에서 서류 이름을 찾지 못했어요. 공고에서 확인해 주세요.</p>'}
 <details><summary>서류 안내 원문 · 주의할 점</summary>${P.documents_unlisted.length?`<p class="tiny" style="margin-top:8px">${P.documents_unlisted.map(num).sort().map(i=>i+'번').join(', ')} 정책은 서류 안내를 찾지 못했어요. 서류가 필요 없다는 뜻이 아니에요.</p>`:''}<p class="tiny" style="margin-top:6px">서류 안내 글에서 이름을 찾은 서류예요. 발급일 · 포함 항목 · 대체서류는 공고에서 확인하세요.</p>${P.policies.map(x=>`<p class="b" style="margin:8px 0 0">${num(x.external_id)}. ${esc(x.name)}</p><p class="pre">${x.documents_source==='web_check'?'(공식 페이지에서 보완 · 사람 검수 전) ':''}${esc(x.documents_text||'기재 없음')}</p>`).join('')}</details></div>
-<div class="card"><h3>신청 순서</h3><ol class="ord">${P.order.map(id=>`<li><strong>${esc(by[id].name)}</strong> · ${esc(by[id].period_label)} <button class="link" data-a="unsel" data-id="${esc(id)}">빼기</button>${by[id].channels.length||by[id].amounts.length?`<span class="tiny blk">${esc([by[id].channels.length?'신청: '+by[id].channels.join(' · '):'',money(by[id])].filter(Boolean).join(' · '))}</span>`:''}</li>`).join('')}</ol><details><summary>순서 · 금액 안내</summary><p class="tiny">API에 적힌 날짜 순서예요. 실제 접수 여부와 마감 시각은 공고에서 확인하세요. 금액은 글에 적힌 표현 그대로이고, 지원금인지 대출 한도인지 구분하지 않아 합산하지 않았어요.</p></details></div>`;}
+<div class="card"><h3>신청 순서</h3><ol class="ord">${P.order.map(id=>`<li><strong>${esc(by[id].name)}</strong> · ${esc(by[id].period_label)}${picked.length?` <button class="link" data-a="unsel" data-id="${esc(id)}">빼기</button>`:''}${by[id].channels.length||by[id].amounts.length?`<span class="tiny blk">${esc([by[id].channels.length?'신청: '+by[id].channels.join(' · '):'',money(by[id])].filter(Boolean).join(' · '))}</span>`:''}</li>`).join('')}</ol>${P.policies.length===1&&P.policies[0].amounts.length?`<p class="s14" style="margin:8px 0 0">글에 적힌 지원 금액 <strong class="h18">${esc(P.policies[0].amounts[0].text)}</strong></p>`:''}<details><summary>순서 · 금액 안내</summary><p class="tiny">API에 적힌 날짜 순서예요. 실제 접수 여부와 마감 시각은 공고에서 확인하세요. 금액은 글에 적힌 표현 그대로이고, 지원금인지 대출 한도인지 구분하지 않아 합산하지 않았어요.</p></details></div>`;}
  const groups=new Map();for(const t of saved)groups.has(t.external_id)?groups.get(t.external_id).push(t):groups.set(t.external_id,[t]);
  const done=saved.filter(t=>t.status==='done').length;
  const savedHtml=saved.length?`<div class="row" style="margin-top:6px"><h3>저장한 준비 작업</h3><span class="tiny">${saved.length}개 중 ${done}개 완료</span></div>${[...groups].map(([id,list])=>`<div class="card"><div class="row"><h3>${esc(list[0].policy_name)}</h3><button class="link" data-a="detail" data-id="${esc(id)}">정책 보기</button></div><ul class="list">${list.map(t=>`<li class="doc"><input type="checkbox" class="cb" data-a="task" data-id="${esc(t.id)}" ${t.status==='done'?'checked':''} ${t.outdated?'disabled':''} aria-label="${esc(t.title)} 완료"><div><span class="b">${esc(t.title)}</span><p class="sub s13">${esc(t.instructions)}</p>${t.outdated?'<p class="red s13">자료가 바뀌었어요. 정책을 다시 골라 계획을 승인해 주세요.</p>':''}</div></li>`).join('')}</ul></div>`).join('')}`:'';
- return head+`<main class="pad">${draft}${savedHtml}</main>${ids.length&&P?`<div class="act ${tab?'floating':''}"><button class="btn f1" data-a="check">신청 전 점검으로</button></div>`:''}`+foot;},
+ return head+`<main class="pad">${draft}${savedHtml}</main>${picked.length&&P?`<div class="act ${tab?'floating':''}"><button class="btn f1" data-a="check">신청 전 점검으로</button></div>`:''}`+foot;},
 
 check:()=>{const P=S.plan;if(!P)return wait('신청 전 점검');
  const by=Object.fromEntries(P.policies.map(x=>[x.external_id,x])),ps=P.order.map(id=>by[id]),nd=P.documents,have=nd.filter(d=>S.docs[d.key]).length,left=nd.filter(d=>!S.docs[d.key]).map(d=>d.name);
@@ -226,7 +233,9 @@ function sheet(){if(S.sheet===null||S.screen!=='detail'||!S.detail)return'';cons
 
 // ── 데이터 불러오기 ──
 async function refreshSpace(){S.space=await api(space())}
-async function loadCounts(){if(!compared()){S.counts=null;return}S.counts=await api('/api/integrations/ontong/screen','POST',{profile:mine(),page_size:1});if(S.screen==='home')render()}
+async function loadCounts(){const first=tasks()[0];
+ if(first&&S.next?.external_id!==first.external_id)api('/api/integrations/ontong/screen','POST',{profile:{},q:first.external_id,page_size:1}).then(r=>{S.next=r.items[0]||null;if(S.screen==='home')render()},()=>{});
+ if(!compared()){S.counts=null;return}S.counts=await api('/api/integrations/ontong/screen','POST',{profile:mine(),page_size:1});if(S.screen==='home')render()}
 async function loadList(page=1){const q=S.query;if(page===1){S.list=null;if(S.screen==='results')render(true)}
  const r=await api('/api/integrations/ontong/screen','POST',{profile:mine(),q:q.q,keywords:q.keywords,outcome:compared()?q.outcome:'',page,page_size:10});
  S.list={...r,items:page===1?r.items:S.list.items.concat(r.items)};if(S.screen==='results')render(page===1)}
@@ -234,11 +243,11 @@ function showResults(keywords=[],tab=false){S.listTab=tab;S.query={keywords,q:''
 async function openDetail(id){S.detail=null;S.detailId=id;go('detail');const path='/api/integrations/ontong/candidates/'+encodeURIComponent(id);
  const [bundle,preview,cmp]=await Promise.all([api(path),api(space('/policies/'+encodeURIComponent(id)+'/preview')),compared()?api(path+'/screen','POST',mine()):null]);
  if(S.detailId!==id)return;S.detail={id,bundle,cmp,sources:preview.tasks[0]?.sources||[]};if(S.screen==='detail')render(true)}
-async function loadPlan(){S.plan=null;if(!selIds().length)return;const ids=selIds();
+async function loadPlan(){S.plan=null;const ids=planIds();if(!ids.length)return;
  const r=await api(space('/plan'),'POST',{external_ids:ids,profile:mine()});
- if(ids.join()!==selIds().join())return;S.plan=r;if(S.screen==='plan'||S.screen==='check')render()}
+ if(ids.join()!==planIds().join())return;S.plan=r;if(S.screen==='plan'||S.screen==='check')render()}
 function select(id,name,on){if(on)S.selected[id]=name;else delete S.selected[id];store.set('youth-desk-selected',S.selected);S.plan=null}
-function showPlan(tab){S.planTab=tab;if(tab){S.back=[];S.screen='plan';S.sheet=null;render(true)}else go('plan');return Promise.all([loadPlan(),tab?refreshSpace().then(()=>{if(S.screen==='plan')render()}):null])}
+function showPlan(tab){S.planTab=tab;if(tab){S.back=[];S.screen='plan';S.sheet=null;render(true)}else go('plan');return (tab?refreshSpace().then(()=>{if(S.screen==='plan')render()}):Promise.resolve()).then(loadPlan)}
 function openChat(first){if(!S.chat.length)S.chat.push({who:'bot',t:`안녕하세요${S.profile?.name?', '+S.profile.name+' 님':''}. 무엇을 받고 싶으세요?`});if(S.screen!=='chat')go('chat');if(first)say(first)}
 async function say(text,quiet){if(S.busy||!text)return;
  // 나이를 물은 직후 숫자만 답하면 내 정보에 넣고 같은 질문으로 다시 찾는다.

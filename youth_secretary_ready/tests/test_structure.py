@@ -1328,3 +1328,10 @@ def test_income_band_is_compared_as_a_range_and_card_summary_is_the_first_line(c
     seed([good('SUM1', plcySprtCn='월세 20만원 지원')])
     assert post(ctx).json()['items'][0]['summary'] == '월세 20만원 지원'
 
+
+def test_detail_bundle_carries_the_same_period_label_as_the_list(ctx):
+    seed([good('PL1', aplyYmd='20261101 ~ 20261130')])
+    label = ctx.get('/api/integrations/ontong/candidates/PL1').json()['period_label']
+    assert label and label == post(ctx, {}).json()['items'][0]['period_label'].replace('D-13', label.split(' ')[0])   # 기준일만 다르다(오늘 / 2026-11-17)
+    assert ctx.get('/api/integrations/ontong/candidates/PL1').json()['period_label'].endswith(('(API 마감일)', '지남', '시작(API)'))
+
