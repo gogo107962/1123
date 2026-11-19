@@ -58,6 +58,8 @@ def official_window(quote, year=None):
 _HEDGE = re.compile(r'아닌|않|미취업|우대|가능|단,|다만|예외')
 
 
+# 내 정보에서 고르는 소득 구간(기준 중위소득 대비 %): 60 이하 / 60 초과 100 이하 / 100 초과 150 이하 / 150 초과
+INCOME_BANDS = {60: (0, 60), 100: (60, 100), 150: (100, 150), 999: (150, None)}
 RESIDENCE_BANDS = (0, 6, 12, 24, 36, 60)   # 내 정보에서 고르는 거주 기간 구간의 아래쪽 값(개월)
 PROFILE_NAMES = {'job_code': 'job', 'school_code': 'school', 'major_code': 'major', 'marriage_code': 'marriage'}
 
@@ -102,6 +104,8 @@ def validate_profile(profile):
         value = profile.get(key)
         if value and value[:2] not in SIDO:
             raise ValueError(f'{key}: 확인된 시도 코드가 아닙니다.')
+    if profile.get('income_band') not in (None, *INCOME_BANDS):
+        raise ValueError('income_band: 목록에 없는 소득 구간입니다.')
     if profile.get('sido') and profile.get('region_code') and profile['region_code'][:2] != profile['sido']:
         raise ValueError('sido와 region_code가 서로 다릅니다.')
 
@@ -244,6 +248,19 @@ def _income(item, profile):
         if side == 'unknown':
             return 'unknown', head + ('경계에 가깝거나 1·2인 가구 가산이 적용될 수 있어 확인이 필요합니다.' if extra else '경계(±5%)에 가깝거나 여러 기준 사이에 있어 확인이 필요합니다.')
         return 'match', head + '기준 안으로 보입니다. 가구 소득 합산 범위(부모·배우자)와 자산 기준은 공고에서 확인하세요.'
+    band = profile.get('income_band')
+    if band and pay is None and bounds and all(b['kind'] != '?' for b in bounds):
+        # 금액 대신 구간으로 받은 소득. 구간 전체가 기준 안이면 '맞아요', 전체가 밖이면 '달라요', 걸치면 '확인 필요'다.
+        low, high = INCOME_BANDS[band]
+        tops, floors = [b['pct'] for b in bounds if b['kind'] == 'max'], [b['pct'] for b in bounds if b['kind'] == 'min']
+        text = ', '.join(f"{b['pct']}% {'이하' if b['kind'] == 'max' else '이상'}" for b in bounds)
+        name = '중위소득 150% 초과' if high is None else f'중위소득 {high}% 이하'
+        head = f'입력한 소득 구간은 {name}이고, API 소득 글의 기준은 {text}입니다. '
+        if (tops and low >= max(tops)) or (floors and high is not None and high < min(floors)):
+            return 'mismatch', head + '기준 밖으로 보입니다. 소득 산정 방식은 공고에서 확인하세요.'
+        if (not tops or (high is not None and high <= min(tops))) and (not floors or low >= max(floors)):
+            return 'match', head + '기준 안으로 보입니다. 산정 방식(소득금액증명·건강보험료)과 가구 기준은 공고에서 확인하세요.'
+        return 'unknown', head + '구간이 기준에 걸쳐 있어 확인이 필요합니다.'
     if pay is not None and size and bounds and all(b['kind'] != '?' for b in bounds):
         # 기준 중위소득 대비 비율로만 비교한다. 경계 ±5%는 산정 방식에 따라 뒤집힐 수 있어 확인 필요로 둔다.
         pct = pay * 10000 / MEDIAN[str(size)] * 100
@@ -432,7 +449,7 @@ def screen_catalog(profile, on, query='', outcome='', only_tier='', page=1, page
                       'long_window': item['application']['long_window'],
                       'category': item['category'], 'period_status': status, 'engine': engine_view(policy, profile, on) if policy else None, 'name_hit': any(w in row['name'] for w in words), **placed, 'screen': result,
                       'amounts': item['amounts'], 'channels': item['access']['channels'], 'provision': item['provision']['label'],
-                      'scale': item['scale'], 'selection': item['selection']['methods'],
+                      'scale': item['scale'], 'selection': item['selection']['methods'], 'summary': item['summary'],
                       'age': item['age'], 'sido_names': item['region']['sido_names'], 'nationwide': item['region']['nationwide'],
                       # 전국 대상은 시군구 묶음이 두 벌이라(행정구역 개편) 코드가 달라도 같은 지역으로 본다.
                       '_same': (row['name'].strip(), 'nationwide' if item['region']['nationwide'] else ','.join(sorted(item['region']['codes'])))})

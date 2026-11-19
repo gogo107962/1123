@@ -305,6 +305,15 @@ def _median(text):
     return found
 
 
+def summary(payload):
+    """지원 내용 글의 첫 줄. 목록 카드에 한 줄로 보여 준다. 글머리표와 자리표시는 뺀다."""
+    for raw in _SPLIT.split(_text(payload, 'plcySprtCn')):
+        line = _BULLET.sub('', raw).strip().lstrip('ㆍ❍▶■◆▣▷◇◈►☞✔✓ㅇ').strip()   # 수집 글에 자주 나오는 글머리표
+        if len(line) >= 4:
+            return line[:60]
+    return ''
+
+
 def targets(payload):
     """정책 이름에 드러난 특정 대상 집단과 정책특화 요건코드. 없으면 빈 목록(누구나 대상이라는 뜻은 아니다)."""
     named = [group for group, pattern in TARGETS.items() if re.search(pattern, str(payload.get('plcyNm') or ''))]
@@ -336,7 +345,7 @@ def structure(payload):
             'agency': payload.get('sprvsnInstCdNm', ''), 'category_raw': payload.get('lclsfNm', ''),
             'category': CATEGORY_ALIAS.get(str(payload.get('lclsfNm') or '').strip(), str(payload.get('lclsfNm') or '').strip()),
             'age': age(payload), 'application': application(payload), 'region': region(payload),
-            'income': income(payload), 'exclusions': exclusions(payload), 'targets': targets(payload), 'amounts': amounts(payload),
+            'income': income(payload), 'exclusions': exclusions(payload), 'targets': targets(payload), 'amounts': amounts(payload), 'summary': summary(payload),
             'special': _codes(payload, 'sbizCd'), 'provision': provision(payload),
             'subcategory': CATEGORY_ALIAS.get(str(payload.get('mclsfNm') or '').strip(), str(payload.get('mclsfNm') or '').strip()), 'operator': str(payload.get('operInstCdNm') or '').strip(),
             'scale': scale(payload), 'project': project(payload, application(payload)), 'documents': documents(payload),

@@ -32,12 +32,12 @@ with sync_playwright() as p:
     assert page.locator('header .ms svg').count() == 1 and page.evaluate(FITS)
     done.append('fonts_blocked_still_renders')
 
-    # 2) 잘못된 나이는 저장하지 않고, 아무것도 고르지 않으면 정보 없이 시작한다
-    page.locator('#age').fill('200')
+    # 2) 말이 안 되는 출생 연월은 저장하지 않고, 아무것도 고르지 않으면 정보 없이 시작한다
+    page.locator('#birth').fill('1800-01')
     page.locator('[data-a=save]').click()
-    expect(page.locator('#toast')).to_contain_text('0~120')
+    expect(page.locator('#toast')).to_contain_text('출생 연월')
     assert page.evaluate("localStorage.getItem('youth-desk-profile')") is None
-    page.locator('#age').fill('')
+    page.locator('#birth').fill('')
     page.locator('[data-a=save]').click()
     expect(page.locator('.greeting')).to_contain_text('체험 사용자')
     expect(page.locator('main')).to_contain_text('내 정보를 입력하면 맞는 지원부터 보여드려요')
@@ -45,28 +45,34 @@ with sync_playwright() as p:
 
     # 3) 내 정보가 없으면 '맞아요/달라요' 표시 없이 전체를 보여 준다
     page.locator('nav [data-s=browse]').click()
-    expect(page.locator('.cardbtn').first).to_be_visible()
-    expect(page.locator('.h18')).to_contain_text('개의 정책')
+    expect(page.locator('.browse-item').first).to_be_visible()
+    expect(page.locator('main > p.tiny').first).to_contain_text('정책')
     assert page.locator('.pill.ok').count() == 0 and page.locator('.pill.bad').count() == 0
     assert page.evaluate(FITS)
     done.append('no_profile_no_judgement_labels')
 
-    # 4) 정책은 5개까지만 함께 고를 수 있다
+    # 4) 정책은 5개까지만 함께 준비할 수 있다(팀 화면처럼 상세의 '이 정책 준비하기'로 고른다)
     for i in range(5):
-        page.locator('input[data-a=sel]').nth(i).check()
+        page.locator('.browse-item').nth(i).click()
+        page.locator('[data-a=prep]').click()
+        expect(page.locator('main')).to_contain_text('신청 순서')
+        page.locator('[data-a=back]').click()                      # 신청 계획 → 상세
+        page.locator('[data-a=back]').click()                      # 상세 → 지원 찾기
+        expect(page.locator('.browse-item').first).to_be_visible()
     expect(page.locator('.act')).to_contain_text('5개 선택')
-    page.locator('input[data-a=sel]').nth(5).click()
+    page.locator('.browse-item').nth(5).click()
+    page.locator('[data-a=prep]').click()
     expect(page.locator('#toast')).to_contain_text('5개까지')
-    assert page.locator('input[data-a=sel]').nth(5).is_checked() is False
+    page.locator('[data-a=back]').click()
     done.append('five_policy_limit')
 
     # 5) 상세 → 뒤로 가도 목록과 선택이 그대로다. 새로고침해도 선택이 남는다.
-    first = page.locator('.cardbtn .h16').first.inner_text()
-    page.locator('.cardbtn').first.click()
+    first = page.locator('.browse-item strong').first.inner_text()
+    page.locator('.browse-item').first.click()
     expect(page.locator('main')).to_contain_text('조건 대조')
     expect(page.locator('main')).to_contain_text('내 정보를 입력하면 조건을 비교해 드려요')
     page.locator('[data-a=back]').click()
-    expect(page.locator('.cardbtn .h16').first).to_have_text(first)
+    expect(page.locator('.browse-item strong').first).to_have_text(first)
     expect(page.locator('.act')).to_contain_text('5개 선택')
     page.reload(wait_until='networkidle')
     page.locator('nav [data-s=plan]').click()

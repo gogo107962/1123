@@ -39,6 +39,8 @@ async def security_headers(request,call_next):
     response.headers.setdefault('X-Content-Type-Options','nosniff')
     response.headers.setdefault('X-Frame-Options','DENY')
     response.headers.setdefault('Referrer-Policy','no-referrer')
+    # 화면 파일을 고친 뒤에도 브라우저가 예전 것을 보여 주는 일이 있었다. 매번 서버에 바뀌었는지 묻게 한다.
+    response.headers.setdefault('Cache-Control','no-cache')
     # API 문서 화면(/docs)은 외부 스크립트를 쓰므로 CSP에서 뺀다.
     if not request.url.path.startswith(('/docs','/redoc','/openapi.json')):response.headers.setdefault('Content-Security-Policy',CSP)
     return response
@@ -129,6 +131,7 @@ class ScreenProfile(BaseModel):
     # 월 소득(만원)과 가구원 수. 기준 중위소득 대비 비율로만 쓴다.
     income_monthly: int | None=Field(default=None,ge=0,le=10000)
     residence_months: int | None=Field(default=None,ge=0,le=600)
+    income_band: int | None=Field(default=None,ge=1,le=999)   # 소득 구간(기준 중위소득 대비 %): 60·100·150·999
     income_bracket: int | None=Field(default=None,ge=0,le=10)   # 학자금 지원구간(0=기초·차상위)
     # 내가 해당하는 대상 집단. None=묻지 않음. 이름은 policy_structure.TARGETS에서 검증한다.
     groups: list[Annotated[str,Field(min_length=1,max_length=30)]] | None=Field(default=None,max_length=12)

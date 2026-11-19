@@ -95,7 +95,7 @@ with sync_playwright() as p:
 
     # 내 정보 지우기 → 시작 화면
     page.locator('nav [data-s=profile]').click()
-    expect(page.locator('#age')).to_have_value('26')
+    expect(page.locator('#birth')).to_have_value('2000-03')
     page.locator('[data-a=logout]').click()
     expect(page.locator('h1.hero')).to_be_visible()
 

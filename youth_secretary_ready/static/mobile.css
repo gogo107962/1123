@@ -10,3 +10,9 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 details{font-size:13px;margin-top:8px}summary{cursor:pointer;color:#4e535b;font-weight:700;padding:8px 0}.ord li{margin:8px 0}
 .doc>div{min-width:0}.search{width:100%}.qform{display:flex;gap:8px;align-items:center}.qform .round{background:#fff}
 a.link{text-decoration:underline}.feed-card .pills{margin:14px 0 0}.bub+.opts{margin-top:8px}
+/* 팀 화면에 없는 덧붙인 내용은 접어 둔다 */
+.more{margin:0}.more>summary{color:#4e535b;font-size:13px;font-weight:700;padding:12px 2px;list-style-position:inside}.more[open]>summary{padding-bottom:6px}
+.more>.card,.more>.chips,.more>.qform,.more>.pills{margin-top:8px}
+.mon{border:0;background:transparent;font:inherit;font-weight:700;color:inherit;text-align:right;min-height:44px;padding:0}
+.addr{padding:12px 0 8px}.addr label{display:block;margin:0 0 8px}.addr .pair{display:flex;gap:8px}.addr select{flex:1;min-width:0;max-width:none;min-height:48px}
+.browse-item>.sub{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:100%}

@@ -666,6 +666,7 @@ def test_security_headers_and_no_inline_script(ctx):
     for path in ('/', '/classic', '/lab', '/api/health', '/static/mobile.js'):
         headers = ctx.get(path).headers
         assert headers['x-content-type-options'] == 'nosniff' and headers['x-frame-options'] == 'DENY'
+        assert headers['cache-control'] == 'no-cache'          # 고친 화면이 바로 보이게 매번 확인하게 한다
         assert "script-src 'self'" in headers['content-security-policy'] and "frame-ancestors 'none'" in headers['content-security-policy']
     assert 'content-security-policy' not in ctx.get('/docs').headers   # API 문서는 외부 스크립트를 쓴다
     import re
@@ -1308,4 +1309,22 @@ def test_several_caps_in_one_text_need_the_highest_to_mismatch_and_the_lowest_to
     tiers = made(earnCndSeCd='0043003', earnEtcCn='중위소득 100% 이하 우선 선발, 중위소득 150% 이하까지 신청 가능')
     median = lambda pay: verdict(tiers, {'income_monthly': pay, 'household': 1})[1]['income']              # 1인 기준 중위소득 약 256만원
     assert [median(p) for p in (200, 300, 420)] == ['match', 'unknown', 'mismatch']                          # 78% / 117% / 164%
+
+
+# ── v0.27: 팀 화면에 맞춘 입력(소득 구간)과 목록 카드의 지원 내용 한 줄 ─────────────────
+def test_income_band_is_compared_as_a_range_and_card_summary_is_the_first_line(ctx):
+    item = made(earnCndSeCd='0043003', earnEtcCn='기준 중위소득 100% 이하')
+    result = lambda band: verdict(item, {'income_band': band})[1]['income']
+    assert [result(b) for b in (60, 100, 150, 999, None)] == ['match', 'match', 'mismatch', 'mismatch', 'unknown']
+    tiers = made(earnCndSeCd='0043003', earnEtcCn='중위소득 60% 이하 우선, 중위소득 150% 이하까지')
+    assert [verdict(tiers, {'income_band': b})[1]['income'] for b in (60, 100, 150, 999)] == ['match', 'unknown', 'unknown', 'mismatch']
+    exact = verdict(item, {'income_band': 60, 'income_monthly': 300, 'household': 1})[0]['criteria'][3]
+    assert exact['result'] == 'mismatch' and '약 117%' in exact['basis']            # 금액을 넣었으면 구간보다 금액을 쓴다
+    with pytest.raises(ValueError):
+        validate_profile({'income_band': 70})
+    assert made(plcySprtCn='○ 응시료 실비, 연 최대 10만 원\n- 1인 1회')['summary'] == '응시료 실비, 연 최대 10만 원'
+    assert made(plcySprtCn='-')['summary'] == '' and made()['summary'] == ''
+    assert made(plcySprtCn='ㆍ기술경영전문대학원 전문석사 과정 운영')['summary'] == '기술경영전문대학원 전문석사 과정 운영'
+    seed([good('SUM1', plcySprtCn='월세 20만원 지원')])
+    assert post(ctx).json()['items'][0]['summary'] == '월세 20만원 지원'
 
