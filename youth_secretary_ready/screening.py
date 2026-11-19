@@ -365,6 +365,22 @@ def _housing(item, kind):
     return 'unknown', f'API 안내 글에 무주택 요건이 있습니다: {said}. 내 정보에 주거 형태가 없어 비교하지 않았습니다.'
 
 
+# 근거가 온통청년 정책 페이지의 어느 항목에서 나왔는지(누리집에 보이는 항목 이름). 화면의 근거 보기 '위치' 줄에 쓴다.
+WHERE = {'period': '사업 신청기간', 'age': '연령', 'region': '거주지역', 'income': '소득', 'job': '취업상태', 'school': '학력', 'major': '전공',
+         'marriage': '혼인여부', 'target': '정책 이름 · 특화분야', 'apply': '신청절차 · 신청 사이트', 'exam': '지원내용 · 추가사항',
+         'housing': '추가사항 · 지원내용 · 참여제한 대상', 'exclusion': '참여제한 대상 · 추가사항'}
+
+
+def _where(key, basis):
+    """근거의 위치. 코드 칸에 더해 조건 글이나 따로 확인한 공식 페이지를 함께 썼으면 그것도 적는다(근거 문장에 그 말이 있을 때)."""
+    parts = ['온통청년 정책 페이지의 ' + WHERE[key]]
+    if key in ('period', 'age', 'region', 'income', 'job', 'school', 'marriage') and re.search(r'조건 글|API 글|글에 ', basis):
+        parts.append('추가사항 · 지원내용 글')
+    if '공식 페이지' in basis:
+        parts.append('따로 확인한 공식 페이지(사람 검수 전)')
+    return ' + '.join(parts)
+
+
 def restricts(item):
     """이 정책의 API 값이 가르는 내 정보 항목. 질문 선택기가 찾은 정책들에서 이것을 세어 무엇을 물을지 고른다."""
     keys, area, limits = set(), item['region'], item['exclusions']['kinds']
@@ -486,7 +502,7 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
     results = {r[1] for r in rows}
     outcome = 'api_mismatch' if 'mismatch' in results else 'needs_check' if 'unknown' in results else 'api_match'
     return {'outcome': outcome, 'qualification_determined': False,
-            'criteria': [{'key': k, 'result': r, 'basis': b} for k, r, b in rows],
+            'criteria': [{'key': k, 'result': r, 'basis': b, 'where': _where(k, b)} for k, r, b in rows],
             'to_confirm': [k for k, r, _ in rows if r in ('unknown', 'mismatch')], 'notice': NOTICE}
 
 

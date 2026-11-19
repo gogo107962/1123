@@ -27,3 +27,6 @@ a.link{text-decoration:underline}.feed-card .pills{margin:14px 0 0}.bub+.opts{ma
 .search input::-webkit-search-cancel-button{display:none}
 .search input{flex:1;min-width:0;min-height:52px;border:0;background:transparent;font:inherit;color:var(--ink);outline:0}
 .search:focus-within{outline:3px solid #b5a12d;outline-offset:3px}
+
+/* 근거 보기: 값이 길어도 이름표(위치 등)는 한 줄로 둔다 */
+.sheet .prow>.sub{flex:none;white-space:nowrap;margin-right:14px}

@@ -1593,3 +1593,16 @@ def test_local_agency_with_department_name_keeps_nationwide_region_unconfirmed()
         assert made(zipCd=ALL, sprvsnInstCdNm=agency)['region']['local_agency_hint'] is hint, agency
     assert verdict(made(zipCd=ALL, sprvsnInstCdNm='경상북도 의성군 관광복지국'), PROFILE)[1]['region'] == 'unknown'
 
+
+# ── v0.36: 모든 조건 줄에 근거의 위치가 붙는다 ──────────────────────────────────────
+def test_every_criterion_says_where_its_evidence_comes_from():
+    item = made(addAplyQlfcCndCn='기준 중위소득 150% 이하 가구, 무주택 청년', ptcpPrpTrgtCn='유사 사업 참여자 제외', plcyNm='자격증 응시료 지원')
+    out, _ = verdict(item, {**PROFILE, 'school_code': '0049007', 'marriage_code': '0055002', 'major_code': '0011003'})
+    where = {c['key']: c['where'] for c in out['criteria']}
+    assert set(where) >= {'period', 'age', 'region', 'income', 'job', 'school', 'major', 'marriage', 'exam', 'housing', 'exclusion'} and all(where.values())
+    assert where['age'] == '온통청년 정책 페이지의 연령' and where['region'] == '온통청년 정책 페이지의 거주지역'
+    assert where['income'] == '온통청년 정책 페이지의 소득 + 추가사항 · 지원내용 글'        # 소득 칸은 '무관'인데 글의 소득 문구 때문에 확인 필요가 된 줄
+    note = {'field': 'period', 'quotes': ['신청기간 2026. 11. 1. ~ 11. 30.'], 'checked_on': '2026-11-18'}
+    official = screen(made(), PROFILE, 'open', notes=[note], on=date(2026, 11, 17))['criteria'][0]
+    assert official['where'].endswith('따로 확인한 공식 페이지(사람 검수 전)')
+

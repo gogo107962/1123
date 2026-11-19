@@ -83,7 +83,7 @@ def main():
                 continue
             judged += 1
             got = {c['key']: c['result'] for c in out['criteria']}
-            check(set(got.values()) <= RESULTS and all(c['basis'] for c in out['criteria']), f'criteria {eid}', got)
+            check(set(got.values()) <= RESULTS and all(c['basis'] and c['where'] for c in out['criteria']), f'criteria {eid}', got)
             expected = 'api_mismatch' if 'mismatch' in got.values() else 'needs_check' if 'unknown' in got.values() else 'api_match'
             check(out['outcome'] == expected and out['qualification_determined'] is False, f'outcome {eid}', (out['outcome'], got))
             check(out['to_confirm'] == [k for k, r in got.items() if r in ('unknown', 'mismatch')], f'to_confirm {eid}')
@@ -112,6 +112,14 @@ def main():
             check(all(not st[k]['other'] or got[k] != 'mismatch' for k in ('job', 'school', 'major')), f'other code {eid}', got)
             mine = profile.get('region_code')
             check(not mine or st['region']['missing_one'].get(mine[:2]) != PARENT.get(mine, mine) or got['region'] != 'mismatch', f'missing one {eid}', got['region'])
+            # 취업·학력이 '제한없음'이어도, 조건 글이 내 상태와 반대쪽만 말하면 '맞아요'가 될 수 없다.
+            words = st['said']
+            if st['job']['unrestricted'] and profile.get('job_code') == '0013001' and words['unemployed'] and not words['employed']:
+                check(got['job'] != 'match', f'job text {eid}', got['job'])
+            if st['job']['unrestricted'] and profile.get('job_code') == '0013003' and words['employed'] and not words['unemployed'] and not profile.get('business'):
+                check(got['job'] != 'match', f'job text {eid}', got['job'])
+            if st['school']['unrestricted'] and words['student'] and profile.get('school_code') and profile['school_code'] not in ('0049002', '0049003', '0049005', '0049006'):
+                check(got['school'] != 'match', f'school text {eid}', got['school'])
             # 빈 프로필은 어떤 정책에서도 '달라요'가 나올 수 없다(기간 제외).
             if not provided(profile):
                 check(all(r != 'mismatch' for k, r in got.items() if k != 'period'), f'empty profile {eid}', got)

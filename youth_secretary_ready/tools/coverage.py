@@ -78,6 +78,11 @@ def measure(on):
         c['live'] += live
         c['live_checked'] += live and bool(mine)
         out = screen(st, FULL, status, age_rule(mine), mine, on)
+        # 완성 기준(3장)에 쓰는 값: 판정이 나왔는가, 줄마다 근거와 위치가 있는가, 자격을 확정하지 않는가
+        c['judged'] += out['outcome'] in ('api_match', 'needs_check', 'api_mismatch') and len(out['criteria']) >= 8
+        c['rows'] += len(out['criteria'])
+        c['rows_with_basis'] += sum(bool(r['basis'] and r['where']) for r in out['criteria'])
+        c['not_determined'] += out['qualification_determined'] is False
         for row in out['criteria']:
             verdicts[(row['key'], row['result'])] += 1
         c['outcome_' + out['outcome']] += 1
@@ -119,7 +124,16 @@ def main(on):
         unknown = verdicts[(key, 'unknown')]
         if decided + unknown:
             out.append(f'| {name} | {decided:,} | {unknown:,} | {decided / (decided + unknown) * 100:.1f}% |')
-    out += ['', "'확인 필요'는 API에 값이 없거나(상시·연중 표기, 선착순, 미기재) 문장을 해석해야 하는 경우다. 모르는 것을 맞다고 하지 않기 위해 남긴 것이다.", '']
+    out += ['', "'확인 필요'는 API에 값이 없거나(상시·연중 표기, 선착순, 미기재) 문장을 해석해야 하는 경우다. 모르는 것을 맞다고 하지 않기 위해 남긴 것이다.", '',
+            '## 3. 판별 엔진의 완성 기준', '',
+            '청년비서는 신청 준비를 돕고 공식 페이지로 넘기는 서비스다. 자격을 확정하는 것은 기관이므로, 판별 엔진이 할 일은 아래 다섯 가지다(2026-11-19 사용자와 정한 기준). 실제 정책을 사람이 승인하는 것은 이 기준에 들지 않는다.', '',
+            '| 기준 | 잰 값 | 어떻게 쟀나 |', '|---|---|---|',
+            f"| 비교할 수 있는 정책 모두에 조건별 판정이 나온다 | {pct(c['judged'], c['comparable'])} | 마감이 아니고 신청 경로가 있는 정책을 가상 프로필로 걸러 본 결과 |",
+            f"| 모든 조건 줄에 근거 문장과 근거의 위치가 붙는다 | {pct(c['rows_with_basis'], c['rows'])} | 조건 줄마다 근거(basis)와 위치(where)가 비어 있지 않은지 |",
+            f"| 자격을 확정하지 않는다고 표시한다 | {pct(c['not_determined'], c['comparable'])} | 결과마다 '자격 판정이 아님' 표시가 있는지 |",
+            f"| 모든 정책에서 공식 페이지로 넘길 수 있다 | {pct(sum(bool(d.get('plcyNo')) for d in rows), n)} | 온통청년 정책 페이지 주소는 정책번호로 만든다. 그중 공고·신청 주소까지 있는 정책은 {c['link']:,}건 |",
+            '| 코드 칸과 조건 글이 어긋나면 단정하지 않는다 | `tools/verify_engine.py`로 확인 | 전체 정책 × 가상 프로필 14개에서 규칙 위반 건수(실행 결과는 VALIDATION.md) |', '',
+            '이 기준에 들지 않는 것: API에 적힌 값이 공고 원문과 같은지(수집값은 공고와 다를 수 있다. 그래서 공식 페이지로 넘긴다), 조건 글을 낱말로 읽는 규칙이 모든 표현을 잡는지.', '']
     text = '\n'.join(out)
     (BASE / 'data/COVERAGE.md').write_text(text, encoding='utf-8', newline='\n')
     print(text)
