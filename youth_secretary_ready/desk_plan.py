@@ -6,13 +6,14 @@
 - 순서는 온통청년에 등록된 마감일 기준이다. 다음 모집일을 추정하지 않는다.
 """
 from fastapi import HTTPException
-from policy_structure import DOC_KIND, DOCS, EXCLUDE, RANK, period_status, structure, timing
+from policy_structure import DOC_KIND, DOCS, EXCLUDE, RANK, doc_hit, period_status, structure, timing
 from screening import NOTICE, age_rule, confirmed, provided, screen
 
+from docboard import board
 from planner import conflicts, core_tokens, estimate, plan as plan_order   # 충돌·순서·금액 계산은 planner.py (이전 이름으로도 불러 쓸 수 있게 둔다)
 
 
-def build(wid, external_ids, profile, on):
+def build(wid, external_ids, profile, on, have=()):
     from desk_service import evidence, preview
     ids = list(dict.fromkeys(external_ids))
     compared = provided(profile)
@@ -33,7 +34,7 @@ def build(wid, external_ids, profile, on):
         if not text:
             unlisted.append(eid)
         for key, name, needles, how in DOCS:
-            if any(n in text for n in needles):
+            if doc_hit(text, needles):
                 found.setdefault(key, {'key': key, 'name': name, 'how': how, 'kind': DOC_KIND[key], 'policies': []})['policies'].append(eid)
         policies.append({
             'external_id': eid, 'name': fields['plcyNm'], 'agency': fields.get('sprvsnInstCdNm', ''),
@@ -52,5 +53,5 @@ def build(wid, external_ids, profile, on):
     planned = plan_order(policies, on)
     return {'as_of': on.isoformat(), 'policies': policies, 'order': planned['order'],
             'documents': [found[key] for key, *_ in DOCS if key in found], 'documents_unlisted': unlisted,
-            'conflicts': planned['conflicts'], 'overlap_checked': False, 'saved': False, 'estimate': estimate(policies), 'planner': planned,
+            'conflicts': planned['conflicts'], 'overlap_checked': False, 'saved': False, 'estimate': estimate(policies), 'planner': planned, 'docboard': board(policies, have, on),
             'notice': NOTICE + ' 서류는 등록된 서류 안내 글에서 이름을 찾은 것이며, 중복 수혜 제한은 검수하지 않았습니다.'}
