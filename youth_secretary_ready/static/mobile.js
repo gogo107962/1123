@@ -37,6 +37,8 @@ const ym=m=>m?`${+m.slice(0,4)}년 ${+m.slice(5,7)}월`:'';
 const mine=(p=S.profile)=>({age:p?.birth?ageOf(p.birth):p?.age??null,sido:p?.sido||null,region_code:p?.region_code||null,job_code:p?.job_code||null,school_code:p?.school_code||null,benefits:p?.benefits??null,groups:p?.groups??null,income_monthly:p?.income_monthly??null,income_band:p?.income_band||null,household:p?.household||null,residence_months:p?.moved?stayed(p.moved):p?.residence_months??null,income_bracket:p?.income_bracket??null});
 // '받는 지원 없음'만으로는 비교했다고 하지 않는다(서버의 provided와 같은 기준).
 const compared=()=>Object.values(mine()).some(v=>v!==null&&!(Array.isArray(v)&&!v.length));
+// 출처 페이지에서 인용 문장이 자동 대조로 확인된 보완 기록인가
+const sure=x=>(x.auto_check??'found')==='found';
 const short=t=>String(t).replace(/\s*\(.*?\)/g,'');   // 'D-2 (API 마감일)' → 'D-2'
 // 내 신청에 저장해 둔 정책(최대 5개). 고른 정책이 없을 때 내 신청 탭은 이 정책들의 서류와 순서를 보여 준다.
 const savedIds=()=>[...new Set((S.space?.tasks||[]).filter(t=>!t.outdated).map(t=>t.external_id))].slice(0,5);
@@ -76,10 +78,10 @@ async function run(fn){try{await fn()}catch(e){toast(e.message)}}
 // ── 조건 대조에 쓰는 표시 값 ──
 function cond(key,d){const st=d.bundle.structured,p=d.bundle.public_fields,a=st.age;
  // 긴 문장은 앞부분만 보여 주고, 전체 문장과 출처는 '더 보기'의 보완 정보에 있다.
- const said=(field,word)=>{const q=d.bundle.supplements.filter(x=>x.field===field).flatMap(x=>x.quotes).find(q=>!word||q.includes(word));return q&&q.length>64?q.slice(0,62)+'…':q};
+ const said=(field,word)=>{const q=d.bundle.supplements.filter(x=>x.field===field&&sure(x)).flatMap(x=>x.quotes).find(q=>!word||q.includes(word));return q&&q.length>64?q.slice(0,62)+'…':q};
  if(key==='period')return said('period')?said('period')+' (공식 페이지)':p.aplyYmd||PERIOD[d.bundle.period_status];
  if(key==='income'&&said('conditions','소득'))return said('conditions','소득')+' (공식 페이지)';
- const found=key==='age'&&d.bundle.supplements.flatMap(x=>x.rules||[]).find(r=>r.predicate.fact==='age');
+ const found=key==='age'&&d.bundle.supplements.filter(sure).flatMap(x=>x.rules||[]).find(r=>r.predicate.fact==='age');
  if(found){const v=found.predicate.value,op=found.predicate.op;return (op==='gte'?`${v}세 이상`:op==='lte'?`${v}세 이하`:`${v[0]}~${v[1]}세`)+' (공식 페이지)'}
  if(key==='age')return a.kind==='range'?(a.max>=99?`${a.min}세 이상 (상한 ${a.max}로 기재)`:`${a.min}~${a.max}세`):a.kind==='min_only'?`${a.min}세 이상`:a.kind==='max_only'?`${a.max}세 이하`:a.no_limit?'제한없음으로 기재':'기재 없음';
  if(key==='region')return st.region.nationwide?'전국(시도 16곳 등록)':st.region.sido_names.join(', ')||'기재 없음';
@@ -158,7 +160,7 @@ ${d.cmp?.engine?`<div class="card"><div class="row"><h3>검수된 규칙으로 �
   :`${['period','age','region','income','job'].map(k=>prow(CRIT[k],cond(k,d))).join('')}<p class="tiny" style="margin-top:8px">내 정보를 입력하면 조건을 비교해 드려요.</p>`}</div>
 ${field('지원 내용',p.plcySprtCn||p.plcyExplnCn,'수집 자료에 없어요. 공식 공고를 확인해 주세요.')}
 <details class="more" data-d="moreDetail" ${S.moreDetail?'open':''}><summary>더 보기 · 신청 방법, 제출서류, AI에게 물어보기</summary>
-${d.bundle.supplements.length?`<div class="card"><div class="row"><h3>공식 페이지에서 보완한 정보</h3>${pill('사람 검수 전','warn')}</div><p class="tiny">수집 자료에 비어 있던 항목을 공식 페이지에서 찾아 적었어요. 원문 문장과 출처를 함께 보여 드려요.</p>${d.bundle.supplements.map(x=>`<p class="b s14" style="margin:10px 0 2px">${FIELD[x.field]}</p><p class="pre">${esc(x.value)}</p><p class="quote2">${x.quotes.map(q=>'“'+esc(q)+'”').join('<br>')}</p><a class="link s13" href="${esc(x.source_url)}" target="_blank" rel="noopener noreferrer">${esc(x.source_title)}</a> <span class="tiny">· 확인일 ${esc(x.checked_on)}</span>`).join('')}</div>`:''}
+${d.bundle.supplements.length?`<div class="card"><div class="row"><h3>공식 페이지에서 보완한 정보</h3>${pill('사람 검수 전','warn')}</div><p class="tiny">수집 자료에 비어 있던 항목을 공식 페이지에서 찾아 적었어요. 원문 문장과 출처를 함께 보여 드려요.</p>${d.bundle.supplements.map(x=>`<p class="b s14" style="margin:10px 0 2px">${FIELD[x.field]} ${sure(x)?pill('출처에서 문장 확인','ok'):pill('자동 대조 안 됨')}</p><p class="pre">${esc(x.value)}</p><p class="quote2">${x.quotes.map(q=>'“'+esc(q)+'”').join('<br>')}</p><a class="link s13" href="${esc(x.source_url)}" target="_blank" rel="noopener noreferrer">${esc(x.source_title)}</a> <span class="tiny">· 확인일 ${esc(x.checked_on)}</span>`).join('')}</div>`:''}
 <div class="card"><div class="row"><h3>AI에게 물어보기</h3>${pill('로컬 AI')}</div><p class="tiny">AI가 이 정책 자료와 준비할 일을 조회해 무엇부터 확인할지 골라요. 안내는 검증된 문구로 보여 주고 자격을 확정하지 않아요.</p>${d.ai?.answer?`<p class="pre">${esc(d.ai.answer)}</p><p class="tiny" style="margin-top:6px">실행한 도구: ${d.ai.tools.map(t=>t.tool==='read_policy'?'정책 자료 조회':'준비 작업 조회').join(' → ')} · 저장한 것은 없어요.</p>`:d.ai?.error?`<p class="red s13">${esc(d.ai.error)}</p>`:''}<button class="btn line w" style="margin-top:10px" data-a="askpolicy" ${d.ai?.loading?'disabled':''}>${d.ai?.loading?'AI가 조회하고 있어요…':'무엇부터 확인할까요?'}</button></div>
 ${p.ptcpPrpTrgtCn?field('참여 제한 안내 (API)',p.ptcpPrpTrgtCn,''):''}
 ${field('신청 방법',p.plcyAplyMthdCn,'수집 자료에 없어요. 공식 공고를 확인해 주세요.')}
@@ -197,10 +199,10 @@ check:()=>{const P=S.plan;if(!P)return wait('신청 전 점검');
 <li class="rowbtn"><span><span class="b">서류 ${nd.length}종 중 ${have}종 준비</span><span class="sub s13 blk">${nd.length?left.length?'남은 서류: '+esc(left.join(', ')):'찾은 서류는 모두 준비했어요':'API에서 서류 이름을 찾지 못했어요'}</span></span>${!nd.length?pill('확인 필요','warn'):left.length?pill('남음','bad'):pill('완료','ok')}</li>
 <li class="rowbtn"><span><span class="b">중복 수혜 여부</span><span class="sub s13 blk">${P.conflicts.length?`안내 글에 함께 받기 어렵다는 문구가 ${P.conflicts.length}건 있어요. 기관에 문의한 뒤 신청하세요`:'검수 전이라 판단하지 않았어요. 기관에 문의한 뒤 신청하세요'}</span></span>${P.conflicts.length?pill('문구 있음','bad'):pill('확인 필요','warn')}</li></ul>
 ${left.length?`<button class="btn line w" style="margin:10px 0 6px" data-a="back">서류 체크하러 돌아가기</button>`:''}</div>
-<div class="card"><h3>공고에서 확인할 일</h3><p class="tiny">승인하면 아래 일이 내 신청에 저장돼요.</p>${ps.map(x=>`<p class="b s14" style="margin:10px 0 2px">${esc(x.name)}</p><ul class="pre" style="padding-left:18px;margin:0">${x.tasks.map(t=>`<li>${esc(t.title)}</li>`).join('')}</ul>${x.links[0]?`<a class="link s13" href="${esc(x.links[0].url)}" target="_blank" rel="noopener noreferrer">${esc(x.links[0].title)} 열기</a>`:'<span class="tiny">사용할 수 있는 공식 링크가 없어요.</span>'}`).join('')}</div>
-<div class="card"><h3>문의 문구</h3><p class="quote2" id="msg">${esc(message)}</p><div class="row" style="justify-content:flex-start;gap:10px"><button class="btn line" data-a="copy">문구 복사</button><span class="tiny">정해진 틀로 만든 문구예요</span></div></div>
+<details class="more" data-d="moreCheck" ${S.moreCheck?'open':''}><summary>승인하면 저장되는 확인 목록 보기</summary><div class="card"><h3>공고에서 확인할 일</h3><p class="tiny">승인하면 아래 일이 내 신청에 저장돼요.</p>${ps.map(x=>`<p class="b s14" style="margin:10px 0 2px">${esc(x.name)}</p><ul class="pre" style="padding-left:18px;margin:0">${x.tasks.map(t=>`<li>${esc(t.title)}</li>`).join('')}</ul>${x.links[0]?`<a class="link s13" href="${esc(x.links[0].url)}" target="_blank" rel="noopener noreferrer">${esc(x.links[0].title)} 열기</a>`:'<span class="tiny">사용할 수 있는 공식 링크가 없어요.</span>'}`).join('')}</div></details>
+<div class="card"><h3>문의 문구</h3><p class="quote2" id="msg">${esc(message)}</p><div class="row" style="justify-content:flex-start;gap:10px"><button class="btn line" data-a="copy">문구 복사</button><span class="tiny">${esc(ps[0].agency||'담당 기관은 공고에서 확인')}</span></div></div>
 <p class="tiny mt">API 기재값을 정리한 안내예요. 제출 전에 공식 공고를 한 번 더 확인하세요.</p></main>
-<div class="act"><button class="btn f1" data-a="approve">승인하고 내 신청에 저장</button></div>`;},
+<div class="act">${ps[0].links[0]?`<a class="btn line" href="${esc(ps[0].links[0].url)}" target="_blank" rel="noopener noreferrer">공식 신청 페이지로 이동</a>`:''}<button class="btn f1" data-a="approve">승인하고 저장</button></div>`;},
 
 profile:()=>{const d=S.draft||(S.draft={name:'',sido:'',job_code:'',school_code:'',...(S.profile||{})});
  if(d.job_pick===undefined)d.job_pick=d.job_code||((d.groups||[]).includes('대학(원)생')?'student':'');

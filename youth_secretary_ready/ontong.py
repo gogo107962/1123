@@ -216,11 +216,19 @@ def source_check(external_id, sha256):
             'notice':'공식 원문의 표시된 항목만 대조했습니다. 전체 자격 검수나 정책 승인이 아닙니다.'}
 
 
-def supplements(external_id):
-    """수집 자료의 빈 항목을 공식 페이지에서 찾아 따로 적어 둔 보완 기록. 수집 원문은 바꾸지 않는다."""
-    path=BASE/'data'/'supplements.json'
+def all_supplements():
+    """공식 페이지에서 찾아 따로 적어 둔 보완 기록 전체. 수집 원문은 바꾸지 않는다.
+    tools/verify_supplements.py 가 출처 페이지에서 인용 문장을 다시 찾아본 결과(auto_check)를 함께 붙인다:
+    found(문장이 그대로 있음) / partly / not_found / unreachable. 대조 기록에 없는 항목은 unchecked 다."""
+    path,checks=BASE/'data'/'supplements.json',BASE/'data'/'supplement_checks.json'
     rows=json.loads(path.read_text(encoding='utf-8')) if path.exists() else []
-    return [x for x in rows if x['external_id']==external_id]
+    if not checks.exists():return rows
+    seen={(c['external_id'],c['field'],c['quotes'][0]['sha1']):c['state'] for c in json.loads(checks.read_text(encoding='utf-8'))['items']}
+    return [{**x,'auto_check':seen.get((x['external_id'],x['field'],hashlib.sha1(x['quotes'][0].encode()).hexdigest()[:10]),'unchecked')} for x in rows]
+
+
+def supplements(external_id):
+    return [x for x in all_supplements() if x['external_id']==external_id]
 
 
 def search_candidates(query='',category='',quality='',page=1,page_size=20,application_code='',job_code='',income_code=''):

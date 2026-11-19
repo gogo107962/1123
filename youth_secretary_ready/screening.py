@@ -110,9 +110,15 @@ def validate_profile(profile):
         raise ValueError('sido와 region_code가 서로 다릅니다.')
 
 
+def confirmed(note):
+    """출처 페이지에서 인용 문장이 자동 대조로 확인된 보완 기록인가. 대조 결과가 붙지 않은 기록(시험용 등)은 그대로 쓴다.
+    확인되지 않은 기록은 '맞아요/달라요'를 만드는 데 쓰지 않고 '확인 필요'로만 작용한다."""
+    return note.get('auto_check', 'found') == 'found'
+
+
 def age_rule(supplements):
-    """공식 페이지에서 찾아 문장과 함께 적어 둔 나이 규칙(사람 검수 전). 없으면 None."""
-    return next(({**r, 'quote': x['quotes'][0]} for x in supplements for r in x.get('rules', []) if r['predicate'].get('fact') == 'age'), None)
+    """공식 페이지에서 찾아 문장과 함께 적어 둔 나이 규칙(사람 검수 전). 문장이 출처에서 확인된 것만. 없으면 None."""
+    return next(({**r, 'quote': x['quotes'][0]} for x in supplements if confirmed(x) for r in x.get('rules', []) if r['predicate'].get('fact') == 'age'), None)
 
 
 def _age(item, value, rule=None):
@@ -331,11 +337,11 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
         rows[3] = ('income', 'unknown', f'API는 소득 무관으로 적혀 있지만 공식 페이지에 소득 조건이 있습니다(사람 검수 전): “{said}”')
     official = next((x['quotes'][0] for x in notes if x['field'] == 'period'), None)
     # 신청 시기 인용들에서 기간이 꼭 하나로 읽힐 때만 쓴다(여러 회차·행사일이 섞이면 쓰지 않는다).
-    spans = {w for x in notes if x['field'] == 'period' for q in x['quotes']
+    spans = {w for x in notes if x['field'] == 'period' and confirmed(x) for q in x['quotes']
              for w in [official_window(q, int(x['checked_on'][:4]) if x.get('checked_on') else None)] if w} if on else set()
     window = next(iter(spans)) if len(spans) == 1 else None
     if window:
-        official = next(q for x in notes if x['field'] == 'period' for q in x['quotes']
+        official = next(q for x in notes if x['field'] == 'period' and confirmed(x) for q in x['quotes']
                         if official_window(q, int(x['checked_on'][:4]) if x.get('checked_on') else None) == window)
     if window and window[0] <= on <= window[1]:
         rows[0] = (rows[0][0], rows[0][1], rows[0][2] + f' 공식 페이지에도 신청 시기가 “{official}”로 적혀 있습니다(사람 검수 전).')
@@ -418,8 +424,9 @@ def screen_catalog(profile, on, query='', outcome='', only_tier='', page=1, page
     # 대조 기록 파일은 한 번만 읽는다(정책마다 다시 읽으면 수천 번 파일을 연다).
     path = BASE / 'data' / 'source_checks.json'
     checks = {x['external_id']: x for x in (json.loads(path.read_text(encoding='utf-8')) if path.exists() else [])}
-    notes_path, notes = BASE / 'data' / 'supplements.json', {}
-    for x in (json.loads(notes_path.read_text(encoding='utf-8')) if notes_path.exists() else []):
+    from ontong import all_supplements
+    notes = {}
+    for x in all_supplements():
         notes.setdefault(x['external_id'], []).append(x)
     needle = query.strip().lower()
     words = [w for w in keywords if w]

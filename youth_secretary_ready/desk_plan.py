@@ -9,7 +9,7 @@ import re
 from datetime import date
 from fastapi import HTTPException
 from policy_structure import DOC_KIND, DOCS, EXCLUDE, RANK, period_status, structure, timing
-from screening import NOTICE, age_rule, provided, screen
+from screening import NOTICE, age_rule, confirmed, provided, screen
 
 SIMILAR = re.compile(r'유사|동일|중복|타\s*(지자체|기관|시군|시·군|자치구)')
 TOPICS = ('응시료', '월세', '수당', '대출', '계좌', '교통', '장학', '인턴')
@@ -55,7 +55,7 @@ def build(wid, external_ids, profile, on):
         docs = item['documents']
         text, source = (fields.get('sbmsnDcmntCn', '').strip() if docs['has_text'] else ''), 'api'
         if not text:  # API가 비어 있으면 공식 페이지에서 확인해 둔 서류 안내를 쓴다(사람 검수 전).
-            found_docs = [x for x in bundle['supplements'] if x['field'] == 'documents']
+            found_docs = [x for x in bundle['supplements'] if x['field'] == 'documents' and confirmed(x)]   # 출처에서 문장이 확인된 것만
             if found_docs:
                 text, source = ' '.join(found_docs[0]['quotes']), 'web_check'
         if not text:

@@ -1335,3 +1335,32 @@ def test_detail_bundle_carries_the_same_period_label_as_the_list(ctx):
     assert label and label == post(ctx, {}).json()['items'][0]['period_label'].replace('D-13', label.split(' ')[0])   # 기준일만 다르다(오늘 / 2026-11-17)
     assert ctx.get('/api/integrations/ontong/candidates/PL1').json()['period_label'].endswith(('(API 마감일)', '지남', '시작(API)'))
 
+
+# ── v0.29: 출처에서 문장이 확인된 보완 기록만 '맞아요/달라요'에 쓴다 ─────────────────────
+def test_unconfirmed_official_notes_only_make_results_more_cautious(ctx, tmp_path, monkeypatch):
+    from screening import age_rule, confirmed
+    rule = {'id': 'age', 'type': 'required', 'predicate': {'fact': 'age', 'op': 'between', 'value': [19, 24]}, 'message': 'm'}
+    note = lambda state, field='conditions', quote='만 19세 ~ 24세 청년', **more: {'field': field, 'quotes': [quote], 'checked_on': '2026-11-18', **({'auto_check': state} if state else {}), **more}
+    assert [confirmed(note(s)) for s in ('found', 'partly', 'not_found', 'unreachable', 'unchecked', None)] == [True, False, False, False, False, True]
+    assert age_rule([note('found', rules=[rule])])['predicate']['value'] == [19, 24] and age_rule([note('not_found', rules=[rule])]) is None
+    item = made()                                                     # API 나이 19~34세
+    age = lambda state, value: screen(item, {'age': value}, 'open', age_rule([note(state, rules=[rule])]), [note(state, rules=[rule])])['criteria'][1]['result']
+    assert [age('found', a) for a in (22, 30)] == ['match', 'mismatch']            # 확인된 문장: 공식 기준으로 판단
+    assert [age('not_found', a) for a in (22, 30)] == ['unknown', 'unknown']       # 확인 안 된 문장: 어느 쪽으로도 단정하지 않는다
+    period = lambda state: screen(item, PROFILE, 'open', None, [note(state, 'period', '신청기간 : 2026. 11. 1. ~ 11. 30.')], date(2026, 11, 18))['criteria'][0]['result']
+    assert (period('found'), period('not_found')) == ('match', 'unknown')
+    # 실제 파일을 읽는 길: 대조 기록이 있으면 auto_check 가 붙고, 없는 항목은 unchecked 다
+    import hashlib
+    quote = '신청서와 주민등록초본을 제출'
+    (tmp_path / 'data').mkdir()
+    (tmp_path / 'data/supplements.json').write_text(json.dumps([
+        {'external_id': 'AC1', 'field': 'documents', 'quotes': [quote], 'value': 'v', 'source_url': 'https://example.go.kr/a', 'source_title': 't'},
+        {'external_id': 'AC1', 'field': 'method', 'quotes': ['온라인 신청'], 'value': 'v', 'source_url': 'https://example.go.kr/a', 'source_title': 't'}], ensure_ascii=False), encoding='utf-8')
+    (tmp_path / 'data/supplement_checks.json').write_text(json.dumps({'items': [
+        {'external_id': 'AC1', 'field': 'documents', 'state': 'not_found', 'quotes': [{'sha1': hashlib.sha1(quote.encode()).hexdigest()[:10], 'found': False}]}]}), encoding='utf-8')
+    monkeypatch.setattr(ontong, 'BASE', tmp_path)
+    assert [x['auto_check'] for x in ontong.supplements('AC1')] == ['not_found', 'unchecked']
+    seed([good('AC1', sbmsnDcmntCn='')])
+    plan = plan_of(ctx, ['AC1'])[1].json()
+    assert plan['documents'] == [] and plan['documents_unlisted'] == ['AC1']      # 확인 안 된 서류 문장으로 서류 목록을 만들지 않는다
+

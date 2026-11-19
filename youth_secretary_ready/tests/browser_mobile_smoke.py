@@ -84,18 +84,38 @@ with sync_playwright() as p:
     page.reload(wait_until='networkidle')
     expect(page.locator('.greeting')).to_contain_text('민지 님')
     expect(page.locator('main')).to_contain_text('확인한 일')
+    # 홈 '이어서 준비하기'에 저장한 정책의 기간 표시(D-day 등)가 붙는다
+    expect(page.locator('.policy-line .pill')).to_be_visible()
+    assert len(page.locator('.policy-line .pill').inner_text().strip()) >= 2
     page.locator('nav [data-s=plan]').click()
     expect(page.locator('main')).to_contain_text(f'{saved}개 중 1개 완료')
+    # 내 신청 탭: 고른 정책이 없어도 저장한 정책의 필요한 서류·신청 순서를 보여 준다(고르는 중이 아니므로 '빼기'와 점검 버튼은 없다)
+    expect(page.locator('main')).to_contain_text('신청 순서')
+    expect(page.locator('.ord li')).to_have_count(2)
+    assert page.locator('[data-a=unsel]').count() == 0 and page.locator('[data-a=check]').count() == 0
+    assert page.evaluate(FITS)
 
     # 공식 페이지에서 보완한 정보(사람 검수 전) 표시
     page.evaluate("openDetail('20261106005400214758')")
     expect(page.locator('main')).to_contain_text('공식 페이지에서 보완한 정보')
     expect(page.locator('main')).to_contain_text('사람 검수 전')
+    # 조건 줄은 '지원 조건'으로 나오고, 보완 기록마다 출처에서 문장을 확인했는지 표시가 붙는다
+    expect(page.locator('main')).to_contain_text('지원 조건:')
+    assert page.locator('details.more .pill').filter(has_text='출처에서 문장 확인').count() + page.locator('details.more .pill').filter(has_text='자동 대조 안 됨').count() >= 1
     page.locator('[data-a=back]').click()
 
     # 내 정보 지우기 → 시작 화면
     page.locator('nav [data-s=profile]').click()
     expect(page.locator('#birth')).to_have_value('2000-03')
+    expect(page.locator('main')).to_contain_text('26세')
+    # 소득 구간을 고르고 저장하면 새로고침 뒤에도 남는다
+    page.locator('select[data-k=income_band]').select_option('100')
+    page.locator('[data-a=save]').click()
+    expect(page.locator('#toast')).to_contain_text('저장했어요')
+    page.reload(wait_until='networkidle')
+    page.locator('nav [data-s=profile]').click()
+    expect(page.locator('select[data-k=income_band]')).to_have_value('100')
+    assert page.evaluate("JSON.parse(localStorage.getItem('youth-desk-profile')).income_band") == 100
     page.locator('[data-a=logout]').click()
     expect(page.locator('h1.hero')).to_be_visible()
 

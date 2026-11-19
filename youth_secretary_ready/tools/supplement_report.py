@@ -25,7 +25,10 @@ def load(name):
 
 
 def main(on):
-    notes = load('supplements.json')
+    from ontong import all_supplements
+    notes = all_supplements()          # 출처에서 문장을 다시 찾아본 결과(auto_check)가 붙어 있다
+    checks = load('supplement_checks.json') if (BASE / 'data/supplement_checks.json').exists() else None
+    sure = sum(x.get('auto_check') == 'found' for x in notes)
     con = sqlite3.connect(f'file:{(BASE / "data/youth_secretary.sqlite3").as_posix()}?mode=ro', uri=True)
     rows = {eid: json.loads(p) for eid, p in con.execute('SELECT external_id, payload_json FROM ontong_candidates')}
     by = {}
@@ -47,6 +50,9 @@ def main(on):
            f"| 도시근로자 가구원수별 월평균소득({sido['year_label']}) | 1~8인 가구 | `data/urban_worker_income_2026.json` | '월평균소득 N% 이하' 비교 |",
            f"| 공식 공고와 대조한 접수 상태 | {len(load('source_checks.json'))}건 | `data/source_checks.json` | 공식 종료 표시 |", '',
            '항목별 건수: ' + ' · '.join(f'{FIELD[k]} {v}' for k, v in fields.most_common()),
+           '', (f"**자동 대조({checks['checked_on']})**: 출처 주소 {sum(checks['pages'].values())}곳을 다시 열어 인용 문장이 그대로 있는지 확인했다. "
+                f"항목 {len(notes)}개 중 **{sure}개는 문장이 페이지에 그대로 있었고**, {len(notes) - sure}개는 찾지 못했다(첨부파일·스크립트로 그려지는 페이지·열리지 않는 페이지). "
+                "찾지 못한 항목은 화면에 '자동 대조 안 됨'으로 표시하고, '맞아요/달라요'를 정하는 데 쓰지 않는다(`tools/verify_supplements.py`)." if checks else '자동 대조 기록이 없다.'),
            '', '출처 사이트(많은 순): ' + ', '.join(f'{h} {n}' for h, n in sites.most_common(12)) + f' 외 {max(len(sites) - 12, 0)}곳', '',
            '## 2. API와 달랐던 것', '']
     closed, ages = [], []
@@ -56,12 +62,12 @@ def main(on):
             continue
         st = structure(payload)
         status = period_status(st['application'], on)
-        spans = {w for x in items if x['field'] == 'period' for q in x['quotes'] for w in [official_window(q, int(x['checked_on'][:4]))] if w}
+        spans = {w for x in items if x['field'] == 'period' and x.get('auto_check', 'found') == 'found' for q in x['quotes'] for w in [official_window(q, int(x['checked_on'][:4]))] if w}
         if status == 'open' and len(spans) == 1 and on > next(iter(spans))[1]:
             start, end = next(iter(spans))
             closed.append(f"| {payload['plcyNm']} | {timing(st['application'], status, on)[1]} | {start.isoformat()} ~ {end.isoformat()} |")
         for x in items:
-            for rule in x.get('rules', []):
+            for rule in (x.get('rules', []) if x.get('auto_check', 'found') == 'found' else []):
                 low, high = rule['predicate']['value'] if rule['predicate']['op'] == 'between' else (None, None)
                 api = st['age']
                 if low is not None and (api['min'], api['max']) != (low, high):
@@ -73,14 +79,15 @@ def main(on):
             '| 정책 | API 표시 | 공식 페이지의 신청 기간 |', '|---|---|---|', *closed, '',
             f'### 2-2. 공식 페이지의 나이 기준이 API와 다른 정책 ({len(ages)}건)', '',
             '| 정책 | API 나이 | 공식 페이지 | 근거 문장(앞부분) |', '|---|---|---|---|', *ages, '',
-            '## 3. 정책별로 채운 항목', '', '| 정책 | 주관기관 | 채운 항목 | 나이 규칙 | 출처 |', '|---|---|---|---|---|']
+            '## 3. 정책별로 채운 항목', '', '| 정책 | 주관기관 | 채운 항목 | 나이 규칙 | 문장 확인 | 출처 |', '|---|---|---|---|---|---|']
     for eid, items in sorted(by.items(), key=lambda kv: rows.get(kv[0], {}).get('plcyNm', '')):
         payload = rows.get(eid, {})
         got = ' · '.join(FIELD[k] for k in FIELD if any(x['field'] == k for x in items))
         rule = next((r['predicate'] for x in items for r in x.get('rules', [])), None)
         age = '' if not rule else f"{rule['value'][0]}~{rule['value'][1]}세" if rule['op'] == 'between' else f"{rule['value']}세 {'이하' if rule['op'] == 'lte' else '이상'}"
         hosts = ', '.join(sorted({urlsplit(x['source_url']).hostname for x in items}))
-        out.append(f"| {payload.get('plcyNm', eid)} | {(payload.get('sprvsnInstCdNm') or '')[:18]} | {got} | {age} | {hosts} |")
+        seen = f"{sum(x.get('auto_check') == 'found' for x in items)} / {len(items)}"
+        out.append(f"| {payload.get('plcyNm', eid)} | {(payload.get('sprvsnInstCdNm') or '')[:18]} | {got} | {age} | {seen} | {hosts} |")
     out += ['', '## 4. 한계', '',
             '- 조회 도구가 연 페이지의 문장을 옮긴 것이다. 첨부파일(hwp·pdf) 안에만 있는 서류 목록은 대부분 들어 있지 않다.',
             '- 정책과 페이지의 연결이 추정인 것, 이미지에서 눈으로 읽은 문장, 지역 포털의 등록 정보(API와 같은 성격)는 넣지 않았다.',

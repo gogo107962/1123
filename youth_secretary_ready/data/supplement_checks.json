@@ -1,0 +1,3977 @@
+{
+ "checked_on": "2026-11-19",
+ "method": "출처 주소를 열어 글자만 남긴 뒤, 인용 문장이 띄어쓰기를 무시하고 그대로 있는지 확인(자동). 사람 검수 아님.",
+ "pages": {
+  "opened": 85,
+  "unreachable": 1
+ },
+ "entries": {
+  "found": 174,
+  "unreachable": 1,
+  "not_found": 20,
+  "partly": 4
+ },
+ "quotes": {
+  "found": 442,
+  "unreachable": 4,
+  "not_found": 119
+ },
+ "items": [
+  {
+   "external_id": "20261106005400214758",
+   "field": "documents",
+   "source_url": "https://www.cheongju.go.kr/www/contents.do?key=24112",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "ce72d89d9f",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261106005400214758",
+   "field": "method",
+   "source_url": "https://www.cheongju.go.kr/www/contents.do?key=24112",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "157a99d36a",
+     "found": true
+    },
+    {
+     "sha1": "a070b39533",
+     "found": true
+    },
+    {
+     "sha1": "a0e206ecde",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261106005400214758",
+   "field": "conditions",
+   "source_url": "https://www.cheongju.go.kr/www/contents.do?key=24112",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "de89ae3805",
+     "found": true
+    },
+    {
+     "sha1": "a60928ddb8",
+     "found": true
+    },
+    {
+     "sha1": "6152cbb47d",
+     "found": true
+    },
+    {
+     "sha1": "1992b49425",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260724005400213300",
+   "field": "method",
+   "source_url": "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=467",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "083e7ede40",
+     "found": true
+    },
+    {
+     "sha1": "321c6f1d9f",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260922005400113545",
+   "field": "period",
+   "source_url": "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020701.jsp",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "3db70721fb",
+     "found": true
+    },
+    {
+     "sha1": "4b15b8c398",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20240109005400100005",
+   "field": "period",
+   "source_url": "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020701.jsp",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "3db70721fb",
+     "found": true
+    },
+    {
+     "sha1": "4b15b8c398",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20240109005400100003",
+   "field": "period",
+   "source_url": "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020201.jsp",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "69e3e97278",
+     "found": true
+    },
+    {
+     "sha1": "d104b03c65",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261021005400214222",
+   "field": "documents",
+   "source_url": "https://1in.seoul.go.kr/front/sport/sportView.do?sport_id=a97db018d11c44af845fd028fde7104c",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "1d5e918421",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261021005400214222",
+   "field": "conditions",
+   "source_url": "https://1in.seoul.go.kr/front/sport/sportView.do?sport_id=a97db018d11c44af845fd028fde7104c",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "f9f2edb96f",
+     "found": true
+    },
+    {
+     "sha1": "052339e178",
+     "found": true
+    },
+    {
+     "sha1": "30d334d642",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261018005400213991",
+   "field": "conditions",
+   "source_url": "https://youth.seoul.go.kr/content.do?key=2310100012",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "3a73dc1a4d",
+     "found": true
+    },
+    {
+     "sha1": "852c20c09e",
+     "found": true
+    },
+    {
+     "sha1": "b70ed5acf1",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260527005400113224",
+   "field": "conditions",
+   "source_url": "https://hrdc.hrdkorea.or.kr/hrdc/193642",
+   "state": "unreachable",
+   "quotes": [
+    {
+     "sha1": "7a5f292180",
+     "found": null
+    },
+    {
+     "sha1": "a97afd9afe",
+     "found": null
+    },
+    {
+     "sha1": "e8c9899760",
+     "found": null
+    },
+    {
+     "sha1": "90a73e5f53",
+     "found": null
+    }
+   ]
+  },
+  {
+   "external_id": "20260710005400113257",
+   "field": "conditions",
+   "source_url": "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/161300000104",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "f78c706ff8",
+     "found": true
+    },
+    {
+     "sha1": "b34bb6c5fb",
+     "found": true
+    },
+    {
+     "sha1": "e9938ad467",
+     "found": true
+    },
+    {
+     "sha1": "a45b6cffd3",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260527005400113223",
+   "field": "conditions",
+   "source_url": "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/161300000103",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "6eb47d4238",
+     "found": true
+    },
+    {
+     "sha1": "e5ba25d986",
+     "found": true
+    },
+    {
+     "sha1": "ba3fa0ef81",
+     "found": true
+    },
+    {
+     "sha1": "d117558c91",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260922005400113546",
+   "field": "conditions",
+   "source_url": "https://nhuf.molit.go.kr/FP/FP05/FP0503/FP05030901.jsp",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "6d1844f062",
+     "found": true
+    },
+    {
+     "sha1": "3b9c103a50",
+     "found": true
+    },
+    {
+     "sha1": "3819cfb56f",
+     "found": true
+    },
+    {
+     "sha1": "a59c96c73b",
+     "found": true
+    },
+    {
+     "sha1": "7d1f0c9bc6",
+     "found": true
+    },
+    {
+     "sha1": "649becd795",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20250514005400110811",
+   "field": "conditions",
+   "source_url": "https://nhuf.molit.go.kr/FP/FP05/FP0503/FP05030901.jsp",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "6d1844f062",
+     "found": true
+    },
+    {
+     "sha1": "3b9c103a50",
+     "found": true
+    },
+    {
+     "sha1": "3819cfb56f",
+     "found": true
+    },
+    {
+     "sha1": "a59c96c73b",
+     "found": true
+    },
+    {
+     "sha1": "7d1f0c9bc6",
+     "found": true
+    },
+    {
+     "sha1": "649becd795",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20240109005400100003",
+   "field": "conditions",
+   "source_url": "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020201.jsp",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "4e89371b97",
+     "found": true
+    },
+    {
+     "sha1": "c020777f8e",
+     "found": true
+    },
+    {
+     "sha1": "730f748d75",
+     "found": true
+    },
+    {
+     "sha1": "b597d2cbc4",
+     "found": true
+    },
+    {
+     "sha1": "3da6ef0f0a",
+     "found": true
+    },
+    {
+     "sha1": "a291dbdafb",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260422005400212862",
+   "field": "documents",
+   "source_url": "https://seogwipo.go.kr/group/selfgoverning/planning/application/intro.htm",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "64210886f8",
+     "found": true
+    },
+    {
+     "sha1": "2f04fb6a90",
+     "found": true
+    },
+    {
+     "sha1": "e8186c2f0a",
+     "found": true
+    },
+    {
+     "sha1": "2344adf765",
+     "found": true
+    },
+    {
+     "sha1": "5edfed2926",
+     "found": true
+    },
+    {
+     "sha1": "6e198ff68e",
+     "found": true
+    },
+    {
+     "sha1": "fe2668108b",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260422005400212862",
+   "field": "method",
+   "source_url": "https://seogwipo.go.kr/group/selfgoverning/planning/application/intro.htm",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "ad3c1789ec",
+     "found": true
+    },
+    {
+     "sha1": "67d030f8c9",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260422005400212862",
+   "field": "period",
+   "source_url": "https://seogwipo.go.kr/group/selfgoverning/planning/application/intro.htm",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "565e896644",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260422005400212862",
+   "field": "conditions",
+   "source_url": "https://seogwipo.go.kr/group/selfgoverning/planning/application/intro.htm",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "67864ef6da",
+     "found": true
+    },
+    {
+     "sha1": "3b273ec682",
+     "found": true
+    },
+    {
+     "sha1": "79ac26c92c",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261023005400214282",
+   "field": "conditions",
+   "source_url": "https://news.seoul.go.kr/welfare/archives/577327",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "4c14b8c2c2",
+     "found": true
+    },
+    {
+     "sha1": "598b942fec",
+     "found": true
+    },
+    {
+     "sha1": "1a9e1f5206",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261023005400214282",
+   "field": "method",
+   "source_url": "https://news.seoul.go.kr/welfare/archives/577327",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "1a5b2f9ebf",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261021005400214202",
+   "field": "conditions",
+   "source_url": "https://youth.seoul.go.kr/youthConts.do?key=2310100072&sc_pbancSeCd=102&sc_bbsStngSn=2310160002&sc_bbsCtgrySn=0&sc_qnaCtgryCd=001&sc_faqCtgryCd=015",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "850f8ee896",
+     "found": true
+    },
+    {
+     "sha1": "5b3412865b",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261021005400214202",
+   "field": "period",
+   "source_url": "https://youth.seoul.go.kr/youthConts.do?key=2310100072&sc_pbancSeCd=102&sc_bbsStngSn=2310160002&sc_bbsCtgrySn=0&sc_qnaCtgryCd=001&sc_faqCtgryCd=015",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "fb19727f60",
+     "found": true
+    },
+    {
+     "sha1": "f496794adf",
+     "found": true
+    },
+    {
+     "sha1": "d8a2a3cf4a",
+     "found": true
+    },
+    {
+     "sha1": "1342ec6dfb",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261021005400214202",
+   "field": "method",
+   "source_url": "https://youth.seoul.go.kr/youthConts.do?key=2310100072&sc_pbancSeCd=102&sc_bbsStngSn=2310160002&sc_bbsCtgrySn=0&sc_qnaCtgryCd=001&sc_faqCtgryCd=015",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "fb19727f60",
+     "found": true
+    },
+    {
+     "sha1": "2f0cddf904",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261010005400113931",
+   "field": "conditions",
+   "source_url": "https://www.worklife.kr/website_renew/index/employerSupport/industrial_complex_support.asp",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "6b02c76345",
+     "found": true
+    },
+    {
+     "sha1": "0da22d31f4",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260812005400213331",
+   "field": "documents",
+   "source_url": "https://nysc.or.kr/nysc/pages/notice_view.php?id=270",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "18c4133cc9",
+     "found": true
+    },
+    {
+     "sha1": "f46f2e760c",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260812005400213331",
+   "field": "method",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?policyId=1423",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "987ab401dc",
+     "found": true
+    },
+    {
+     "sha1": "efc105b154",
+     "found": true
+    },
+    {
+     "sha1": "2aba2e4dd1",
+     "found": true
+    },
+    {
+     "sha1": "27f797615d",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260812005400213331",
+   "field": "period",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?policyId=1423",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "115115d048",
+     "found": true
+    },
+    {
+     "sha1": "89034451ba",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260812005400213331",
+   "field": "conditions",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?policyId=1423",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "3865fac1f6",
+     "found": true
+    },
+    {
+     "sha1": "8d97474f49",
+     "found": true
+    },
+    {
+     "sha1": "2165f9cabb",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260714005400113258",
+   "field": "method",
+   "source_url": "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?currentPageNo=1&recordCountPerPage=10&systId=SI00000512&systClId=SC00000391",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "a1fe237c3b",
+     "found": true
+    },
+    {
+     "sha1": "dff77de418",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260714005400113258",
+   "field": "conditions",
+   "source_url": "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?currentPageNo=1&recordCountPerPage=10&systId=SI00000512&systClId=SC00000391",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "6ea2d744fa",
+     "found": true
+    },
+    {
+     "sha1": "fd1cfb4995",
+     "found": true
+    },
+    {
+     "sha1": "068993d73e",
+     "found": true
+    },
+    {
+     "sha1": "e43fd11a02",
+     "found": true
+    },
+    {
+     "sha1": "9eb37688b6",
+     "found": true
+    },
+    {
+     "sha1": "9c3b5c321b",
+     "found": true
+    },
+    {
+     "sha1": "4afc678d55",
+     "found": true
+    },
+    {
+     "sha1": "4a774d52ff",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212572",
+   "field": "documents",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?policyId=1319",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "7cafc18dd9",
+     "found": true
+    },
+    {
+     "sha1": "73fb506249",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212572",
+   "field": "method",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?policyId=1319",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "a0fa277ffe",
+     "found": true
+    },
+    {
+     "sha1": "fb65b89a63",
+     "found": true
+    },
+    {
+     "sha1": "02711ac549",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212572",
+   "field": "period",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?policyId=1319",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "47bf586093",
+     "found": true
+    },
+    {
+     "sha1": "bf9a528f2b",
+     "found": true
+    },
+    {
+     "sha1": "ababee1195",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212572",
+   "field": "conditions",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?policyId=1319",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "bc2b235124",
+     "found": true
+    },
+    {
+     "sha1": "344ac626df",
+     "found": true
+    },
+    {
+     "sha1": "cfbf32c31c",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212557",
+   "field": "documents",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?policyId=1338",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "7cafc18dd9",
+     "found": true
+    },
+    {
+     "sha1": "4e66b3fe74",
+     "found": true
+    },
+    {
+     "sha1": "2909b3ebc9",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212557",
+   "field": "method",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?policyId=1338",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "3355bf6f31",
+     "found": true
+    },
+    {
+     "sha1": "d05d474ae5",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212557",
+   "field": "period",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?policyId=1338",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "d823443c19",
+     "found": true
+    },
+    {
+     "sha1": "f727ed1d09",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212557",
+   "field": "conditions",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?policyId=1338",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "f878f1812c",
+     "found": true
+    },
+    {
+     "sha1": "ec8ea7370a",
+     "found": true
+    },
+    {
+     "sha1": "0e5c2da193",
+     "found": true
+    },
+    {
+     "sha1": "ca30d55aff",
+     "found": true
+    },
+    {
+     "sha1": "9ac1dc3c60",
+     "found": true
+    },
+    {
+     "sha1": "537593cc26",
+     "found": true
+    },
+    {
+     "sha1": "ccb7bae343",
+     "found": true
+    },
+    {
+     "sha1": "8198ce58c8",
+     "found": true
+    },
+    {
+     "sha1": "a6fabade9a",
+     "found": true
+    },
+    {
+     "sha1": "f6d74fded8",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260402005400212384",
+   "field": "method",
+   "source_url": "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56057",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "e52baf4640",
+     "found": true
+    },
+    {
+     "sha1": "fc4fc49ce3",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260402005400212384",
+   "field": "conditions",
+   "source_url": "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56057",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "a97c70c302",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260325005400212279",
+   "field": "method",
+   "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/board/post/view.do?mid=0401010000&bcIdx=41&idx=361596",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "d5d3305580",
+     "found": true
+    },
+    {
+     "sha1": "0024f359cf",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260325005400212279",
+   "field": "period",
+   "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/board/post/view.do?mid=0401010000&bcIdx=41&idx=361596",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "892cac20f7",
+     "found": true
+    },
+    {
+     "sha1": "c70ded71ca",
+     "found": true
+    },
+    {
+     "sha1": "0b10a35208",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260325005400212279",
+   "field": "conditions",
+   "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/board/post/view.do?mid=0401010000&bcIdx=41&idx=361596",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "7970fc580d",
+     "found": true
+    },
+    {
+     "sha1": "c35221d782",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261001005400213785",
+   "field": "method",
+   "source_url": "https://www.jobaram.com/fair_2026",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "94051ff6ab",
+     "found": true
+    },
+    {
+     "sha1": "9d9a1dede3",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261001005400213785",
+   "field": "period",
+   "source_url": "https://www.jobaram.com/fair_2026",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "13fac60ae9",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261001005400213785",
+   "field": "conditions",
+   "source_url": "https://www.jobaram.com/fair_2026",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "c70a14805a",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261022005400214253",
+   "field": "conditions",
+   "source_url": "https://www.yeosu.go.kr/www/govt/news/notify/new_notify?idx=81107&mode=view",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "61026bc3e1",
+     "found": true
+    },
+    {
+     "sha1": "114dc7c88b",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261022005400214253",
+   "field": "period",
+   "source_url": "https://www.yeosu.go.kr/www/govt/news/notify/new_notify?idx=80418&mode=view",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "e81440312c",
+     "found": true
+    },
+    {
+     "sha1": "de26892710",
+     "found": true
+    },
+    {
+     "sha1": "967731879a",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261022005400214253",
+   "field": "method",
+   "source_url": "https://www.yeosu.go.kr/www/govt/news/notify/new_notify?idx=81107&mode=view",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "4886062ced",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261021005400214201",
+   "field": "documents",
+   "source_url": "https://youth.seoul.go.kr/youthConts.do?key=2310100075&sc_detailAt=&pageIndex=1&orderBy=regYmd+desc&tabKind=201&sc_pbancSe=&sc_pbancSeCd=001&sc_bbsStngSn=2212200001&sc_bbsCtgrySn=2310200002&sc_pstSn=2602030001&sc_userId=&sc_ntcPstYn=&sc_delYn=&sc_ctgry=&useYn=&sc_faqCtgryCd=007&sc_qnaCtgryCd=&sc_plcyQnaSn=0&pstSn=&recordCountPerPage=10&sc_wDateS=&sc_wDateE=&sc=&sw=",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "e631356936",
+     "found": true
+    },
+    {
+     "sha1": "93da624e55",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261021005400214201",
+   "field": "period",
+   "source_url": "https://news.seoul.go.kr/gov/archives/574771",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "1d41014001",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261021005400214201",
+   "field": "conditions",
+   "source_url": "https://news.seoul.go.kr/gov/archives/574771",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "1d41014001",
+     "found": true
+    },
+    {
+     "sha1": "3e30e609aa",
+     "found": true
+    },
+    {
+     "sha1": "8ee0e15473",
+     "found": true
+    },
+    {
+     "sha1": "e120a85ef1",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260930005400213706",
+   "field": "conditions",
+   "source_url": "https://www.yeoju.go.kr/www/previewBbsFile.do?key=409&bbsNo=44&atchmnflNo=101919",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "c515300247",
+     "found": false
+    },
+    {
+     "sha1": "e1fcb6abba",
+     "found": false
+    },
+    {
+     "sha1": "49360256a9",
+     "found": false
+    },
+    {
+     "sha1": "45a590bce1",
+     "found": false
+    },
+    {
+     "sha1": "bd03fa5b0b",
+     "found": false
+    },
+    {
+     "sha1": "406ed67e6e",
+     "found": false
+    },
+    {
+     "sha1": "b4527cc071",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260930005400213706",
+   "field": "conditions",
+   "source_url": "https://www.yeoju.go.kr/www/selectBbsNttView.do?key=409&bbsNo=44&nttNo=92166&searchCtgry=&searchCnd=SJ&searchKrwd=%eb%b3%b4%ec%a6%9d%ea%b8%88&integrDeptCode=&pageIndex=1",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "d7fd1ceaf6",
+     "found": true
+    },
+    {
+     "sha1": "d7af01797e",
+     "found": true
+    },
+    {
+     "sha1": "6654f90912",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260930005400213706",
+   "field": "period",
+   "source_url": "https://www.yeoju.go.kr/www/selectBbsNttView.do?key=409&bbsNo=44&nttNo=92166&searchCtgry=&searchCnd=SJ&searchKrwd=%eb%b3%b4%ec%a6%9d%ea%b8%88&integrDeptCode=&pageIndex=1",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "1705410f98",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260504005400113123",
+   "field": "conditions",
+   "source_url": "https://thehyuil.co.kr/programs/chungnam-buyeo/275",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "09bd31f530",
+     "found": true
+    },
+    {
+     "sha1": "da34e548a7",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260421005400212824",
+   "field": "documents",
+   "source_url": "https://www.seogwipo.go.kr/info/news/notice.htm?qType=title&q=%EC%84%9C%EA%B7%80%ED%8F%AC%EC%8B%9C+%EC%B2%AD%EB%85%84+%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0&act=view&seq=154300591",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "1ed67f375a",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260421005400212824",
+   "field": "method",
+   "source_url": "https://www.seogwipo.go.kr/info/news/notice.htm?qType=title&q=%EC%84%9C%EA%B7%80%ED%8F%AC%EC%8B%9C+%EC%B2%AD%EB%85%84+%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0&act=view&seq=154300591",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "d341a2b4b4",
+     "found": true
+    },
+    {
+     "sha1": "b5a583d07a",
+     "found": true
+    },
+    {
+     "sha1": "2077dd096d",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260421005400212824",
+   "field": "period",
+   "source_url": "https://www.seogwipo.go.kr/info/news/notice.htm?qType=title&q=%EC%84%9C%EA%B7%80%ED%8F%AC%EC%8B%9C+%EC%B2%AD%EB%85%84+%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0&act=view&seq=154300591",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "0939c16d19",
+     "found": true
+    },
+    {
+     "sha1": "879046185a",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260421005400212824",
+   "field": "conditions",
+   "source_url": "https://www.seogwipo.go.kr/info/news/notice.htm?qType=title&q=%EC%84%9C%EA%B7%80%ED%8F%AC%EC%8B%9C+%EC%B2%AD%EB%85%84+%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0&act=view&seq=154300591",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "f1f42bf858",
+     "found": true
+    },
+    {
+     "sha1": "59f039cadc",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212568",
+   "field": "documents",
+   "source_url": "https://gjdgit.kr/program/detail/60",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "fac24608d8",
+     "found": false
+    },
+    {
+     "sha1": "3f795e85ac",
+     "found": false
+    },
+    {
+     "sha1": "26be913be8",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212568",
+   "field": "period",
+   "source_url": "https://gjdgit.kr/program/detail/60",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "b78473b89d",
+     "found": false
+    },
+    {
+     "sha1": "5b4582233f",
+     "found": false
+    },
+    {
+     "sha1": "bda1c7464b",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212568",
+   "field": "conditions",
+   "source_url": "https://gjdgit.kr/program/detail/60",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "e8dcbd4ead",
+     "found": false
+    },
+    {
+     "sha1": "6032eb6232",
+     "found": false
+    },
+    {
+     "sha1": "5ff79e688a",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212542",
+   "field": "period",
+   "source_url": "https://uipa.or.kr/webuser/business/view.html?bd_id=23722",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "904df70576",
+     "found": true
+    },
+    {
+     "sha1": "cafdc61bbf",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260331005400212355",
+   "field": "documents",
+   "source_url": "https://www.goryeong.go.kr/front/viewFile.do?IDX_FI=194218&BRD_ID=1023",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "ab15f7f690",
+     "found": false
+    },
+    {
+     "sha1": "895cafc0a3",
+     "found": false
+    },
+    {
+     "sha1": "e29e99fcd1",
+     "found": false
+    },
+    {
+     "sha1": "c7ed0d7089",
+     "found": false
+    },
+    {
+     "sha1": "713d883445",
+     "found": false
+    },
+    {
+     "sha1": "de170aaac9",
+     "found": false
+    },
+    {
+     "sha1": "a8da68378e",
+     "found": false
+    },
+    {
+     "sha1": "4cab03b429",
+     "found": false
+    },
+    {
+     "sha1": "9c6e9eae2a",
+     "found": false
+    },
+    {
+     "sha1": "417536f5ac",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260331005400212355",
+   "field": "method",
+   "source_url": "https://www.goryeong.go.kr/front/viewFile.do?IDX_FI=194218&BRD_ID=1023",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "b48cd57e58",
+     "found": false
+    },
+    {
+     "sha1": "fd081dbc81",
+     "found": false
+    },
+    {
+     "sha1": "4fcf2beace",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260331005400212355",
+   "field": "period",
+   "source_url": "https://www.goryeong.go.kr/front/viewFile.do?IDX_FI=194218&BRD_ID=1023",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "49121624af",
+     "found": false
+    },
+    {
+     "sha1": "8794cb79f7",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260331005400212355",
+   "field": "conditions",
+   "source_url": "https://www.goryeong.go.kr/front/viewFile.do?IDX_FI=194218&BRD_ID=1023",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "3bc35e001d",
+     "found": false
+    },
+    {
+     "sha1": "062b8b8b60",
+     "found": false
+    },
+    {
+     "sha1": "fef8ee946a",
+     "found": false
+    },
+    {
+     "sha1": "07c56ff768",
+     "found": false
+    },
+    {
+     "sha1": "38729692cd",
+     "found": false
+    },
+    {
+     "sha1": "ad488559b4",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260326005400212291",
+   "field": "documents",
+   "source_url": "https://www.pyeongtaek.go.kr/synap/skin/doc.html?fn=file_000000000418411_8&rs=/synap/BBS/file_000000000418411_8/",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "99c5d35fb5",
+     "found": false
+    },
+    {
+     "sha1": "e36727cfcd",
+     "found": false
+    },
+    {
+     "sha1": "8dffbab1f0",
+     "found": false
+    },
+    {
+     "sha1": "2150223b3f",
+     "found": false
+    },
+    {
+     "sha1": "05622f73f7",
+     "found": false
+    },
+    {
+     "sha1": "b62c829abd",
+     "found": false
+    },
+    {
+     "sha1": "c894b231a1",
+     "found": false
+    },
+    {
+     "sha1": "b4f4fc0a11",
+     "found": false
+    },
+    {
+     "sha1": "6c8b0a0636",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260326005400212291",
+   "field": "method",
+   "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/board/post/view.do?idx=354803&bcIdx=41&mid=0401010000",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "2fb06b3022",
+     "found": true
+    },
+    {
+     "sha1": "938fdd08b7",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260326005400212291",
+   "field": "period",
+   "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/board/post/view.do?idx=354803&bcIdx=41&mid=0401010000",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "8adb76f278",
+     "found": true
+    },
+    {
+     "sha1": "bc10e7925e",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260326005400212291",
+   "field": "conditions",
+   "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/board/post/view.do?idx=354803&bcIdx=41&mid=0401010000",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "a94f24f1cb",
+     "found": true
+    },
+    {
+     "sha1": "256ecfc797",
+     "found": true
+    },
+    {
+     "sha1": "557a72b521",
+     "found": true
+    },
+    {
+     "sha1": "b166d519b2",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260326005400212291",
+   "field": "conditions",
+   "source_url": "https://www.pyeongtaek.go.kr/synap/skin/doc.html?fn=file_000000000418411_8&rs=/synap/BBS/file_000000000418411_8/",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "181352fb56",
+     "found": false
+    },
+    {
+     "sha1": "945a180cb1",
+     "found": false
+    },
+    {
+     "sha1": "08fcc85c79",
+     "found": false
+    },
+    {
+     "sha1": "c25c6442d7",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260325005400212264",
+   "field": "conditions",
+   "source_url": "https://youthforest.iksan.go.kr/board/view.iksan?boardId=BBS_0000015&menuCd=DOM_000000105002001000&paging=ok&startPage=1&dataSid=45005",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "5f0d9ad76e",
+     "found": true
+    },
+    {
+     "sha1": "02c65413fb",
+     "found": true
+    },
+    {
+     "sha1": "cf6ab66fdb",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260325005400212264",
+   "field": "conditions",
+   "source_url": "https://youthforest.iksan.go.kr/index.iksan?menuCd=DOM_000000102003001000",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "3b45db400e",
+     "found": true
+    },
+    {
+     "sha1": "343363111f",
+     "found": true
+    },
+    {
+     "sha1": "053e7e0014",
+     "found": true
+    },
+    {
+     "sha1": "a1d88db0b8",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260325005400212264",
+   "field": "period",
+   "source_url": "https://youthforest.iksan.go.kr/board/view.iksan?boardId=BBS_0000015&menuCd=DOM_000000105002001000&paging=ok&startPage=1&dataSid=45005",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "8211ad87b8",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261104005400214719",
+   "field": "documents",
+   "source_url": "https://www.dgyouth.kr/board/notice.asp?num=2625&pmode=VIEW&board=notice&page=1&s",
+   "state": "partly",
+   "quotes": [
+    {
+     "sha1": "91a08c8840",
+     "found": true
+    },
+    {
+     "sha1": "5f96156b9e",
+     "found": false
+    },
+    {
+     "sha1": "98d6ae0ca5",
+     "found": false
+    },
+    {
+     "sha1": "068bcb3377",
+     "found": false
+    },
+    {
+     "sha1": "6433502f84",
+     "found": false
+    },
+    {
+     "sha1": "4babfe9184",
+     "found": false
+    },
+    {
+     "sha1": "26f013903d",
+     "found": false
+    },
+    {
+     "sha1": "984114b63d",
+     "found": false
+    },
+    {
+     "sha1": "10fe6b93a1",
+     "found": false
+    },
+    {
+     "sha1": "4318012adb",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20261104005400214719",
+   "field": "period",
+   "source_url": "https://www.dgyouth.kr/board/notice.asp?num=2625&pmode=VIEW&board=notice&page=1&s",
+   "state": "partly",
+   "quotes": [
+    {
+     "sha1": "9e05b4e274",
+     "found": false
+    },
+    {
+     "sha1": "6ea18cebfd",
+     "found": true
+    },
+    {
+     "sha1": "8f135fcafa",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261104005400214719",
+   "field": "conditions",
+   "source_url": "https://www.dgyouth.kr/board/notice.asp?num=2625&pmode=VIEW&board=notice&page=1&s",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "0b869d91e3",
+     "found": false
+    },
+    {
+     "sha1": "a8bf429bd8",
+     "found": false
+    },
+    {
+     "sha1": "c1584ce4be",
+     "found": false
+    },
+    {
+     "sha1": "9152947b3b",
+     "found": false
+    },
+    {
+     "sha1": "5b3b57a19e",
+     "found": false
+    },
+    {
+     "sha1": "d3bd777ddb",
+     "found": false
+    },
+    {
+     "sha1": "fd27844b50",
+     "found": false
+    },
+    {
+     "sha1": "b16cc96a79",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20261017005400213978",
+   "field": "conditions",
+   "source_url": "https://www.daejeonyouthportal.kr/content/CT_000000000431/cntPage.do?commonMenuNo=&dpmSectionFst=2&dpmSectionScd=19",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "051e4c76ff",
+     "found": true
+    },
+    {
+     "sha1": "6668e835d3",
+     "found": true
+    },
+    {
+     "sha1": "b073fb0230",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261017005400213978",
+   "field": "period",
+   "source_url": "https://www.daejeonyouthportal.kr/content/CT_000000000431/cntPage.do?commonMenuNo=&dpmSectionFst=2&dpmSectionScd=19",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "aef4cc1ad0",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261004005400113896",
+   "field": "method",
+   "source_url": "https://www.chungbuk.go.kr/young/contents.do?key=5437",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "2ef137d665",
+     "found": true
+    },
+    {
+     "sha1": "bf7ba426e9",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261004005400113896",
+   "field": "period",
+   "source_url": "https://www.chungbuk.go.kr/young/contents.do?key=5437",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "21e9ba2160",
+     "found": true
+    },
+    {
+     "sha1": "d767b5a133",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261004005400113896",
+   "field": "conditions",
+   "source_url": "https://www.chungbuk.go.kr/young/contents.do?key=5437",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "08e9f6697b",
+     "found": true
+    },
+    {
+     "sha1": "0ac3da21f7",
+     "found": true
+    },
+    {
+     "sha1": "b87c10c7a7",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260928005400213607",
+   "field": "documents",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/50?siteId=www&policyId=1473&url=%2Fwww%2Fpolicy%2FgjYgPolicyView",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "8922e0bef9",
+     "found": false
+    },
+    {
+     "sha1": "7f69e944fa",
+     "found": false
+    },
+    {
+     "sha1": "035defae22",
+     "found": false
+    },
+    {
+     "sha1": "afacf94025",
+     "found": false
+    },
+    {
+     "sha1": "accd48f565",
+     "found": false
+    },
+    {
+     "sha1": "5e348a86eb",
+     "found": false
+    },
+    {
+     "sha1": "31046ec91f",
+     "found": false
+    },
+    {
+     "sha1": "3d653d1014",
+     "found": false
+    },
+    {
+     "sha1": "5edc218abd",
+     "found": false
+    },
+    {
+     "sha1": "e9b3868e5e",
+     "found": false
+    },
+    {
+     "sha1": "fd3ed937b3",
+     "found": false
+    },
+    {
+     "sha1": "0d95fc5695",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260928005400213607",
+   "field": "period",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/50?siteId=www&policyId=1473&url=%2Fwww%2Fpolicy%2FgjYgPolicyView",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "69e7932d1a",
+     "found": false
+    },
+    {
+     "sha1": "530a8768e9",
+     "found": false
+    },
+    {
+     "sha1": "9ac74614ec",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260928005400213607",
+   "field": "conditions",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/50?siteId=www&policyId=1473&url=%2Fwww%2Fpolicy%2FgjYgPolicyView",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "8b775fbeae",
+     "found": false
+    },
+    {
+     "sha1": "b1beeae233",
+     "found": false
+    },
+    {
+     "sha1": "4a2854f877",
+     "found": false
+    },
+    {
+     "sha1": "5c33e87fcc",
+     "found": false
+    },
+    {
+     "sha1": "7f464ff1d3",
+     "found": false
+    },
+    {
+     "sha1": "280fd13817",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260728005400213309",
+   "field": "period",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/50?siteId=www&policyId=1411&url=%2Fwww%2Fpolicy%2FgjYgPolicyView",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "aa041be0f2",
+     "found": false
+    },
+    {
+     "sha1": "123e5cd33d",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260504005400213018",
+   "field": "documents",
+   "source_url": "https://www.ch2030youth.kr/bbs/board.php?bo_table=notice&wr_id=606",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "8374c12d6c",
+     "found": true
+    },
+    {
+     "sha1": "815e7b6ab8",
+     "found": true
+    },
+    {
+     "sha1": "129acedae1",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260504005400213018",
+   "field": "period",
+   "source_url": "https://www.ch2030youth.kr/bbs/board.php?bo_table=notice&wr_id=606",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "011eeb09b7",
+     "found": true
+    },
+    {
+     "sha1": "38e1e7982b",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260504005400213018",
+   "field": "conditions",
+   "source_url": "https://www.ch2030youth.kr/bbs/board.php?bo_table=notice&wr_id=606",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "0532cc8036",
+     "found": true
+    },
+    {
+     "sha1": "1f576525d6",
+     "found": true
+    },
+    {
+     "sha1": "fa2e3d8d46",
+     "found": true
+    },
+    {
+     "sha1": "ee640de6a6",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260413005400212711",
+   "field": "documents",
+   "source_url": "https://www.ulsan.go.kr/u/rep/bbs/view.do?bbsId=BBS_0000000000000003&mId=001004001001000000&dataId=179385",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "e912152a0a",
+     "found": false
+    },
+    {
+     "sha1": "916fad2326",
+     "found": false
+    },
+    {
+     "sha1": "227bd09335",
+     "found": false
+    },
+    {
+     "sha1": "6b2e60ebfe",
+     "found": false
+    },
+    {
+     "sha1": "2af05a4508",
+     "found": false
+    },
+    {
+     "sha1": "323ef39704",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260413005400212711",
+   "field": "method",
+   "source_url": "https://www.ulsan.go.kr/u/rep/bbs/view.do?bbsId=BBS_0000000000000003&mId=001004001001000000&dataId=179385",
+   "state": "partly",
+   "quotes": [
+    {
+     "sha1": "d1856ad0e2",
+     "found": true
+    },
+    {
+     "sha1": "1789681e24",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260413005400212711",
+   "field": "period",
+   "source_url": "https://www.ulsan.go.kr/u/rep/bbs/view.do?bbsId=BBS_0000000000000003&mId=001004001001000000&dataId=179385",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "b923a71519",
+     "found": true
+    },
+    {
+     "sha1": "1b2d83f2cc",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260413005400212711",
+   "field": "conditions",
+   "source_url": "https://www.ulsan.go.kr/u/rep/bbs/view.do?bbsId=BBS_0000000000000003&mId=001004001001000000&dataId=179385",
+   "state": "partly",
+   "quotes": [
+    {
+     "sha1": "5a58823cd9",
+     "found": true
+    },
+    {
+     "sha1": "d3fd7813b2",
+     "found": false
+    },
+    {
+     "sha1": "3594110b76",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212560",
+   "field": "documents",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/50?siteId=www&policyId=1335&url=%2Fwww%2Fpolicy%2FgjYgPolicyView",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "a80b362d19",
+     "found": false
+    },
+    {
+     "sha1": "c4a0291ecd",
+     "found": false
+    },
+    {
+     "sha1": "8f94d7f514",
+     "found": false
+    },
+    {
+     "sha1": "56384f64ae",
+     "found": false
+    },
+    {
+     "sha1": "d1e115f5fe",
+     "found": false
+    },
+    {
+     "sha1": "55fedd3a5e",
+     "found": false
+    },
+    {
+     "sha1": "26046090b5",
+     "found": false
+    },
+    {
+     "sha1": "bf8eb990b3",
+     "found": false
+    },
+    {
+     "sha1": "0056b7ee6f",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212560",
+   "field": "period",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/50?siteId=www&policyId=1335&url=%2Fwww%2Fpolicy%2FgjYgPolicyView",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "b3259e064c",
+     "found": false
+    },
+    {
+     "sha1": "0480e473b7",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212560",
+   "field": "conditions",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/50?siteId=www&policyId=1335&url=%2Fwww%2Fpolicy%2FgjYgPolicyView",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "a5cdefd742",
+     "found": false
+    },
+    {
+     "sha1": "96c794a072",
+     "found": false
+    },
+    {
+     "sha1": "4403732147",
+     "found": false
+    },
+    {
+     "sha1": "19f232c3b7",
+     "found": false
+    },
+    {
+     "sha1": "2c76a5e46e",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212534",
+   "field": "documents",
+   "source_url": "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000309&mId=008001002000000000&dataId=56772",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "eeaafec514",
+     "found": true
+    },
+    {
+     "sha1": "465cc08c8c",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212534",
+   "field": "method",
+   "source_url": "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000309&mId=008001002000000000&dataId=56772",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "928f84ddcb",
+     "found": true
+    },
+    {
+     "sha1": "168ec6b07f",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212534",
+   "field": "period",
+   "source_url": "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000309&mId=008001002000000000&dataId=56772",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "f4146ed855",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212534",
+   "field": "conditions",
+   "source_url": "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000309&mId=008001002000000000&dataId=56772",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "35b055aa52",
+     "found": true
+    },
+    {
+     "sha1": "6f9ac2d399",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260326005400212296",
+   "field": "conditions",
+   "source_url": "https://youthforest.iksan.go.kr/index.iksan?menuCd=DOM_000000102003001000",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "3c84472835",
+     "found": true
+    },
+    {
+     "sha1": "ba15abf4b9",
+     "found": true
+    },
+    {
+     "sha1": "b903942931",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260326005400212290",
+   "field": "method",
+   "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/board/post/view.do?idx=362679&bcIdx=41&mid=0401010000",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "d5d3305580",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260326005400212290",
+   "field": "conditions",
+   "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/board/post/view.do?idx=362679&bcIdx=41&mid=0401010000",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "75fc750d58",
+     "found": true
+    },
+    {
+     "sha1": "47d4a174cd",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261102005400214695",
+   "field": "period",
+   "source_url": "https://www.dcoe.or.kr/business/detail/290",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "7f95614dcc",
+     "found": true
+    },
+    {
+     "sha1": "f503043f6e",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261102005400214695",
+   "field": "conditions",
+   "source_url": "https://www.dcoe.or.kr/business/detail/290",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "74e6f9445e",
+     "found": true
+    },
+    {
+     "sha1": "2169fad4ab",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261025005400214398",
+   "field": "period",
+   "source_url": "https://www.arko.or.kr/board/view/4053?cid=1810469",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "b4a88c5651",
+     "found": true
+    },
+    {
+     "sha1": "de41f3e293",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261025005400214398",
+   "field": "conditions",
+   "source_url": "https://www.arko.or.kr/board/view/4053?cid=1810469",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "f60469b202",
+     "found": true
+    },
+    {
+     "sha1": "b45f16c1f4",
+     "found": true
+    },
+    {
+     "sha1": "ed12070f6d",
+     "found": true
+    },
+    {
+     "sha1": "0879133664",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261021005400214210",
+   "field": "conditions",
+   "source_url": "https://wis.seoul.go.kr/was/fmc/FamilyCareInfo.do",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "f31e23e5a9",
+     "found": true
+    },
+    {
+     "sha1": "59d39e61df",
+     "found": true
+    },
+    {
+     "sha1": "8f3fc933a5",
+     "found": true
+    },
+    {
+     "sha1": "f110a91b79",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261016005400213956",
+   "field": "period",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?siteId=www&policyId=1483&url=%2Fwww%2Fpolicy%2FgjYgPolicyView",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "357aca90cb",
+     "found": true
+    },
+    {
+     "sha1": "cd14acfc73",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261016005400213956",
+   "field": "conditions",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?siteId=www&policyId=1483&url=%2Fwww%2Fpolicy%2FgjYgPolicyView",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "9b935fd520",
+     "found": true
+    },
+    {
+     "sha1": "4ac73bc2ae",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261016005400213956",
+   "field": "documents",
+   "source_url": "https://www.namgu.gwangju.kr/board.es?mid=a10604010000&bid=0001&act=view&list_no=8843&tag=&nPage=1",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "ae8242af71",
+     "found": true
+    },
+    {
+     "sha1": "9253b0d5a7",
+     "found": true
+    },
+    {
+     "sha1": "0f8a79e74d",
+     "found": true
+    },
+    {
+     "sha1": "f157a91ab7",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261002005400213801",
+   "field": "documents",
+   "source_url": "https://www.cbitle.or.kr/www/contents.do?key=71",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "c142fb19e0",
+     "found": true
+    },
+    {
+     "sha1": "163d583bff",
+     "found": true
+    },
+    {
+     "sha1": "8238dd9544",
+     "found": true
+    },
+    {
+     "sha1": "9461e5f461",
+     "found": true
+    },
+    {
+     "sha1": "6f99daf890",
+     "found": true
+    },
+    {
+     "sha1": "141e1b11bd",
+     "found": true
+    },
+    {
+     "sha1": "c12a29ed21",
+     "found": true
+    },
+    {
+     "sha1": "69cd0873de",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261002005400213801",
+   "field": "method",
+   "source_url": "https://www.cbitle.or.kr/www/contents.do?key=71",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "e311ae9755",
+     "found": true
+    },
+    {
+     "sha1": "74cba2c742",
+     "found": true
+    },
+    {
+     "sha1": "9bcbfed60e",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261002005400213801",
+   "field": "period",
+   "source_url": "https://www.cbitle.or.kr/www/contents.do?key=71",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "8447778ae0",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261002005400213801",
+   "field": "conditions",
+   "source_url": "https://www.cbitle.or.kr/www/contents.do?key=71",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "c481918cdc",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260921005400113468",
+   "field": "period",
+   "source_url": "https://www.korea.kr/multi/visualNewsView.do?newsId=148975630",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "b68a45d583",
+     "found": true
+    },
+    {
+     "sha1": "7d34396900",
+     "found": true
+    },
+    {
+     "sha1": "aba46a703e",
+     "found": true
+    },
+    {
+     "sha1": "770122edb2",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260728005400213308",
+   "field": "documents",
+   "source_url": "https://www.namgu.gwangju.kr/board.es?mid=a10604010000&bid=0001&act=view&list_no=8843&tag=&nPage=1",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "ae8242af71",
+     "found": true
+    },
+    {
+     "sha1": "9253b0d5a7",
+     "found": true
+    },
+    {
+     "sha1": "0f8a79e74d",
+     "found": true
+    },
+    {
+     "sha1": "f157a91ab7",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260728005400213308",
+   "field": "period",
+   "source_url": "https://www.namgu.gwangju.kr/board.es?mid=a10604010000&bid=0001&act=view&list_no=8843&tag=&nPage=1",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "f36418d85d",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260728005400213308",
+   "field": "conditions",
+   "source_url": "https://www.namgu.gwangju.kr/board.es?mid=a10604010000&bid=0001&act=view&list_no=8843&tag=&nPage=1",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "f2c8d694f0",
+     "found": true
+    },
+    {
+     "sha1": "92eeedeee9",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260429005400212915",
+   "field": "documents",
+   "source_url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000121452",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "6fdb58e52b",
+     "found": true
+    },
+    {
+     "sha1": "fb7962862b",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260429005400212915",
+   "field": "period",
+   "source_url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000121452",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "9f91793f78",
+     "found": true
+    },
+    {
+     "sha1": "632b25280a",
+     "found": true
+    },
+    {
+     "sha1": "006b2b9514",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260429005400212915",
+   "field": "conditions",
+   "source_url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000121452",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "b35a53aeb1",
+     "found": true
+    },
+    {
+     "sha1": "0196aa9a9e",
+     "found": true
+    },
+    {
+     "sha1": "d9d853fb90",
+     "found": true
+    },
+    {
+     "sha1": "cab82cc401",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260421005400212810",
+   "field": "documents",
+   "source_url": "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/650000000259",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "744fc97ecf",
+     "found": true
+    },
+    {
+     "sha1": "763ae800a0",
+     "found": true
+    },
+    {
+     "sha1": "0804b6224d",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260421005400212810",
+   "field": "period",
+   "source_url": "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/650000000259",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "72733078e9",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260421005400212810",
+   "field": "conditions",
+   "source_url": "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/650000000259",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "ad0c794053",
+     "found": true
+    },
+    {
+     "sha1": "5e641e1d29",
+     "found": true
+    },
+    {
+     "sha1": "576c51c953",
+     "found": true
+    },
+    {
+     "sha1": "e90d21993b",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260413005400212696",
+   "field": "method",
+   "source_url": "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56181",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "69d8a32e2d",
+     "found": true
+    },
+    {
+     "sha1": "fd1064892a",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260413005400212696",
+   "field": "conditions",
+   "source_url": "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56181",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "2008b5bd89",
+     "found": true
+    },
+    {
+     "sha1": "db33d1196d",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212558",
+   "field": "documents",
+   "source_url": "https://www.gjcci.or.kr/user/sub305120/view?proj_no=20260727-110002&page=1",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "94cd5a8a72",
+     "found": true
+    },
+    {
+     "sha1": "3cadeffabc",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212558",
+   "field": "period",
+   "source_url": "https://www.gjcci.or.kr/user/sub305120/view?proj_no=20260727-110002&page=1",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "fa759215ac",
+     "found": true
+    },
+    {
+     "sha1": "19d0578697",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212533",
+   "field": "documents",
+   "source_url": "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?mId=008001002000000000&bbsId=BBS_0000000000000309&dataId=58114",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "1a2bb981e8",
+     "found": true
+    },
+    {
+     "sha1": "b245430a24",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212533",
+   "field": "method",
+   "source_url": "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?mId=008001002000000000&bbsId=BBS_0000000000000309&dataId=58114",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "70ab3b7ea5",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212533",
+   "field": "period",
+   "source_url": "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?mId=008001002000000000&bbsId=BBS_0000000000000309&dataId=58114",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "4f38ea57a9",
+     "found": true
+    },
+    {
+     "sha1": "ef7f0116b4",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212533",
+   "field": "conditions",
+   "source_url": "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?mId=008001001000000000&bbsId=BBS_0000000000000316&dataId=56148",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "5fe525f6fc",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260326005400212295",
+   "field": "documents",
+   "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/saeol/gosi/view.do?notAncmtMgtNo=117174&mid=0401020100",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "518198ff2c",
+     "found": true
+    },
+    {
+     "sha1": "0607a71c91",
+     "found": true
+    },
+    {
+     "sha1": "01eb6461e0",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260326005400212295",
+   "field": "period",
+   "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/saeol/gosi/view.do?notAncmtMgtNo=117174&mid=0401020100",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "43532f8014",
+     "found": true
+    },
+    {
+     "sha1": "9b36615899",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260326005400212295",
+   "field": "conditions",
+   "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/saeol/gosi/view.do?notAncmtMgtNo=117174&mid=0401020100",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "f8f7cdac3f",
+     "found": true
+    },
+    {
+     "sha1": "17b46254c8",
+     "found": true
+    },
+    {
+     "sha1": "b24eb64085",
+     "found": true
+    },
+    {
+     "sha1": "b3b6e41cd4",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260318005400212193",
+   "field": "period",
+   "source_url": "https://www.gunpoycf.or.kr/company_05.php",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "f6a5dcb85e",
+     "found": true
+    },
+    {
+     "sha1": "072d575219",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260318005400212193",
+   "field": "conditions",
+   "source_url": "https://www.gunpoycf.or.kr/company_05.php",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "ef1fd6507b",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261023005400214275",
+   "field": "conditions",
+   "source_url": "https://youth.seoul.go.kr/youthConts.do?key=2310200023&sc_pbancSeCd=005&sc_bbsStngSn=221200001&sc_bbsCtgrySn=2310200005&sc_qnaCtgryCd=&sc_faqCtgryCd=002",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "2bbc9c3b3b",
+     "found": true
+    },
+    {
+     "sha1": "b87f645ffa",
+     "found": true
+    },
+    {
+     "sha1": "c4b43613e7",
+     "found": true
+    },
+    {
+     "sha1": "41e80fcf6c",
+     "found": true
+    },
+    {
+     "sha1": "fa12386163",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261023005400214275",
+   "field": "period",
+   "source_url": "https://youth.seoul.go.kr/bbs/view.do?key=2303300002&pstSn=2611100005&sc_bbsCtgrySn=2304110001",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "90288326e2",
+     "found": true
+    },
+    {
+     "sha1": "2a77ddf130",
+     "found": true
+    },
+    {
+     "sha1": "b7401f1f78",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261021005400214204",
+   "field": "conditions",
+   "source_url": "https://youth.seoul.go.kr/youthConts.do?key=2310100062&sc_pbancSeCd=008&sc_bbsStngSn=2212200001&sc_bbsCtgrySn=2310200007&sc_qnaCtgryCd=&sc_faqCtgryCd=013",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "4a0d009a91",
+     "found": true
+    },
+    {
+     "sha1": "6e399474ba",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261023005400214281",
+   "field": "conditions",
+   "source_url": "https://news.seoul.go.kr/welfare/archives/511982",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "be93c4f8ef",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261023005400214281",
+   "field": "conditions",
+   "source_url": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00001175",
+   "state": "not_found",
+   "quotes": [
+    {
+     "sha1": "b9cbe5e7a6",
+     "found": false
+    },
+    {
+     "sha1": "7f61e66f0f",
+     "found": false
+    },
+    {
+     "sha1": "f1d93a0f04",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20261103005400214699",
+   "field": "period",
+   "source_url": "https://www.yeonggwang.go.kr/bbs/?b_id=gosigonggo&site=headquarter_new&mn=9059&type=view&sc_cate=&per_page=10&start_date=&end_date=&sc_key=subject&sc_word=%EC%A3%BC%ED%83%9D%EA%B5%AC%EC%9E%85&bs_idx=28498",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "ab0519cb5b",
+     "found": true
+    },
+    {
+     "sha1": "e3f06c9ac5",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261103005400214699",
+   "field": "conditions",
+   "source_url": "https://www.yeonggwang.go.kr/bbs/?b_id=gosigonggo&site=headquarter_new&mn=9059&type=view&sc_cate=&per_page=10&start_date=&end_date=&sc_key=subject&sc_word=%EC%A3%BC%ED%83%9D%EA%B5%AC%EC%9E%85&bs_idx=28498",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "c8a6ed269d",
+     "found": true
+    },
+    {
+     "sha1": "a29e07bf91",
+     "found": true
+    },
+    {
+     "sha1": "9e3306b1c3",
+     "found": true
+    },
+    {
+     "sha1": "b3e682c877",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261103005400214699",
+   "field": "documents",
+   "source_url": "https://www.yeonggwang.go.kr/bbs/?b_id=gosigonggo&site=headquarter_new&mn=9059&type=view&sc_cate=&per_page=10&start_date=&end_date=&sc_key=subject&sc_word=%EC%A3%BC%ED%83%9D%EA%B5%AC%EC%9E%85&bs_idx=28498",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "aded211c61",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261103005400214699",
+   "field": "method",
+   "source_url": "https://www.yeonggwang.go.kr/bbs/?b_id=gosigonggo&site=headquarter_new&mn=9059&type=view&sc_cate=&per_page=10&start_date=&end_date=&sc_key=subject&sc_word=%EC%A3%BC%ED%83%9D%EA%B5%AC%EC%9E%85&bs_idx=28498",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "53ea0c2197",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261020005400214079",
+   "field": "period",
+   "source_url": "https://www.yeonggwang.go.kr/bbs/?b_id=gosigonggo&site=headquarter_new&mn=9059&type=view&sc_cate=&per_page=10&start_date=&end_date=&sc_key=subject&sc_word=%EC%9A%B4%EC%A0%84%EB%A9%B4%ED%97%88&bs_idx=29214",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "ce3e0f9f31",
+     "found": true
+    },
+    {
+     "sha1": "6adffcfc92",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261020005400214079",
+   "field": "conditions",
+   "source_url": "https://www.yeonggwang.go.kr/bbs/?b_id=gosigonggo&site=headquarter_new&mn=9059&type=view&sc_cate=&per_page=10&start_date=&end_date=&sc_key=subject&sc_word=%EC%9A%B4%EC%A0%84%EB%A9%B4%ED%97%88&bs_idx=29214",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "fd6247ffa5",
+     "found": true
+    },
+    {
+     "sha1": "efb89f1292",
+     "found": true
+    },
+    {
+     "sha1": "4358139b2a",
+     "found": true
+    },
+    {
+     "sha1": "3d1136aeb4",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261020005400214079",
+   "field": "method",
+   "source_url": "https://www.yeonggwang.go.kr/bbs/?b_id=gosigonggo&site=headquarter_new&mn=9059&type=view&sc_cate=&per_page=10&start_date=&end_date=&sc_key=subject&sc_word=%EC%9A%B4%EC%A0%84%EB%A9%B4%ED%97%88&bs_idx=29214",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "d635f51a43",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261020005400214123",
+   "field": "period",
+   "source_url": "https://www.wonju.go.kr/wjyouth/selectBbsNttView.do?key=5882&bbsNo=1190&nttNo=478867&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=1&integrDeptCode=",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "e5d73d36cf",
+     "found": true
+    },
+    {
+     "sha1": "3c3cfd6a4f",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260304005400212098",
+   "field": "period",
+   "source_url": "https://www.wonju.go.kr/wjyouth/selectBbsNttView.do?key=5882&bbsNo=1190&nttNo=478867&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=1&integrDeptCode=",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "e5d73d36cf",
+     "found": true
+    },
+    {
+     "sha1": "3c3cfd6a4f",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261020005400214123",
+   "field": "period",
+   "source_url": "https://www.wonju.go.kr/wjyouth/viewTnWjyouthProgrmU.do?progrmNo=56&key=5942",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "8d64b770bc",
+     "found": true
+    },
+    {
+     "sha1": "c3dfee1d85",
+     "found": true
+    },
+    {
+     "sha1": "bdeaf9418d",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260304005400212098",
+   "field": "period",
+   "source_url": "https://www.wonju.go.kr/wjyouth/viewTnWjyouthProgrmU.do?progrmNo=56&key=5942",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "8d64b770bc",
+     "found": true
+    },
+    {
+     "sha1": "c3dfee1d85",
+     "found": true
+    },
+    {
+     "sha1": "bdeaf9418d",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261020005400214123",
+   "field": "conditions",
+   "source_url": "https://www.wonju.go.kr/wjyouth/viewTnWjyouthProgrmU.do?progrmNo=56&key=5942",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "a86fe5b50f",
+     "found": true
+    },
+    {
+     "sha1": "8a1ace8bd2",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260304005400212098",
+   "field": "conditions",
+   "source_url": "https://www.wonju.go.kr/wjyouth/viewTnWjyouthProgrmU.do?progrmNo=56&key=5942",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "a86fe5b50f",
+     "found": true
+    },
+    {
+     "sha1": "8a1ace8bd2",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261020005400214123",
+   "field": "documents",
+   "source_url": "https://www.wonju.go.kr/wjyouth/viewTnWjyouthProgrmU.do?progrmNo=56&key=5942",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "235f7636fd",
+     "found": true
+    },
+    {
+     "sha1": "9c9d946f46",
+     "found": true
+    },
+    {
+     "sha1": "a6d933d933",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260304005400212098",
+   "field": "documents",
+   "source_url": "https://www.wonju.go.kr/wjyouth/viewTnWjyouthProgrmU.do?progrmNo=56&key=5942",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "235f7636fd",
+     "found": true
+    },
+    {
+     "sha1": "9c9d946f46",
+     "found": true
+    },
+    {
+     "sha1": "a6d933d933",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261020005400214123",
+   "field": "method",
+   "source_url": "https://www.wonju.go.kr/wjyouth/viewTnWjyouthProgrmU.do?progrmNo=56&key=5942",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "61f1992b70",
+     "found": true
+    },
+    {
+     "sha1": "c9dee8f3d5",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260304005400212098",
+   "field": "method",
+   "source_url": "https://www.wonju.go.kr/wjyouth/viewTnWjyouthProgrmU.do?progrmNo=56&key=5942",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "61f1992b70",
+     "found": true
+    },
+    {
+     "sha1": "c9dee8f3d5",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261016005400213957",
+   "field": "period",
+   "source_url": "https://apply.jobaba.net/special/gibon/main.do",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "ebf8bf3f92",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261016005400213957",
+   "field": "conditions",
+   "source_url": "https://apply.jobaba.net/special/gibon/main.do",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "46edc07fd1",
+     "found": true
+    },
+    {
+     "sha1": "3d7cdd716c",
+     "found": true
+    },
+    {
+     "sha1": "a256e7d1f2",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260513005400213198",
+   "field": "period",
+   "source_url": "https://young.busan.go.kr/index.nm?menuCd=271",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "5297e69e55",
+     "found": true
+    },
+    {
+     "sha1": "6fe39b24bf",
+     "found": true
+    },
+    {
+     "sha1": "548e047743",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260513005400213198",
+   "field": "conditions",
+   "source_url": "https://young.busan.go.kr/index.nm?menuCd=271",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "ab715b184d",
+     "found": true
+    },
+    {
+     "sha1": "170601c180",
+     "found": true
+    },
+    {
+     "sha1": "f4780e2ffb",
+     "found": true
+    },
+    {
+     "sha1": "f04907bf0c",
+     "found": true
+    },
+    {
+     "sha1": "9d1a2fe216",
+     "found": true
+    },
+    {
+     "sha1": "c6285723ba",
+     "found": true
+    },
+    {
+     "sha1": "b5580cbc3d",
+     "found": true
+    },
+    {
+     "sha1": "4f26493311",
+     "found": true
+    },
+    {
+     "sha1": "281aa8cf46",
+     "found": true
+    },
+    {
+     "sha1": "ee11333c35",
+     "found": true
+    },
+    {
+     "sha1": "194d73de9f",
+     "found": true
+    },
+    {
+     "sha1": "79024ef9ef",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260513005400213198",
+   "field": "documents",
+   "source_url": "https://young.busan.go.kr/index.nm?menuCd=271",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "208f8db2f1",
+     "found": true
+    },
+    {
+     "sha1": "6e3f3411ca",
+     "found": true
+    },
+    {
+     "sha1": "8332d12f60",
+     "found": true
+    },
+    {
+     "sha1": "89559ad391",
+     "found": true
+    },
+    {
+     "sha1": "68a36aba1a",
+     "found": true
+    },
+    {
+     "sha1": "93703eaf19",
+     "found": true
+    },
+    {
+     "sha1": "b0929a4727",
+     "found": true
+    },
+    {
+     "sha1": "bca9ec0500",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260513005400213198",
+   "field": "method",
+   "source_url": "https://young.busan.go.kr/index.nm?menuCd=271",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "e7d8e73e38",
+     "found": true
+    },
+    {
+     "sha1": "bacffb7b34",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260504005400213053",
+   "field": "conditions",
+   "source_url": "https://www.buyeo.go.kr/html/kr/together/together_03220406.html",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "3cdfbdbf70",
+     "found": true
+    },
+    {
+     "sha1": "1bd3cb4ecf",
+     "found": true
+    },
+    {
+     "sha1": "56489d70b6",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260504005400213053",
+   "field": "documents",
+   "source_url": "https://www.buyeo.go.kr/html/kr/together/together_03220406.html",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "71b564e83c",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260504005400213053",
+   "field": "method",
+   "source_url": "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20260401LC000000000003072",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "2e1440c568",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260504005400213025",
+   "field": "conditions",
+   "source_url": "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20260402LC000000000003164",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "f00b766eac",
+     "found": true
+    },
+    {
+     "sha1": "b399a067c0",
+     "found": true
+    },
+    {
+     "sha1": "bc5ca05562",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260504005400213025",
+   "field": "conditions",
+   "source_url": "https://www.cheonan.go.kr/go_now/contents/job-policy",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "22e8c74c8b",
+     "found": true
+    },
+    {
+     "sha1": "9044248083",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260504005400213025",
+   "field": "method",
+   "source_url": "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20260402LC000000000003164",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "cbd737f04b",
+     "found": true
+    },
+    {
+     "sha1": "92848c4ca0",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260410005400212671",
+   "field": "conditions",
+   "source_url": "https://ulsan.go.kr/s/ulsanyouth/contents.ulsan?mId=008001001002000000",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "b14659131d",
+     "found": true
+    },
+    {
+     "sha1": "db33d1196d",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260410005400212671",
+   "field": "method",
+   "source_url": "https://ulsan.go.kr/s/ulsanyouth/contents.ulsan?mId=008001001002000000",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "69d8a32e2d",
+     "found": true
+    },
+    {
+     "sha1": "fd1064892a",
+     "found": true
+    },
+    {
+     "sha1": "6041fa37a4",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261113005400214850",
+   "field": "period",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?siteId=www&policyId=1582",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "7f71775c17",
+     "found": true
+    },
+    {
+     "sha1": "662cdb19a0",
+     "found": true
+    },
+    {
+     "sha1": "b72820890b",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261113005400214850",
+   "field": "conditions",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?siteId=www&policyId=1582",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "452e0ef3b9",
+     "found": true
+    },
+    {
+     "sha1": "48e023c89e",
+     "found": true
+    },
+    {
+     "sha1": "bc0533d501",
+     "found": true
+    },
+    {
+     "sha1": "243b28a003",
+     "found": true
+    },
+    {
+     "sha1": "e0f8d06206",
+     "found": true
+    },
+    {
+     "sha1": "42140d79fd",
+     "found": true
+    },
+    {
+     "sha1": "2c7fdf083c",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261113005400214850",
+   "field": "documents",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?siteId=www&policyId=1582",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "113d3b5a17",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261113005400214850",
+   "field": "method",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?siteId=www&policyId=1582",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "705008f512",
+     "found": true
+    },
+    {
+     "sha1": "4bc9acaced",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261030005400214619",
+   "field": "conditions",
+   "source_url": "https://www.jinan.go.kr/board/view.jinan?boardId=BBS_0000026&menuCd=DOM_000000107001001000&dataSid=210332",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "ac2186dac7",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261030005400214619",
+   "field": "method",
+   "source_url": "https://www.jinan.go.kr/board/view.jinan?boardId=BBS_0000026&menuCd=DOM_000000107001001000&dataSid=210332",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "ef8df9be3c",
+     "found": true
+    },
+    {
+     "sha1": "cf9269ec8b",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261020005400214113",
+   "field": "period",
+   "source_url": "https://www.samcheok.go.kr/media/00084/00095.web?amode=view&mgtNo=37890&cd=01&cpage=1&sstring=%EC%B2%AD%EB%85%84%EB%AA%B0&stype=title",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "f74e3c5cdf",
+     "found": true
+    },
+    {
+     "sha1": "4aff1e88b6",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261020005400214113",
+   "field": "conditions",
+   "source_url": "https://www.samcheok.go.kr/media/00084/00095.web?amode=view&mgtNo=37890&cd=01&cpage=1&sstring=%EC%B2%AD%EB%85%84%EB%AA%B0&stype=title",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "3dd3d64160",
+     "found": true
+    },
+    {
+     "sha1": "3ec05a4b8a",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260408005400212594",
+   "field": "period",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?siteId=www&policyId=1312",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "b4e00ffdd7",
+     "found": true
+    },
+    {
+     "sha1": "7c6d7cfc3e",
+     "found": true
+    },
+    {
+     "sha1": "d78bd17fa5",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260408005400212594",
+   "field": "conditions",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?siteId=www&policyId=1312",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "d64d540409",
+     "found": true
+    },
+    {
+     "sha1": "0e1c4d4711",
+     "found": true
+    },
+    {
+     "sha1": "b10d8ee956",
+     "found": true
+    },
+    {
+     "sha1": "39bf4f3c99",
+     "found": true
+    },
+    {
+     "sha1": "70bafa99f4",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260408005400212594",
+   "field": "documents",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?siteId=www&policyId=1312",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "5447142953",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260408005400212594",
+   "field": "method",
+   "source_url": "https://youth.jeonnam-gwangju.go.kr/www/policy/gjYgPolicyView?siteId=www&policyId=1312",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "6e6fbaca37",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260930005400113719",
+   "field": "conditions",
+   "source_url": "https://www.mohw.go.kr/gallery.es?mid=a10314000000&bid=0015&tag=&act=view&list_no=380050",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "f285d45871",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260930005400113719",
+   "field": "method",
+   "source_url": "https://www.mohw.go.kr/gallery.es?mid=a10314000000&bid=0015&tag=&act=view&list_no=380050",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "a11a6f44b5",
+     "found": true
+    },
+    {
+     "sha1": "f624757c8d",
+     "found": true
+    },
+    {
+     "sha1": "bb4bd29681",
+     "found": true
+    },
+    {
+     "sha1": "37865cc300",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260311005400112111",
+   "field": "period",
+   "source_url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_18_01&naviParam=JH%2C03%2C04%2C00",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "7c392c284b",
+     "found": true
+    },
+    {
+     "sha1": "1f33469b5d",
+     "found": true
+    },
+    {
+     "sha1": "4d1659884e",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260311005400112111",
+   "field": "conditions",
+   "source_url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_18_01&naviParam=JH%2C03%2C04%2C00",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "3769d81907",
+     "found": true
+    },
+    {
+     "sha1": "85180841c1",
+     "found": true
+    },
+    {
+     "sha1": "994c8efb87",
+     "found": true
+    },
+    {
+     "sha1": "c144942dcb",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260311005400112111",
+   "field": "method",
+   "source_url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_18_01&naviParam=JH%2C03%2C04%2C00",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "c79fa51968",
+     "found": true
+    },
+    {
+     "sha1": "012a879ce6",
+     "found": true
+    },
+    {
+     "sha1": "50ef2a3d77",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260311005400112111",
+   "field": "documents",
+   "source_url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_18_01&naviParam=JH,03,04,13&ttab1=3",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "76535d8525",
+     "found": true
+    },
+    {
+     "sha1": "0192839ea2",
+     "found": true
+    },
+    {
+     "sha1": "6181f9a4b7",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20240507005400200010",
+   "field": "period",
+   "source_url": "https://www.daejeonyouthportal.kr/content/CT_000000000059/cntPage.do?commonMenuNo=304_305_323_329&dpmSectionScd=9&dpmSectionFst=2",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "fad6c51de2",
+     "found": true
+    },
+    {
+     "sha1": "47d67c73ad",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20240507005400200010",
+   "field": "conditions",
+   "source_url": "https://www.daejeonyouthportal.kr/content/CT_000000000059/cntPage.do?commonMenuNo=304_305_323_329&dpmSectionScd=9&dpmSectionFst=2",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "985042c3d9",
+     "found": true
+    },
+    {
+     "sha1": "b9d6923517",
+     "found": true
+    },
+    {
+     "sha1": "49dda0c57e",
+     "found": true
+    },
+    {
+     "sha1": "4fdc448be0",
+     "found": true
+    },
+    {
+     "sha1": "2e89ed70c8",
+     "found": true
+    },
+    {
+     "sha1": "a00ea7c11b",
+     "found": true
+    },
+    {
+     "sha1": "e61b057ef4",
+     "found": true
+    },
+    {
+     "sha1": "935e048931",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20240507005400200010",
+   "field": "method",
+   "source_url": "https://www.daejeonyouthportal.kr/content/CT_000000000059/cntPage.do?commonMenuNo=304_305_323_329&dpmSectionScd=9&dpmSectionFst=2",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "b3ac49471c",
+     "found": true
+    }
+   ]
+  }
+ ]
+}
