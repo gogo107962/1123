@@ -1649,3 +1649,67 @@ def test_ask_falls_back_to_topic_words_in_the_message_when_model_keywords_find_n
     none = ctx.post(ASK, json={'message': '정보처리기사 봤어', 'profile': PROFILE, 'on': '2026-11-17'}).json()
     assert none['total'] == 0 and '없어요' in none['answer']
 
+
+
+def _chosen(eid, name, exclusions=(), code='0042006', text='', status='open', label='D-13', deadline='2026-11-30', early=None):
+    return {'external_id': eid, 'name': name, 'exclusions': list(exclusions), 'amounts': made(plcySprtCn=text)['amounts'],
+            'provision': made(plcyPvsnMthdCd=code)['provision'], 'period_status': status, 'period_label': label, 'deadline': deadline, 'early_close': early}
+
+
+def test_planner_reads_who_is_excluded_not_any_shared_word():
+    from planner import relations
+    found, compatible = relations([
+        _chosen('A', '청년 월세 지원', ['공공기관 재직자 및 대한민국 국적이 아닌 자 제외', '고용보험 가입자 제외', '주거급여 수급자 제외',
+                                  '단, 청년도약계좌/청년미래적금은 신청제외대상이 아님(중복가입 가능)']),
+        _chosen('B', '공공기관 청년인턴 채용'), _chosen('C', '청년 주거급여 분리지급'), _chosen('D', '청년도약계좌'), _chosen('E', '고용보험 미적용자 출산급여'),
+        _chosen('F', '누림통장', ['누림통장 기가입자 및 유사사업 참여자 제외'])])
+    # 신분(재직·국적·보험 가입)을 말하는 문장은 다른 정책을 가리키는 것이 아니다. 받는 지원을 말하는 문장만 잡는다.
+    assert [(c['from'], c['to'], c['kind']) for c in found] == [('A', 'C', 'named')] and found[0]['quote'] == '주거급여 수급자 제외'
+    # '함께 받을 수 있다'고 적힌 문장은 충돌이 아니라 따로 알린다.
+    assert [(c['from'], c['to'], c['kind']) for c in compatible] == [('A', 'D', 'allowed')]
+
+
+def test_planner_groups_conflicts_and_gives_amount_for_each_choice():
+    from datetime import date
+    from planner import plan
+    out = plan([_chosen('G1', '서울 청년 월세 지원', ['서울 청년수당 참여자는 지원 제외'], text='월 20만원씩 최대 12개월'),
+                _chosen('G2', '서울 청년수당', text='최대 30만원 지급', deadline='2026-11-20', label='D-3'),
+                _chosen('G3', '청년 문화패스', text='연 최대 50만원', code='0042010', status='rolling', label='상시', deadline=None)], date(2026, 11, 17))
+    assert out['groups'] == [{'policies': ['G1', 'G2'], 'options': [
+        {'keep': ['G1'], 'drop': ['G2'], 'monthly_krw': 200000, 'other_krw': 0}, {'keep': ['G2'], 'drop': ['G1'], 'monthly_krw': 0, 'other_krw': 300000}]}]
+    assert out['amounts']['all'] == {'monthly_krw': 200000, 'other_krw': 800000}
+    # 묶음에서 한 조합만 받을 때: 묶음 밖의 G3(50만원)는 그대로 더한다.
+    assert out['amounts']['one_per_group'] == {'monthly_krw': [0, 200000], 'other_krw': [500000, 800000]}
+    assert out['order'] == ['G2', 'G1', 'G3'] and out['overlap_checked'] is False
+    why = {s['external_id']: ' '.join(s['reasons']) for s in out['steps']}
+    # 글이 말한 방향대로만 적는다: G1의 글이 G2를 가리킨다. G2 쪽에는 'G1의 글이 그렇게 적고 있다'고만 알린다.
+    assert '「서울 청년수당」와 함께 받기 어려울 수 있다는 문구' in why['G1'] and '「서울 청년 월세 지원」의 안내 글이' in why['G2'] and '3일 남았어요' in why['G2']
+    assert out['steps'][0]['check_with'] == ['G1'] and out['steps'][2]['check_with'] == [] and '상시' in why['G3']
+    assert out['brief'][0] == '신청 순서: 서울 청년수당 → 서울 청년 월세 지원 → 청년 문화패스' and any('200,000' in line for line in out['brief'])
+
+
+def test_planner_puts_early_close_wording_ahead_without_inventing_dates():
+    from datetime import date
+    from planner import plan
+    on = date(2026, 11, 17)
+    late = _chosen('P1', '정책 하나', deadline='2026-12-20', label='D-33', early='예산 소진 시 조기 마감')
+    mid = _chosen('P2', '정책 둘', deadline='2026-11-28', label='D-11')
+    near = _chosen('P3', '정책 셋', deadline='2026-11-19', label='D-2')
+    yearly = _chosen('P4', '정책 넷', deadline='2026-12-31', label='연중 표기 · 모집 회차 확인')
+    out = plan([late, mid, near, yearly], on)
+    # 조기 마감 문구가 있으면 7일 안에 마감하는 정책처럼 줄을 세운다. 더 급한 마감(D-2)보다 앞서지는 않는다. 연중 표기는 뒤.
+    assert out['order'] == ['P3', 'P1', 'P2', 'P4']
+    step = out['steps'][1]
+    assert step['deadline'] == '2026-12-20' and '예산 소진 시 조기 마감' in step['reasons'][1] and '33일 남았어요' in step['reasons'][0]
+    assert out['groups'] == [] and out['amounts']['one_per_group'] == {'monthly_krw': [0, 0], 'other_krw': [0, 0]}
+
+
+def test_planner_endpoint_returns_the_small_result_for_tools(ctx):
+    import planner
+    seed([good('X1', plcyNm='중랑구 미취업청년 자격증 응시료 지원사업', ptcpPrpTrgtCn='2026년 서울 청년수당, 국민취업지원제도 참여자는 지원 제외'),
+          good('X2', plcyNm='2026 서울시 청년수당', aplyYmd='20261101 ~ 20261120')])
+    wid, full = plan_of(ctx, ['X1', 'X2'])
+    small = ctx.post(f'/api/desk/workspaces/{wid}/planner', json={'external_ids': ['X1', 'X2'], 'profile': PROFILE, 'on': '2026-11-17'}).json()
+    assert small == full.json()['planner'] and small['order'] == full.json()['order'] == ['X2', 'X1']
+    assert small['groups'][0]['policies'] == ['X1', 'X2'] and 'policies' not in small and small['notice']
+    assert planner.TOOL['parameters']['required'] == ['external_ids']

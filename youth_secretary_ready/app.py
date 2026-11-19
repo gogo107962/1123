@@ -191,6 +191,11 @@ def desk_plan(wid:str,payload:PlanRequest):
     except ValueError as exc:raise HTTPException(422,str(exc)) from None
     return build(wid,payload.external_ids,payload.profile.model_dump(),on)
 
+# 충돌·순서 플래너만: 함께 받기 어려울 수 있는 조합, 신청 순서와 이유, 조합별 예상 금액. 다른 AI가 도구로 부르기 좋게 작다(planner.TOOL).
+@app.post('/api/desk/workspaces/{wid}/planner')
+def desk_planner(wid:str,payload:PlanRequest):
+    return desk_plan(wid,payload)['planner']
+
 class AskRequest(BaseModel):
     message: str=Field(min_length=1,max_length=600)
     profile: ScreenProfile=ScreenProfile()
