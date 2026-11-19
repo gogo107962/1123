@@ -77,12 +77,12 @@ def preview(wid,external_id):
                 'instructions':f"{check['checked_on']}에 대조한 공식 안내는 접수 종료 상태였습니다. 새 모집 여부와 조건을 공식 사이트에서 확인하세요. 다음 모집일은 아직 입력하지 않았습니다."}]
     else:
         tasks=[{'key':'period','title':'실제 접수기간과 모집 여부 확인하기',
-                'instructions':'API 기간은 실제 접수기간과 다를 수 있습니다. 최신 모집공고의 회차·시작일·마감 시각·예산 소진 여부를 확인하세요.'},
+                'instructions':'등록된 기간은 실제 접수기간과 다를 수 있습니다. 최신 모집공고의 회차·시작일·마감 시각·예산 소진 여부를 확인하세요.'},
                {'key':'conditions','title':'자격과 중복 수혜 제한 확인하기',
                 'instructions':'공식 공고에서 거주·연령·소득·취업·이미 받는 지원의 제한을 대조하세요. 이 정책은 전체 조건 검수 전이므로 자격을 확정하지 않았습니다.'},
                {'key':'documents','title':'제출서류와 발급 조건 확인하기',
-                'instructions':('API의 서류 안내를 최신 공고와 대조하고 발급일·포함 항목·대체 가능 여부를 확인하세요.' if p.get('sbmsnDcmntCn') else 'API에 서류 안내가 없습니다. 서류가 필요 없다는 뜻이 아니므로 공식 공고나 담당 기관에서 확인하세요.')}]
-    if not links:tasks.append({'key':'source','title':'공식 모집공고 주소 찾기','instructions':'수집 정보에 사용 가능한 참고 링크가 없습니다. 담당 기관의 공식 홈페이지에서 같은 연도·회차 공고를 찾아 주세요.'})
+                'instructions':('온통청년의 서류 안내를 최신 공고와 대조하고 발급일·포함 항목·대체 가능 여부를 확인하세요.' if p.get('sbmsnDcmntCn') else '온통청년 정보에 서류 안내가 없습니다. 서류가 필요 없다는 뜻이 아니므로 공식 공고나 담당 기관에서 확인하세요.')}]
+    if not links:tasks.append({'key':'source','title':'공식 모집공고 주소 찾기','instructions':'온통청년 정보에 참고 링크가 없습니다. 담당 기관의 공식 홈페이지에서 같은 연도·회차 공고를 찾아 주세요.'})
     token=hashlib.sha256((wid+'|'+external_id+'|'+fingerprint).encode()).hexdigest()
     return {'external_id':external_id,'name':p['plcyNm'],'preview_token':token,'evidence_hash':fingerprint,
             'tasks':[{**t,'sources':links} for t in tasks],'source_check':check,'closed_notice':closed,

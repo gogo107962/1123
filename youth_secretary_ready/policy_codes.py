@@ -4,7 +4,7 @@ from pathlib import Path
 
 CODEBOOK = json.loads((Path(__file__).parent / 'data/ontong_codebook.json').read_text(encoding='utf-8'))
 
-# 코드표 표기(bizPrdSecd)와 수집 API 필드명(bizPrdSeCd)이 다르다. 코드표 원문 표기는 그대로 두고
+# 코드표 표기(bizPrdSecd)와 수집 등록된 필드명(bizPrdSeCd)이 다르다. 코드표 원문 표기는 그대로 두고
 # 값을 읽을 때만 실제 필드명으로 바꾼다. 이 별칭이 없으면 4,020건 모두 값이 있는데도 해석되지 않는다.
 API_FIELD = {'bizPrdSecd': 'bizPrdSeCd'}
 
@@ -27,8 +27,8 @@ def application_hint(payload, check=None):
     if check and check.get('official_status') == 'closed' and not check.get('api_changed_since_check'):
         return {'kind': 'closed', 'label': '공식 공고 종료 기록', 'basis': 'source_check', 'current_open': None}
     code = str(payload.get('aplyPrdSeCd') or '')
-    kind, label = {'0057001': ('fixed', 'API 특정기간'), '0057002': ('rolling', 'API 상시'),
-                   '0057003': ('closed', 'API 마감')}.get(code, ('unknown', '접수 상태 확인 필요'))
+    kind, label = {'0057001': ('fixed', '등록된 특정기간'), '0057002': ('rolling', '등록된 상시'),
+                   '0057003': ('closed', '등록된 마감')}.get(code, ('unknown', '접수 상태 확인 필요'))
     return {'kind': kind, 'label': label, 'basis': 'api_code', 'current_open': None}
 
 

@@ -1,4 +1,4 @@
-"""API 필드 구조화와 걸러보기 회귀. 모의 데이터 기반이며 실제 4,020건·실제 공고 검증이 아니다."""
+"""등록된 필드 구조화와 걸러보기 회귀. 모의 데이터 기반이며 실제 4,020건·실제 공고 검증이 아니다."""
 import json
 from pathlib import Path
 from datetime import date
@@ -128,7 +128,7 @@ def test_local_agency_hint(agency, hint):
     ({}, {'sido': '11'}, 'unknown'),                    # 시도만 입력: 시군구 확인 필요
     ({}, {'region_code': '11305'}, 'match'),
     ({}, {'sido': '11', 'region_code': '11305'}, 'match'),
-    ({}, {'region_code': '11740'}, 'mismatch'),         # 같은 시도라도 API에 없는 시군구
+    ({}, {'region_code': '11740'}, 'mismatch'),         # 같은 시도라도 온통청년 정보에 없는 시군구
     ({}, {'sido': '26'}, 'mismatch'),
     ({'zipCd': ''}, {'sido': '11'}, 'unknown'),         # 지역 코드 없음 ≠ 전국
     ({'zipCd': ALL, 'sprvsnInstCdNm': '고용노동부'}, {'sido': '11'}, 'match'),
@@ -154,7 +154,7 @@ def test_coded_criteria(key, field):
 
 
 def test_income_amount_is_compared_only_for_annual_income_code():
-    assert verdict(made(), {})[1]['income'] == 'match'  # API '무관' 표기
+    assert verdict(made(), {})[1]['income'] == 'match'  # 등록된 '무관' 표기
     assert verdict(made(earnCndSeCd=''), {})[1]['income'] == 'unknown'
     limited = made(earnCndSeCd='0043002', earnMinAmt='0', earnMaxAmt='5000')
     assert limited['income']['annual'] == {'min': 0, 'max': 5000} and limited['income']['unit'] == '만원/년'
@@ -283,7 +283,7 @@ def test_catalog_uses_source_check_only_for_unchanged_api_content(ctx, tmp_path,
     # 승인된 정책과 연결된 수집 정책만 '검수 통과' 갈래가 된다(여기서는 가상 정책).
     write('demo_rent')
     assert one()['tier'] == 'reviewed' and one()['screen']['outcome'] == 'api_mismatch'
-    # API 내용이 바뀌면 예전 공식 종료 기록을 계속 쓰지 않는다.
+    # 등록된 내용이 바뀌면 예전 공식 종료 기록을 계속 쓰지 않는다.
     seed([good('C1', plcyExplnCn='내용 변경')])
     assert (one()['period_status'], one()['tier']) == ('open', 'reviewed')
 
@@ -366,7 +366,7 @@ def test_ask_without_profile_does_not_claim_matches(ctx, monkeypatch):
     assert body['compared'] is False and body['total'] == 5 and '비교하지 않았어요' in body['answer']
     assert all(x['screen'] is None for x in body['items'])
     monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['없는주제']))
-    assert '찾지 못했어요' in ctx.post(ASK, json={'message': 'x', 'profile': PROFILE}).json()['answer']
+    assert '정책이 없어요' in ctx.post(ASK, json={'message': 'x', 'profile': PROFILE}).json()['answer']
 
 
 def test_ask_failure_modes(ctx, monkeypatch):
@@ -435,8 +435,8 @@ def test_plan_merges_documents_orders_by_api_deadline_and_writes_nothing(ctx):
     # 접수 중(마감 빠른 순) → 상시 → 마감. 상시·마감은 날짜를 만들지 않는다.
     assert body['order'] == ['D2', 'D1', 'D3', 'D4']
     by_id = {p['external_id']: p for p in body['policies']}
-    assert by_id['D2']['period_label'] == 'D-3 (API 마감일)' and by_id['D1']['deadline'] == '2026-11-30'
-    assert by_id['D3']['deadline'] is None and by_id['D3']['period_label'] == '상시(API)' and by_id['D4']['deadline'] is None
+    assert by_id['D2']['period_label'] == 'D-3' and by_id['D1']['deadline'] == '2026-11-30'
+    assert by_id['D3']['deadline'] is None and by_id['D3']['period_label'] == '상시' and by_id['D4']['deadline'] is None
     docs = {d['key']: d['policies'] for d in body['documents']}
     assert docs == {'resident_abstract': ['D1', 'D2'], 'bankbook': ['D1'], 'exam': ['D2'], 'receipt': ['D2'], 'application': ['D1']}
     # 서류 안내가 비어 있으면 '서류 없음'이 아니라 '안내 없음'으로 따로 남는다.
@@ -557,7 +557,7 @@ def test_supplement_fills_blank_documents_without_touching_collected_data(ctx, t
     body = plan_of(ctx, ['U1', 'U2', 'U3'])[1].json()
     by_id = {p['external_id']: p for p in body['policies']}
     assert by_id['U1']['documents_source'] == 'web_check' and by_id['U3']['documents_source'] == 'api'
-    assert by_id['U3']['documents_text'] == '신청서'  # API에 값이 있으면 보완 기록으로 덮지 않는다
+    assert by_id['U3']['documents_text'] == '신청서'  # 온통청년 정보에 값이 있으면 보완 기록으로 덮지 않는다
     assert body['documents_unlisted'] == ['U2']
     assert {d['key']: d['policies'] for d in body['documents']} == {'exam': ['U1'], 'application': ['U3']}
 
@@ -657,8 +657,8 @@ def test_matches_are_ordered_by_nearest_api_deadline(ctx):
     items = post(ctx).json()['items']
     # 접수 중(T2 → T4 → T1, 마감 빠른 순) 다음에 시작 전(T3, 확인 필요)
     assert [x['external_id'] for x in items] == ['T2', 'T4', 'T1', 'T3']
-    assert items[0]['period_label'] == 'D-3 (API 마감일)' and items[0]['deadline'] == '2026-11-20'
-    assert items[3]['period_label'] == '2026-12-01 시작(API)'
+    assert items[0]['period_label'] == 'D-3' and items[0]['deadline'] == '2026-11-20'
+    assert items[3]['period_label'] == '2026-12-01 시작'
 
 
 # ── 취약점 보완 · 검수용 초안 ────────────────────────────────────────
@@ -668,7 +668,7 @@ def test_security_headers_and_no_inline_script(ctx):
         assert headers['x-content-type-options'] == 'nosniff' and headers['x-frame-options'] == 'DENY'
         assert headers['cache-control'] == 'no-cache'          # 고친 화면이 바로 보이게 매번 확인하게 한다
         assert "script-src 'self'" in headers['content-security-policy'] and "frame-ancestors 'none'" in headers['content-security-policy']
-    assert 'content-security-policy' not in ctx.get('/docs').headers   # API 문서는 외부 스크립트를 쓴다
+    assert 'content-security-policy' not in ctx.get('/docs').headers   # 등록된 문서는 외부 스크립트를 쓴다
     import re
     for name in ('mobile.html', 'desk.html', 'index.html'):
         html = (Path(ontong.BASE) / 'static' / name).read_text(encoding='utf-8')
@@ -753,7 +753,7 @@ def test_rules_found_on_official_pages_fill_ruleless_drafts():
     import sys
     sys.path.insert(0, str(Path(ontong.BASE) / 'tools'))
     from draft_policy import draft
-    # API에 최대 나이만 있고 전국·제한없음이라 규칙으로 옮길 값이 없는 정책
+    # 온통청년 정보에 최대 나이만 있고 전국·제한없음이라 규칙으로 옮길 값이 없는 정책
     payload = {**BASE, 'plcyNo': 'DR-3', 'plcyNm': '응시료 지원', 'refUrlAddr1': 'https://example.go.kr/n', 'sprtTrgtMinAge': '0', 'sprtTrgtMaxAge': '34', 'zipCd': ALL}
     with pytest.raises(ValueError):
         draft(payload)
@@ -764,7 +764,7 @@ def test_rules_found_on_official_pages_fill_ruleless_drafts():
     assert rule['predicate'] == {'fact': 'age', 'op': 'lte', 'value': 34} and rule['source_ref'] == 'web1'
     source = next(s for s in policy['sources'] if s['ref'] == 'web1')
     assert source['excerpt'] == '가. 지원대상: 만 34세 이하 청년 누구나' and source['verified'] is False and policy['review']['status'] == 'draft'
-    # API에 같은 항목의 규칙이 있으면 공식 페이지 규칙으로 바꾼다(둘 다 두지 않는다).
+    # 온통청년 정보에 같은 항목의 규칙이 있으면 공식 페이지 규칙으로 바꾼다(둘 다 두지 않는다).
     both = draft({**payload, 'sprtTrgtMinAge': '19'}, [note])
     assert [r['predicate']['op'] for r in both['rules'] if r['id'] == 'age'] == ['lte']
     real = json.loads((Path(ontong.BASE) / 'data' / 'supplements.json').read_text(encoding='utf-8'))
@@ -917,7 +917,7 @@ def test_year_long_window_is_not_treated_as_currently_recruiting(ctx):
     items = post(ctx).json()['items']
     # 날짜가 정해진 접수 중(LW3 → LW2) 다음에 연중 표기(LW1)가 온다. 연중 표기는 D-day를 보여 주지 않는다.
     assert [x['external_id'] for x in items] == ['LW3', 'LW2', 'LW1']
-    assert items[2]['period_label'] == '연중 표기(API) · 모집 회차 확인' and items[0]['period_label'].startswith('D-')
+    assert items[2]['period_label'] == '연중 표기 · 모집 회차 확인' and items[0]['period_label'].startswith('D-')
 
 
 def test_target_group_in_policy_name(ctx):
@@ -1080,7 +1080,7 @@ def test_region_match_understands_city_and_ward_codes_and_abolished_codes():
         validate_profile({'region_code': '99110'})
 
 
-# ── v0.23: 남은 API 필드(지원 규모·선착순, 사업기간, 서류, 심사, 수정일)와 자리표시 ──────────
+# ── v0.23: 남은 등록된 필드(지원 규모·선착순, 사업기간, 서류, 심사, 수정일)와 자리표시 ──────────
 def test_scale_and_first_come_follow_operator_site_and_first_come_is_not_open():
     from policy_structure import scale
     assert scale({'sprtSclLmtYn': 'Y', 'sprtSclCnt': '0', 'sprtArvlSeqYn': 'Y'}) == {
@@ -1165,7 +1165,7 @@ def test_official_page_notes_override_api_income_and_show_official_period(ctx):
     inside = period('가. 신청기간 : 2026. 3. 25.(수) ~ 11. 30.(월) 18시까지', date(2026, 11, 18))
     assert inside['result'] == 'match' and '공식 페이지에도' in inside['basis']
     over = period('○ 모집기간 : 2026.10.14.(수) ~ 10.27.(화)', date(2026, 11, 18))
-    assert over['result'] == 'unknown' and '이미 지났습니다' in over['basis']          # API는 접수 중, 공식 페이지는 지남 → 단정하지 않고 확인 필요
+    assert over['result'] == 'unknown' and '이미 지났습니다' in over['basis']          # 온통청년 정보는 접수 중, 공식 페이지는 지남 → 단정하지 않고 확인 필요
     for vague in ('2026. 8. 6. (목) ~ 예산 소진 시까지', '신청기간: 2026. 2. 19.(목) ~ 12. 11.(금) / 예산소진시 조기종료', '상반기: 1~4월, 하반기: 7~9월',
                   '❍ 신청기간 : ’26. 4. 6.(월) ∼ 11. 30.(월) ※ 매월 첫째주 월요일 오전 9시부터 선착순 모집'):
         assert period(vague, date(2026, 11, 18))['result'] == 'unknown', vague          # 끝날을 믿을 수 없는 문장은 읽지 않는다
@@ -1333,7 +1333,7 @@ def test_detail_bundle_carries_the_same_period_label_as_the_list(ctx):
     seed([good('PL1', aplyYmd='20261101 ~ 20261130')])
     label = ctx.get('/api/integrations/ontong/candidates/PL1').json()['period_label']
     assert label and label == post(ctx, {}).json()['items'][0]['period_label'].replace('D-13', label.split(' ')[0])   # 기준일만 다르다(오늘 / 2026-11-17)
-    assert ctx.get('/api/integrations/ontong/candidates/PL1').json()['period_label'].endswith(('(API 마감일)', '지남', '시작(API)'))
+    assert ctx.get('/api/integrations/ontong/candidates/PL1').json()['period_label'].endswith(('', '지남', '시작'))
 
 
 # ── v0.29: 출처에서 문장이 확인된 보완 기록만 '맞아요/달라요'에 쓴다 ─────────────────────
@@ -1343,7 +1343,7 @@ def test_unconfirmed_official_notes_only_make_results_more_cautious(ctx, tmp_pat
     note = lambda state, field='conditions', quote='만 19세 ~ 24세 청년', **more: {'field': field, 'quotes': [quote], 'checked_on': '2026-11-18', **({'auto_check': state} if state else {}), **more}
     assert [confirmed(note(s)) for s in ('found', 'partly', 'not_found', 'unreachable', 'unchecked', None)] == [True, False, False, False, False, True]
     assert age_rule([note('found', rules=[rule])])['predicate']['value'] == [19, 24] and age_rule([note('not_found', rules=[rule])]) is None
-    item = made()                                                     # API 나이 19~34세
+    item = made()                                                     # 등록된 나이 19~34세
     age = lambda state, value: screen(item, {'age': value}, 'open', age_rule([note(state, rules=[rule])]), [note(state, rules=[rule])])['criteria'][1]['result']
     assert [age('found', a) for a in (22, 30)] == ['match', 'mismatch']            # 확인된 문장: 공식 기준으로 판단
     assert [age('not_found', a) for a in (22, 30)] == ['unknown', 'unknown']       # 확인 안 된 문장: 어느 쪽으로도 단정하지 않는다
@@ -1638,4 +1638,14 @@ def test_tasks_saved_with_the_old_fingerprint_stay_valid_when_content_is_the_sam
     assert not any(t['outdated'] for t in ctx.get(f'/api/desk/workspaces/{wid}').json()['tasks'])
     seed([good('OLDFP', sbizCd='0014010', sbmsnDcmntCn='주민등록등본')])                              # 서류 안내가 바뀌면 옛 지문은 유효하지 않다
     assert all(t['outdated'] for t in ctx.get(f'/api/desk/workspaces/{wid}').json()['tasks'])
+
+
+def test_ask_falls_back_to_topic_words_in_the_message_when_model_keywords_find_nothing(ctx, monkeypatch):
+    seed([good('FB1', plcyNm='자격증 응시료 지원')])
+    monkeypatch.setattr(desk_finder, 'model_status', lambda: {'ready': True})
+    monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['정보처리기사']))     # 실제 모델이 시험 이름만 고른 사례
+    body = ctx.post(ASK, json={'message': '정보처리기사 봤는데 응시료 지원돼?', 'profile': PROFILE, 'on': '2026-11-17'}).json()
+    assert body['total'] == 1 and body['keywords'] == ['응시료'] and body['items'][0]['external_id'] == 'FB1'
+    none = ctx.post(ASK, json={'message': '정보처리기사 봤어', 'profile': PROFILE, 'on': '2026-11-17'}).json()
+    assert none['total'] == 0 and '없어요' in none['answer']
 

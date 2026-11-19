@@ -9,7 +9,7 @@
   "demo_only": false,
   "official_url": "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020701.jsp",
   "application": {
-    "period_note": "API 신청기간 구분: rolling. 날짜 없음."
+    "period_note": "등록된 신청기간 구분: rolling. 날짜 없음."
   },
   "review": {
     "status": "draft",
@@ -20,7 +20,7 @@
     {
       "ref": "api",
       "kind": "api",
-      "title": "온통청년 API 수집값(공고 원문 아님)",
+      "title": "온통청년 등록된 수집값(공고 원문 아님)",
       "url": "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020701.jsp",
       "anchor": "",
       "excerpt": "",
@@ -48,7 +48,7 @@
           34
         ]
       },
-      "message": "API 연령 19~34세. 공고의 기준일과 출생연도 표현을 확인하세요.",
+      "message": "등록된 연령 19~34세. 공고의 기준일과 출생연도 표현을 확인하세요.",
       "source_ref": "api"
     }
   ],
@@ -56,12 +56,12 @@
     {
       "id": "period",
       "source_ref": "api",
-      "message": "API 신청기간(기재 없음)을 최신 공고의 회차·시작일·마감 시각과 대조하세요."
+      "message": "등록된 신청기간(기재 없음)을 최신 공고의 회차·시작일·마감 시각과 대조하세요."
     },
     {
       "id": "income",
       "source_ref": "api",
-      "message": "API 소득: 연소득 연 5,000만원 이하(단위는 온통청년 누리집 표시 기준) · 금액 단위, 개인/가구 기준, 산정 방식을 공고에서 확인하세요."
+      "message": "등록된 소득: 연소득 연 5,000만원 이하(단위는 온통청년 누리집 표시 기준) · 금액 단위, 개인/가구 기준, 산정 방식을 공고에서 확인하세요."
     },
     {
       "id": "exclusion1",

@@ -1,6 +1,6 @@
-"""온통청년 API 필드를 비교 가능한 구조로 정리한다. 개인 자격을 판정하지 않는다.
+"""온통청년 등록된 필드를 비교 가능한 구조로 정리한다. 개인 자격을 판정하지 않는다.
 
-모든 값은 API 기재값이다. 팀의 원문 대조(2026-11-17)에서 API와 공고가 다른 사례가
+모든 값은 등록 정보이다. 팀의 원문 대조(2026-11-17)에서 API와 공고가 다른 사례가
 확인됐으므로, 이 구조는 걸러보기와 '원문에서 확인할 것' 찾기에만 쓴다.
 빈값·0은 '제한 없음'으로 바꾸지 않고 '기재 없음'으로 남긴다.
 """
@@ -62,7 +62,7 @@ DOC_KIND = {**dict.fromkeys(('resident_register', 'resident_abstract', 'family',
 _PLACEHOLDER = re.compile(r'(-+|\.+|해당\s*(사항)?\s*없음|없음|제한\s*없음|무관)\.?')
 # 서류 안내가 목록 없이 다른 곳을 가리키기만 하는 표현
 _POINTER = re.compile(r'붙임|첨부|참조|참고|공고|공지|안내문|별도\s*(문의|안내)|에 따름|확인|상이|미정|서식')
-# (키, 표시 이름, API 글에서 찾을 말, 발급·준비 방법)
+# (키, 표시 이름, 안내 글에서 찾을 말, 발급·준비 방법)
 DOCS = [
     ('resident_register', '주민등록등본', ('주민등록등본', '주민등록표등본', '주민등록표 등본', '주민등록 등본'), '정부24에서 발급'),
     ('resident_abstract', '주민등록초본', ('초본',), '정부24에서 발급'),
@@ -115,8 +115,8 @@ SAID = {'unemployed': r'미취업|구직 ?중|구직자|취업 ?준비', 'employ
         'early_close': r'예산 ?소진|조기 ?(?:마감|종료)|선착순 ?(?:접수|마감|모집)'}
 # 정렬 순서: 접수 중(마감 빠른 순) → 시작 전 → 상시 → 기간 미기재 → 마감
 RANK = {'open': 0, 'upcoming': 1, 'rolling': 2, 'unknown': 3, 'ended': 4, 'closed_code': 4, 'closed_official': 4}
-LABEL = {'rolling': '상시(API)', 'unknown': '기간 확인 필요', 'ended': 'API 기간 지남',
-         'closed_code': '마감(API)', 'closed_official': '공식 공고 종료'}
+LABEL = {'rolling': '상시', 'unknown': '기간 확인 필요', 'ended': '신청기간 지남',
+         'closed_code': '마감', 'closed_official': '공식 공고 종료'}
 # 정책 이름에 드러난 특정 대상. 이름에 있을 때만 '그 집단을 위한 정책'으로 본다(설명 글의 낱말은 우연히 걸리는 경우가 많다).
 TARGETS = {'여성': r'여성', '대학(원)생': r'대학생|대학원생|재학생', '군 복무·전역': r'장병|군인|군 ?복무|전역|제대군인|간부', '신혼·예비부부': r'신혼|예비부부',
            '한부모·양육': r'한부모|양육|육아|임산부|다자녀', '장애': r'장애', '자립준비청년': r'자립준비|보호종료|시설 ?퇴소',
@@ -233,7 +233,7 @@ def application(payload):
 
 
 def period_status(app, on, check=None):
-    """API 날짜만으로 본 상태. 시각·조기 마감·회차는 알 수 없으므로 'open'도 접수 보장이 아니다."""
+    """등록된 날짜만으로 본 상태. 시각·조기 마감·회차는 알 수 없으므로 'open'도 접수 보장이 아니다."""
     if check and check.get('official_status') == 'closed' and not check.get('api_changed_since_check'):
         return 'closed_official'
     if app['kind'] == 'closed':
@@ -249,16 +249,16 @@ def period_status(app, on, check=None):
 
 
 def timing(app, status, on):
-    """화면 표시와 정렬에 쓸 날짜. API 기재값만 쓰고 다음 모집일을 만들지 않는다."""
+    """화면 표시와 정렬에 쓸 날짜. 등록 정보만 쓰고 다음 모집일을 만들지 않는다."""
     day = on.isoformat()
     if status == 'open':
         end = min(w['end'] for w in app['windows'] if w['start'] <= day <= w['end'])
         if app['long_window']:   # 1년 가까운 기간의 끝날을 '마감 임박'처럼 보여 주지 않는다
-            return end, '연중 표기(API) · 모집 회차 확인'
-        return end, f'D-{(date.fromisoformat(end) - on).days} (API 마감일)'
+            return end, '연중 표기 · 모집 회차 확인'
+        return end, f'D-{(date.fromisoformat(end) - on).days}'
     if status == 'upcoming':
         start = min(w['start'] for w in app['windows'] if w['start'] > day)
-        return start, f'{start} 시작(API)'
+        return start, f'{start} 시작'
     return None, LABEL[status]
 
 
@@ -483,13 +483,13 @@ def selection(payload):
 
 
 def updated(payload):
-    """API 등록·수정 시각. 2026-01-01 00:00:00은 725건에 똑같이 찍힌 일괄 처리 시각이라 실제 수정일로 보지 않는다."""
+    """등록된 등록·수정 시각. 2026-01-01 00:00:00은 725건에 똑같이 찍힌 일괄 처리 시각이라 실제 수정일로 보지 않는다."""
     stamp = str(payload.get('lastMdfcnDt') or '')
     return {'registered': _day(payload.get('frstRegDt')), 'modified': _day(stamp), 'modified_is_bulk': stamp.startswith('2026-01-01 00:00:00')}
 
 
 def tier(structured, status, reviewed=False):
-    """표시 갈래. reviewed=사람 검수로 승인된 정책, screenable=API 값으로 걸러볼 수 있음, link_only=원문 링크만."""
+    """표시 갈래. reviewed=사람 검수로 승인된 정책, screenable=등록 정보로 걸러볼 수 있음, link_only=원문 링크만."""
     if reviewed:
         return {'tier': 'reviewed', 'reasons': []}
     reasons = []

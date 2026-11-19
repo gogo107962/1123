@@ -142,6 +142,12 @@ def find(message, profile, on, skip=()):
         picked = fallback(message)
     words = picked['keywords']
     result = screen_catalog(profile, on, keywords=words, page_size=6)
+    # 모델이 고른 검색어로 하나도 안 나오면, 말에 그대로 있는 주제 낱말로 한 번 더 찾는다.
+    # (실제 모델이 '정보처리기사 봤는데 응시료 지원돼?'에서 '정보처리기사'만 골라 0건이 나온 사례)
+    said = [w for w in WORDS if w in message][:4]
+    if not result['total'] and said and said != words:
+        words = said
+        result = screen_catalog(profile, on, keywords=words, page_size=6)
     # 말에서 읽은 값은 제안일 뿐이다. 저장된 값과 다를 때만 돌려주고 반영은 사용자가 정한다.
     named = [code for code, names in SIDO_ALIAS.items() if any(n in message for n in names)]
     # 나이는 말에 그 숫자가 있을 때만 받고, 모델이 놓쳤으면 'N살/N세' 표현을 코드가 읽는다.
@@ -164,12 +170,12 @@ def find(message, profile, on, skip=()):
     compared = provided(profile)
     # 아직 모르는 정보 중 하나만 묻는다. 방금 말에서 읽어 제안한 값은 다시 묻지 않는다.
     question = next_question(profile, suggestion, result['splits'], skip)
-    topic = "'" + '·'.join(words) + "' 관련" if words else '수집된 전체'
+    topic = "'" + '·'.join(words) + "' 관련" if words else '전체'
     o, t = result['outcomes'], result['tiers']
     if not result['total']:
-        answer = f'{topic} 정책을 수집 자료에서 찾지 못했어요. 다른 표현으로 물어봐 주세요.'
+        answer = f'{topic} 정책이 없어요. 다른 표현으로 물어봐 주세요.'
     elif compared:
-        answer = (f"{topic} 정책 {result['total']:,}건을 찾았어요. 내 정보와 API에 적힌 조건이 맞는 정책 {o['api_match']:,}건, "
+        answer = (f"{topic} 정책 {result['total']:,}건을 찾았어요. 내 정보와 온통청년에 등록된 조건이 맞는 정책 {o['api_match']:,}건, "
                   f"공고 확인이 필요한 정책 {o['needs_check']:,}건, 조건이 다른 정책 {o['api_mismatch']:,}건이에요. "
                   f"나머지 {t['link_only']:,}건은 마감됐거나 정보가 부족해 원문 링크만 드려요.")
     else:

@@ -9,7 +9,7 @@
   "demo_only": false,
   "official_url": "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/161300000103",
   "application": {
-    "period_note": "API 신청기간 구분: rolling. 날짜 없음."
+    "period_note": "등록된 신청기간 구분: rolling. 날짜 없음."
   },
   "review": {
     "status": "draft",
@@ -20,7 +20,7 @@
     {
       "ref": "api",
       "kind": "api",
-      "title": "온통청년 API 수집값(공고 원문 아님)",
+      "title": "온통청년 등록된 수집값(공고 원문 아님)",
       "url": "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/161300000103",
       "anchor": "",
       "excerpt": "",
@@ -53,12 +53,12 @@
     {
       "id": "period",
       "source_ref": "api",
-      "message": "API 신청기간(기재 없음)을 최신 공고의 회차·시작일·마감 시각과 대조하세요."
+      "message": "등록된 신청기간(기재 없음)을 최신 공고의 회차·시작일·마감 시각과 대조하세요."
     },
     {
       "id": "age",
       "source_ref": "api",
-      "message": "API에 연령 '제한없음'으로 적혀 있습니다(온통청년 누리집 표시 기준). 실제로 연령 제한이 없는지 공고에서 확인하세요."
+      "message": "온통청년 정보에 연령 '제한없음'으로 적혀 있습니다(온통청년 누리집 표시 기준). 실제로 연령 제한이 없는지 공고에서 확인하세요."
     },
     {
       "id": "housing",

@@ -1,7 +1,7 @@
-"""API 기재값으로 하는 1차 걸러보기. 자격 판정이 아니며 DB에 아무것도 쓰지 않는다.
+"""등록 정보으로 하는 1차 걸러보기. 자격 판정이 아니며 DB에 아무것도 쓰지 않는다.
 
 결과는 기준마다 match / mismatch / unknown 세 값이다. 프로필이 주지 않은 기준은 skipped.
-- mismatch는 'API 값과 맞지 않음'이지 '자격 없음'이 아니다(API와 공고가 다른 사례가 확인됨).
+- mismatch는 '등록 정보와 맞지 않음'이지 '자격 없음'이 아니다(API와 공고가 다른 사례가 확인됨).
 - 빈값, 상시, 소득 금액, 시군구 미지정은 unknown으로 남긴다.
 사람 검수를 통과한 정책의 실제 판정은 engine.py가 맡는다.
 """
@@ -15,7 +15,7 @@ from db import connect
 from policy_codes import CODEBOOK
 from policy_structure import ABOLISHED, CLOSED, PARENT, PROFILE_FIELDS, RANK, SIDO, TARGETS, period_status, structure, tier, timing
 
-NOTICE = 'API에 적힌 값으로 걸러본 결과입니다. 자격 판정이 아니며, 신청 전 공고 원문을 확인해야 합니다.'
+NOTICE = '온통청년에 등록된 값으로 걸러본 결과입니다. 자격 판정이 아니며, 신청 전 공고 원문을 확인해야 합니다.'
 ORDER = {'api_match': 0, 'needs_check': 1, 'api_mismatch': 2}
 # 내 정보에서 고를 수 있는 '받고 있는 지원'과, 정책의 참여 제한 문장에서 그 지원을 찾을 낱말.
 # 실제 수집본의 참여 제한 문장에 이름이 나오는 지원만 넣었다(data/DATA_AUDIT.md 점검 때 센 것).
@@ -83,7 +83,7 @@ _CACHE = {'key': None, 'rows': []}
 def _catalog():
     """수집 정책과 그 구조화 결과. 수집 내용이 바뀌면(건수·마지막 수집 시각·원문 길이 합) 다시 만든다."""
     with connect() as con:
-        from ontong import CURRENT   # API에서 사라진 정책은 목록에 넣지 않는다
+        from ontong import CURRENT   # 온통청년 정보에서 사라진 정책은 목록에 넣지 않는다
         key = (str(db.DB_PATH), *con.execute('SELECT count(*), max(last_seen_at), total(length(payload_json)) FROM ontong_candidates WHERE ' + CURRENT).fetchone())
         if _CACHE['key'] != key:
             rows = con.execute('SELECT external_id,name,agency,sha256,payload_json FROM ontong_candidates WHERE ' + CURRENT).fetchall()
@@ -125,7 +125,7 @@ def age_rule(supplements):
 
 
 def _age(item, value, rule=None):
-    """나이. 공식 페이지에서 확인한 규칙이 있으면 그것을 쓰고, 없으면 API 나이 칸으로 본 결과를 조건 글에 적힌 나이 범위와 견준다.
+    """나이. 공식 페이지에서 확인한 규칙이 있으면 그것을 쓰고, 없으면 등록된 나이 칸으로 본 결과를 조건 글에 적힌 나이 범위와 견준다.
     둘이 다른 결과를 내면(칸은 '제한없음'인데 글은 19~39세 등) 어느 쪽도 믿지 않고 확인 필요로 둔다."""
     result, basis = _age_field(item, value, rule)
     ranges = item['text_ranges']
@@ -134,7 +134,7 @@ def _age(item, value, rule=None):
     text = ', '.join(f'{a}~{b}세' for a, b in ranges)
     if {'match' if a <= value <= b else 'mismatch' for a, b in ranges} != {result}:
         field = "'제한없음'" if item['kind'] == 'unspecified' else f"{item['min'] or '?'}~{item['max'] or '?'}세"
-        return 'unknown', f'API 나이 칸({field})과 조건 글에 적힌 나이({text})가 다릅니다. 어느 쪽이 맞는지 공고에서 확인하세요.'
+        return 'unknown', f'등록된 나이 칸({field})과 조건 글에 적힌 나이({text})가 다릅니다. 어느 쪽이 맞는지 공고에서 확인하세요.'
     return result, basis + f' 조건 글에는 {text}로 적혀 있습니다.'
 
 
@@ -142,41 +142,41 @@ def _age_field(item, value, rule=None):
     if value is None:
         return 'skipped', '나이를 입력하지 않았습니다.'
     if rule:
-        # API 나이 값이 비었거나 공고와 다른 경우가 많아, 공식 페이지에서 확인한 문장이 있으면 그 기준을 쓴다.
+        # 등록된 나이 값이 비었거나 공고와 다른 경우가 많아, 공식 페이지에서 확인한 문장이 있으면 그 기준을 쓴다.
         op, bound = rule['predicate']['op'], rule['predicate']['value']
         fits = value >= bound if op == 'gte' else value <= bound if op == 'lte' else bound[0] <= value <= bound[1]
         return ('match' if fits else 'mismatch'), f"공식 페이지 기준(사람 검수 전): “{rule['quote']}” — {rule['message']}"
     low, high, kind = item['min'], item['max'], item['kind']
     if kind in ('unspecified', 'invalid'):
         if kind == 'unspecified' and item['no_limit']:
-            return 'match', "API에 연령 '제한없음'으로 적혀 있습니다(온통청년 누리집 표시 기준). 공고와 다른 사례가 있어 원문 확인이 필요합니다."
-        return 'unknown', 'API에 연령 범위가 없습니다. 제한이 없다는 뜻은 아닙니다.'
+            return 'match', "온통청년 정보에 연령 '제한없음'으로 적혀 있습니다(온통청년 누리집 표시 기준). 공고와 다른 사례가 있어 원문 확인이 필요합니다."
+        return 'unknown', '온통청년 정보에 연령 범위가 없습니다. 제한이 없다는 뜻은 아닙니다.'
     if (low and value < low) or (high and value > high):
         if item['no_limit']:   # 범위와 '제한없음'이 함께 적힌 어긋난 값. 어느 쪽도 믿지 않는다.
-            return 'unknown', f"API에 연령 {low or '?'}~{high or '?'}세와 '제한없음' 표기가 함께 적혀 있습니다. 어느 쪽이 맞는지 공고에서 확인하세요."
-        return 'mismatch', f'API 연령 {low or "?"}~{high or "?"}세 밖입니다.'
+            return 'unknown', f"온통청년 정보에 연령 {low or '?'}~{high or '?'}세와 '제한없음' 표기가 함께 적혀 있습니다. 어느 쪽이 맞는지 공고에서 확인하세요."
+        return 'mismatch', f'등록된 연령 {low or "?"}~{high or "?"}세 밖입니다.'
     if kind == 'range':
         if high >= 99:  # 실제 수집본에 99·100·120·999가 100건 있다. 숫자를 그대로 보여 주면 '19~999세'가 된다.
-            return 'match', f'API 연령 {low}세 이상입니다(상한이 {high}로 적혀 있어 사실상 상한 없음으로 보임). 공고에서 상한을 확인하세요.'
-        return 'match', f'API 연령 {low}~{high}세 안입니다.'
+            return 'match', f'등록된 연령 {low}세 이상입니다(상한이 {high}로 적혀 있어 사실상 상한 없음으로 보임). 공고에서 상한을 확인하세요.'
+        return 'match', f'등록된 연령 {low}~{high}세 안입니다.'
     side = f'최소 {low}세' if low else f'최대 {high}세'
-    return 'unknown', f'API에 {side}만 적혀 있습니다. 반대쪽 기준은 공고에서 확인하세요.'
+    return 'unknown', f'온통청년 정보에 {side}만 적혀 있습니다. 반대쪽 기준은 공고에서 확인하세요.'
 
 
 def _region(item, profile):
     result, basis = _area(item, profile)
     need, lived = item['residence_min_months'], profile.get('residence_months')
     if result == 'match' and need and item['residence_unclear']:
-        return 'unknown', '지역은 맞지만 API 글에 거주 기간 조건이 여러 가지이거나 우대·유형별 조건으로 적혀 있습니다. 내게 해당하는 기간을 공고에서 확인하세요.'
+        return 'unknown', '지역은 맞지만 안내 글에 거주 기간 조건이 여러 가지이거나 우대·유형별 조건으로 적혀 있습니다. 내게 해당하는 기간을 공고에서 확인하세요.'
     if result == 'match' and need and lived is not None:
         # 내 정보의 거주 기간은 구간(6개월~1년 등)의 아래쪽 값이다. 구간 전체가 조건 위·아래에 있을 때만 정한다.
         upper = next((b for b in RESIDENCE_BANDS if b > lived), None)
         if lived >= need:
-            return 'match', f'지역이 맞고, 입력한 거주 기간이 API 글의 {need}개월 이상 거주 조건을 넘습니다. 기준일과 연속 거주 여부는 공고에서 확인하세요.'
+            return 'match', f'지역이 맞고, 입력한 거주 기간이 안내 글의 {need}개월 이상 거주 조건을 넘습니다. 기준일과 연속 거주 여부는 공고에서 확인하세요.'
         if upper is not None and upper <= need:
-            return 'mismatch', f'지역은 맞지만 API 글에 {need}개월 이상 거주 조건이 있고, 입력한 거주 기간은 그보다 짧습니다. 기준일은 공고에서 확인하세요.'
+            return 'mismatch', f'지역은 맞지만 안내 글에 {need}개월 이상 거주 조건이 있고, 입력한 거주 기간은 그보다 짧습니다. 기준일은 공고에서 확인하세요.'
     if result == 'match' and need:
-        return 'unknown', f"지역은 맞지만 API 글에 {need}개월 이상 거주 조건이 있습니다. 전입일을 공고의 기준일과 대조하세요."
+        return 'unknown', f"지역은 맞지만 안내 글에 {need}개월 이상 거주 조건이 있습니다. 전입일을 공고의 기준일과 대조하세요."
     return result, basis
 
 
@@ -185,9 +185,9 @@ def _area(item, profile):
     if not sido:
         return 'skipped', '지역을 입력하지 않았습니다.'
     if not item['codes']:
-        return 'unknown', 'API에 지역 코드가 없습니다.'
+        return 'unknown', '온통청년 정보에 지역 코드가 없습니다.'
     if sido not in item['sido']:
-        return 'mismatch', 'API 지역 코드에 해당 지역이 없습니다.'
+        return 'mismatch', '등록된 지역 코드에 해당 지역이 없습니다.'
     # 시도 전체가 등록된 정책, 내가 사는 구의 '시' 코드로 등록된 정책은 내 코드가 목록에 없어도 다르다고 하지 않는다.
     if code and code not in item['codes'] and sido not in item['full_sido'] and PARENT.get(code) not in item['codes']:
         if any(PARENT.get(c) == code for c in item['codes']):
@@ -197,13 +197,13 @@ def _area(item, profile):
         old = [ABOLISHED[c] for c in item['codes'] if c in ABOLISHED and c[:2] == sido]
         if old:   # 폐지 코드가 어느 새 구로 이어지는지는 공식 코드 목록에 없다
             return 'unknown', f"행정구역 개편 전 시군구 코드({', '.join(old)})로 등록돼 있어 지금의 시군구와 견줄 수 없습니다. 대상 지역을 공고에서 확인하세요."
-        return 'mismatch', 'API 지역 코드에 해당 지역이 없습니다.'
+        return 'mismatch', '등록된 지역 코드에 해당 지역이 없습니다.'
     if item['nationwide'] and item['local_agency_hint']:
         return 'unknown', '전국으로 등록됐지만 주관기관이 지자체로 보입니다. 실제 지원 지역을 확인하세요.'
     if code or item['nationwide']:
-        return 'match', 'API 지역 코드에 해당 지역이 있습니다.'
+        return 'match', '등록된 지역 코드에 해당 지역이 있습니다.'
     if sido in item['full_sido']:
-        return 'match', 'API 지역 코드가 이 시도의 시군구 전체를 포함합니다.'
+        return 'match', '등록된 지역 코드가 이 시도의 시군구 전체를 포함합니다.'
     return 'unknown', '시도는 포함되지만 시군구를 입력하지 않아 확인이 필요합니다.'
 
 
@@ -211,28 +211,28 @@ def _coded(item, value):
     if not value:
         return 'skipped', '입력하지 않았습니다.'
     if item['missing']:
-        return 'unknown', 'API에 값이 없습니다. 제한이 없다는 뜻은 아닙니다.'
+        return 'unknown', '온통청년 정보에 값이 없습니다. 제한이 없다는 뜻은 아닙니다.'
     if item['unrestricted'] or value in item['codes']:
-        return 'match', 'API 기재: ' + ', '.join(item['labels'] or item['codes'])
+        return 'match', '등록된 조건: ' + ', '.join(item['labels'] or item['codes'])
     if item['unknown_codes']:
         return 'unknown', '코드표에 없는 코드가 있어 확인이 필요합니다.'
     if item['other']:   # '기타'가 적힌 정책은 코드표에 없는 요건이 있다는 뜻이라 다르다고 단정하지 않는다
-        return 'unknown', "API 기재: " + ', '.join(item['labels']) + ". '기타'로 적힌 요건이 무엇인지 알 수 없어 공고에서 확인하세요."
-    return 'mismatch', 'API 기재: ' + ', '.join(item['labels'])
+        return 'unknown', "등록된 조건: " + ', '.join(item['labels']) + ". '기타'로 적힌 요건이 무엇인지 알 수 없어 공고에서 확인하세요."
+    return 'mismatch', '등록된 조건: ' + ', '.join(item['labels'])
 
 
 def _period(status, long_window=False, scale=None):
     if status == 'open' and not long_window and scale and scale['first_come']:
         people = f" {scale['count']:,}명" if scale['count'] else ''
-        return 'unknown', f'API 신청기간 안이지만 선착순{people}으로 적혀 있습니다. 마감일 전에 끝났을 수 있어 접수 여부를 공고나 기관에서 확인하세요.'
+        return 'unknown', f'등록된 신청기간 안이지만 선착순{people}으로 적혀 있습니다. 마감일 전에 끝났을 수 있어 접수 여부를 공고나 기관에서 확인하세요.'
     if status == 'open' and long_window:
-        return 'unknown', 'API 신청기간이 1년 가까이로 적혀 있습니다. 사업기간을 적은 것일 수 있어 실제 모집 회차와 마감일을 공고에서 확인하세요.'
-    return {'open': ('match', 'API 신청기간 안입니다. 시각·조기 마감은 공고에서 확인하세요.'),
-            'rolling': ('unknown', 'API 상시 표기입니다. 현재 접수 여부는 확인이 필요합니다.'),
-            'upcoming': ('unknown', 'API 신청기간이 아직 시작되지 않았습니다.'),
-            'unknown': ('unknown', 'API에 신청기간이 없습니다.'),
-            'ended': ('mismatch', 'API 신청기간이 지났습니다.'),
-            'closed_code': ('mismatch', 'API 마감 표기입니다.'),
+        return 'unknown', '등록된 신청기간이 1년 가까이로 적혀 있습니다. 사업기간을 적은 것일 수 있어 실제 모집 회차와 마감일을 공고에서 확인하세요.'
+    return {'open': ('match', '등록된 신청기간 안입니다. 시각·조기 마감은 공고에서 확인하세요.'),
+            'rolling': ('unknown', '상시로 등록돼 있습니다. 현재 접수 여부는 확인이 필요합니다.'),
+            'upcoming': ('unknown', '등록된 신청기간이 아직 시작되지 않았습니다.'),
+            'unknown': ('unknown', '온통청년 정보에 신청기간이 없습니다.'),
+            'ended': ('mismatch', '등록된 신청기간이 지났습니다.'),
+            'closed_code': ('mismatch', '마감으로 등록돼 있습니다.'),
             'closed_official': ('mismatch', '대조한 공식 공고가 접수 종료 상태였습니다.')}[status]
 
 
@@ -249,28 +249,28 @@ def _side(pct, bounds, extra=0):
 
 def _income(item, profile):
     if item['code'] == '0043001':
-        return 'match', 'API 소득 무관 표기입니다. 공고와 다른 사례가 있어 원문 확인이 필요합니다.'
+        return 'match', '소득 무관으로 등록돼 있습니다. 공고와 다른 사례가 있어 원문 확인이 필요합니다.'
     if item['missing']:
-        return 'unknown', 'API에 소득 구분이 없습니다.'
+        return 'unknown', '온통청년 정보에 소득 구분이 없습니다.'
     pay, size, bounds = profile.get('income_monthly'), profile.get('household'), item['median_bounds']
     top, mine = item['bracket_max'], profile.get('income_bracket')
     if top is not None:
         if mine is None:
-            return 'unknown', f'API 소득 글에 학자금 지원 {top}구간(소득분위) 이하 기준이 있습니다. 내 정보에 구간을 넣으면 견줘 봅니다.'
+            return 'unknown', f'소득 칸의 글에 학자금 지원 {top}구간(소득분위) 이하 기준이 있습니다. 내 정보에 구간을 넣으면 견줘 봅니다.'
         mark = '기초·차상위' if mine == 0 else f'{mine}구간'
         if mine <= top:
-            return 'match', f'입력한 학자금 지원구간({mark})이 API 소득 글의 {top}구간 이하 안입니다. 어느 학기 구간을 보는지와 예외는 공고에서 확인하세요.'
-        return 'mismatch', f'입력한 학자금 지원구간({mark})이 API 소득 글의 {top}구간 이하 밖입니다. 다자녀·긴급 사유 같은 예외는 공고에서 확인하세요.'
+            return 'match', f'입력한 학자금 지원구간({mark})이 소득 칸의 글의 {top}구간 이하 안입니다. 어느 학기 구간을 보는지와 예외는 공고에서 확인하세요.'
+        return 'mismatch', f'입력한 학자금 지원구간({mark})이 소득 칸의 글의 {top}구간 이하 밖입니다. 다자녀·긴급 사유 같은 예외는 공고에서 확인하세요.'
     city = item['urban_bounds']
     if city and not bounds and all(b['kind'] != '?' for b in city):
         text = ', '.join(f"{b['pct']}% {'이하' if b['kind'] == 'max' else '이상'}" for b in city)
         table = URBAN.get('monthly', {})
         if pay is None or not size or str(size) not in table:
-            return 'unknown', f'API 글에 도시근로자 월평균소득 {text} 기준이 있습니다. 월 소득과 가구원 수를 넣으면 견줘 봅니다.'
+            return 'unknown', f'안내 글에 도시근로자 월평균소득 {text} 기준이 있습니다. 월 소득과 가구원 수를 넣으면 견줘 봅니다.'
         pct = pay * 10000 / table[str(size)] * 100
         # 1·2인 가구에 기준을 더 얹어 주는 정책이 있어(표 파일의 small_household_addition), 그만큼은 '달라요'로 보지 않는다.
         extra = URBAN.get('small_household_addition', {}).get(str(size), 0)
-        head = f"입력한 월 소득은 {URBAN['year_label']} 도시근로자 월평균소득({size}인 가구)의 약 {pct:.0f}%이고, API 글의 기준은 {text}입니다. "
+        head = f"입력한 월 소득은 {URBAN['year_label']} 도시근로자 월평균소득({size}인 가구)의 약 {pct:.0f}%이고, 안내 글의 기준은 {text}입니다. "
         side = _side(pct, city, extra)
         if side == 'mismatch':
             return 'mismatch', head + '기준 밖으로 보입니다. 가구 소득 합산 범위와 산정 방식은 공고에서 확인하세요.'
@@ -284,7 +284,7 @@ def _income(item, profile):
         tops, floors = [b['pct'] for b in bounds if b['kind'] == 'max'], [b['pct'] for b in bounds if b['kind'] == 'min']
         text = ', '.join(f"{b['pct']}% {'이하' if b['kind'] == 'max' else '이상'}" for b in bounds)
         name = '중위소득 150% 초과' if high is None else f'중위소득 {high}% 이하'
-        head = f'입력한 소득 구간은 {name}이고, API 소득 글의 기준은 {text}입니다. '
+        head = f'입력한 소득 구간은 {name}이고, 소득 칸의 글의 기준은 {text}입니다. '
         if (tops and low >= max(tops)) or (floors and high is not None and high < min(floors)):
             return 'mismatch', head + '기준 밖으로 보입니다. 소득 산정 방식은 공고에서 확인하세요.'
         if (not tops or (high is not None and high <= min(tops))) and (not floors or low >= max(floors)):
@@ -294,7 +294,7 @@ def _income(item, profile):
         # 기준 중위소득 대비 비율로만 비교한다. 경계 ±5%는 산정 방식에 따라 뒤집힐 수 있어 확인 필요로 둔다.
         pct = pay * 10000 / MEDIAN[str(size)] * 100
         text = ', '.join(f"{b['pct']}% {'이하' if b['kind'] == 'max' else '이상'}" for b in bounds)
-        head = f'입력한 월 소득은 2026년 기준 중위소득({size}인 가구)의 약 {pct:.0f}%이고, API 소득 글의 기준은 {text}입니다. '
+        head = f'입력한 월 소득은 2026년 기준 중위소득({size}인 가구)의 약 {pct:.0f}%이고, 소득 칸의 글의 기준은 {text}입니다. '
         side = _side(pct, bounds)
         if side == 'mismatch':
             return 'mismatch', head + '기준 밖으로 보입니다. 소득 산정 방식은 공고에서 확인하세요.'
@@ -307,21 +307,21 @@ def _income(item, profile):
         if annual['min']:
             # 최소 금액 칸이 하한이 아니라 다른 대상의 상한으로 쓰인 사례가 있다(전세보증금반환보증: 청년 5,000 / 신혼부부 7,500).
             # 실제 47건 중 8건에 두 값이 있고 어느 뜻인지 가릴 수 없어 견주지 않는다.
-            return 'unknown', (f"API 소득 칸에 {annual['min']:,}만원과 {annual['max']:,}만원 두 값이 적혀 있습니다. 하한·상한인지 대상별 상한인지 알 수 없어 견주지 않았습니다. "
+            return 'unknown', (f"등록된 소득 칸에 {annual['min']:,}만원과 {annual['max']:,}만원 두 값이 적혀 있습니다. 하한·상한인지 대상별 상한인지 알 수 없어 견주지 않았습니다. "
                                '공고에서 내 대상의 소득 기준을 확인하세요.')
         if annual['max'] < 1000:   # 실제 수집본의 '연 534만원 이하'(공공분양주택)처럼 연소득 상한으로 보기 어려운 값은 견주지 않는다
-            return 'unknown', f'API 소득 기준이 {text}로 적혀 있습니다. 연소득 상한으로 보기에는 값이 작아 월 단위이거나 잘못 적힌 값일 수 있습니다. 공고에서 확인하세요.'
+            return 'unknown', f'등록된 소득 기준이 {text}로 적혀 있습니다. 연소득 상한으로 보기에는 값이 작아 월 단위이거나 잘못 적힌 값일 수 있습니다. 공고에서 확인하세요.'
         if pay is None:
-            return 'unknown', f'API 소득 기준은 {text}입니다(단위는 온통청년 누리집 표시 기준). 월 소득을 넣으면 견줘 봅니다.'
+            return 'unknown', f'등록된 소득 기준은 {text}입니다(단위는 온통청년 누리집 표시 기준). 월 소득을 넣으면 견줘 봅니다.'
         yearly = pay * 12
-        head = f'입력한 월 소득으로 본 연소득은 약 {yearly:,}만원이고, API 소득 기준은 {text}입니다(단위는 온통청년 누리집 표시 기준). '
+        head = f'입력한 월 소득으로 본 연소득은 약 {yearly:,}만원이고, 등록된 소득 기준은 {text}입니다(단위는 온통청년 누리집 표시 기준). '
         if yearly > annual['max'] * 1.05:
             return 'mismatch', head + '기준 밖으로 보입니다. 개인·가구 기준과 산정 방식은 공고에서 확인하세요.'
         if yearly >= annual['max'] * 0.95:
             return 'unknown', head + '경계(±5%)에 가까워 확인이 필요합니다.'
         return 'match', head + '기준 안으로 보입니다. 개인·가구 기준과 산정 방식은 공고에서 확인하세요.'
     if item['median_pct']:
-        return 'unknown', ('API 소득 글에 중위소득 ' + '·'.join(f'{x}%' for x in item['median_pct'])
+        return 'unknown', ('소득 칸의 글에 중위소득 ' + '·'.join(f'{x}%' for x in item['median_pct'])
                            + ' 기준이 적혀 있습니다. 가구원 수와 산정 방식을 공고에서 확인하세요.')
     kinds = [k for k in item['kinds'] if k != '공고에서 확인']
     return 'unknown', ('소득 조건이 있습니다. ' + (f"기준 방식: {', '.join(kinds)}. " if kinds else '')
@@ -344,11 +344,11 @@ def _exam(item, names):
     for name in names:
         key = ''.join(name.split()).lower()
         if len(key) >= 2 and key not in ('자격증', '시험', '응시료', '어학') and key in item['text']:
-            return 'match', f'API 안내 글에 입력한 시험({name})이 나옵니다. 응시일·횟수 기준은 공고에서 확인하세요.'
+            return 'match', f'안내 글에 입력한 시험({name})이 나옵니다. 응시일·횟수 기준은 공고에서 확인하세요.'
         kind = next((k for k, pattern in EXAM_ALIAS.items() if re.search(pattern, key)), None)
         if kind in item['kinds']:
-            return 'match', f'입력한 시험: {name}. 이름으로 보아 {kind}에 해당하고, API 안내 글에 {kind} 항목이 대상 시험으로 나옵니다. 종목·응시일 기준은 공고에서 확인하세요.'
-    return 'unknown', f"입력한 시험({', '.join(names)})이 API 안내 글에 보이지 않습니다. 대상 시험인지 공고에서 확인하세요." + listed
+            return 'match', f'입력한 시험: {name}. 이름으로 보아 {kind}에 해당하고, 안내 글에 {kind} 항목이 대상 시험으로 나옵니다. 종목·응시일 기준은 공고에서 확인하세요.'
+    return 'unknown', f"입력한 시험({', '.join(names)})이 안내 글에 보이지 않습니다. 대상 시험인지 공고에서 확인하세요." + listed
 
 
 def _housing(item, kind):
@@ -356,13 +356,13 @@ def _housing(item, kind):
     said = f"“{item['no_home']}”"
     if kind == '자가':
         if item['hedged']:
-            return 'unknown', f'API 안내 글에 무주택이 나오지만 주택 구입·우대 같은 다른 경우가 함께 적혀 있어 단정하지 않았습니다: {said}. 공고에서 확인하세요.'
-        return 'mismatch', f'API 안내 글에 무주택 요건이 있는데 주거 형태를 자가로 입력했습니다: {said}. 해당하는지 공고에서 확인하세요.'
+            return 'unknown', f'안내 글에 무주택이 나오지만 주택 구입·우대 같은 다른 경우가 함께 적혀 있어 단정하지 않았습니다: {said}. 공고에서 확인하세요.'
+        return 'mismatch', f'안내 글에 무주택 요건이 있는데 주거 형태를 자가로 입력했습니다: {said}. 해당하는지 공고에서 확인하세요.'
     if kind == '가족과 거주' and item['apart']:
-        return 'unknown', f"API 안내 글에 부모와 따로 사는 청년이 대상이라고 적혀 있는데 가족과 거주한다고 입력했습니다: “{item['apart']}”. 함께 사는 가족이 부모인지에 따라 달라지니 공고에서 확인하세요."
+        return 'unknown', f"안내 글에 부모와 따로 사는 청년이 대상이라고 적혀 있는데 가족과 거주한다고 입력했습니다: “{item['apart']}”. 함께 사는 가족이 부모인지에 따라 달라지니 공고에서 확인하세요."
     if kind:
-        return 'unknown', f'API 안내 글에 무주택 요건이 있습니다: {said}. 주거 형태({kind})만으로는 주택 소유 여부를 알 수 없어 확인이 필요합니다.'
-    return 'unknown', f'API 안내 글에 무주택 요건이 있습니다: {said}. 내 정보에 주거 형태가 없어 비교하지 않았습니다.'
+        return 'unknown', f'안내 글에 무주택 요건이 있습니다: {said}. 주거 형태({kind})만으로는 주택 소유 여부를 알 수 없어 확인이 필요합니다.'
+    return 'unknown', f'안내 글에 무주택 요건이 있습니다: {said}. 내 정보에 주거 형태가 없어 비교하지 않았습니다.'
 
 
 # 근거가 온통청년 정책 페이지의 어느 항목에서 나왔는지(누리집에 보이는 항목 이름). 화면의 근거 보기 '위치' 줄에 쓴다.
@@ -374,7 +374,7 @@ WHERE = {'period': '사업 신청기간', 'age': '연령', 'region': '거주지�
 def _where(key, basis):
     """근거의 위치. 코드 칸에 더해 조건 글이나 따로 확인한 공식 페이지를 함께 썼으면 그것도 적는다(근거 문장에 그 말이 있을 때)."""
     parts = ['온통청년 정책 페이지의 ' + WHERE[key]]
-    if key in ('period', 'age', 'region', 'income', 'job', 'school', 'marriage') and re.search(r'조건 글|API 글|글에 ', basis):
+    if key in ('period', 'age', 'region', 'income', 'job', 'school', 'marriage') and re.search(r'조건 글|안내 글|글에 (예산|자녀)', basis):
         parts.append('추가사항 · 지원내용 글')
     if '공식 페이지' in basis:
         parts.append('따로 확인한 공식 페이지(사람 검수 전)')
@@ -382,7 +382,7 @@ def _where(key, basis):
 
 
 def restricts(item):
-    """이 정책의 API 값이 가르는 내 정보 항목. 질문 선택기가 찾은 정책들에서 이것을 세어 무엇을 물을지 고른다."""
+    """이 정책의 등록 정보가 가르는 내 정보 항목. 질문 선택기가 찾은 정책들에서 이것을 세어 무엇을 물을지 고른다."""
     keys, area, limits = set(), item['region'], item['exclusions']['kinds']
     if not area['nationwide']:
         keys.add('sido')
@@ -411,7 +411,7 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
              for key, name in [('job_code', 'job'), ('school_code', 'school'), ('major_code', 'major'), ('marriage_code', 'marriage')]]
     # 사업자등록이 있으면 미취업자 요건을 그대로 '맞아요'로 보지 않는다(사업자등록자를 미취업에서 빼는 공고가 많다).
     if profile.get('business') and profile.get('job_code') == '0013003' and rows[4][1] == 'match' and not structured['job']['unrestricted']:
-        rows[4] = ('job', 'unknown', 'API 취업 요건은 미취업자인데 사업자등록이 있다고 입력했습니다. 사업자등록이 있으면 미취업으로 보지 않는 공고가 많아 확인이 필요합니다.')
+        rows[4] = ('job', 'unknown', '등록된 취업 요건은 미취업자인데 사업자등록이 있다고 입력했습니다. 사업자등록이 있으면 미취업으로 보지 않는 공고가 많아 확인이 필요합니다.')
     # 코드 칸은 '제한 없음'이거나 한 가지 값인데 같은 정책의 조건 글이 다르게 말하면 단정하지 않는다.
     # (비교 가능한 1,448건에서 센 어긋남: 소득 21, 취업 54+6, 학력 43+3, 조기 마감 9. VALIDATION.md v0.35)
     words, job, school = structured['said'], profile.get('job_code'), profile.get('school_code')
@@ -419,30 +419,30 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
     def soften(i, why):
         rows[i] = (rows[i][0], 'unknown', why)
     if rows[1][1] == 'mismatch' and not rule and (structured['age']['max'] or 99) < 19 and words['child']:
-        soften(1, f"API 나이 칸이 {structured['age']['min'] or '?'}~{structured['age']['max']}세인데 글에 자녀·아동·보호자가 나옵니다: “{words['child']}”. 신청하는 사람이 아니라 자녀의 나이일 수 있어 공고에서 확인하세요.")
+        soften(1, f"등록된 나이 칸이 {structured['age']['min'] or '?'}~{structured['age']['max']}세인데 글에 자녀·아동·보호자가 나옵니다: “{words['child']}”. 신청하는 사람이 아니라 자녀의 나이일 수 있어 공고에서 확인하세요.")
     if rows[0][1] == 'match' and words['early_close']:
-        soften(0, f"API 신청기간 안이지만 글에 예산 소진·선착순·조기 마감이 적혀 있습니다: “{words['early_close']}”. 지금도 접수하는지 공고나 기관에서 확인하세요.")
+        soften(0, f"등록된 신청기간 안이지만 글에 예산 소진·선착순·조기 마감이 적혀 있습니다: “{words['early_close']}”. 지금도 접수하는지 공고나 기관에서 확인하세요.")
     if rows[3][1] == 'match' and structured['income']['code'] == '0043001' and words['income']:
-        soften(3, f"API 소득 칸은 '무관'인데 조건 글에 소득과 관련된 말이 있습니다: “{words['income']}”. 소득 조건이 있는지 공고에서 확인하세요.")
+        soften(3, f"등록된 소득 칸은 '무관'인데 조건 글에 소득과 관련된 말이 있습니다: “{words['income']}”. 소득 조건이 있는지 공고에서 확인하세요.")
     if rows[4][1] == 'match' and structured['job']['unrestricted']:
         if job == '0013001' and words['unemployed'] and not words['employed']:
-            soften(4, f"API 취업 요건은 '제한없음'인데 조건 글에 미취업·구직 청년이 나옵니다: “{words['unemployed']}”. 재직자도 대상인지 공고에서 확인하세요.")
+            soften(4, f"등록된 취업 요건은 '제한없음'인데 조건 글에 미취업·구직 청년이 나옵니다: “{words['unemployed']}”. 재직자도 대상인지 공고에서 확인하세요.")
         elif job == '0013003' and words['employed'] and not words['unemployed']:
-            soften(4, f"API 취업 요건은 '제한없음'인데 조건 글에 재직자·근로자가 나옵니다: “{words['employed']}”. 미취업자도 대상인지 공고에서 확인하세요.")
+            soften(4, f"등록된 취업 요건은 '제한없음'인데 조건 글에 재직자·근로자가 나옵니다: “{words['employed']}”. 미취업자도 대상인지 공고에서 확인하세요.")
     elif rows[4][1] == 'mismatch' and words['short_work']:
-        soften(4, f"API 취업 요건({', '.join(structured['job']['labels'])})과는 다르지만 조건 글에 단기근로·아르바이트 등을 함께 적었습니다: “{words['short_work']}”. 내 근로 형태가 해당하는지 공고에서 확인하세요.")
+        soften(4, f"등록된 취업 요건({', '.join(structured['job']['labels'])})과는 다르지만 조건 글에 단기근로·아르바이트 등을 함께 적었습니다: “{words['short_work']}”. 내 근로 형태가 해당하는지 공고에서 확인하세요.")
     if rows[5][1] == 'match' and structured['school']['unrestricted'] and words['student'] and school not in STUDENT:
-        soften(5, f"API 학력 요건은 '제한없음'인데 조건 글에 재학생·대학생이 나옵니다: “{words['student']}”. 재학생만 대상인지 공고에서 확인하세요.")
+        soften(5, f"등록된 학력 요건은 '제한없음'인데 조건 글에 재학생·대학생이 나옵니다: “{words['student']}”. 재학생만 대상인지 공고에서 확인하세요.")
     elif rows[5][1] == 'mismatch' and school in GRADUATE and words['graduate']:
-        soften(5, f"API 학력 요건({', '.join(structured['school']['labels'])})과는 다르지만 조건 글에 졸업자도 나옵니다: “{words['graduate']}”. 졸업자도 대상인지 공고에서 확인하세요.")
+        soften(5, f"등록된 학력 요건({', '.join(structured['school']['labels'])})과는 다르지만 조건 글에 졸업자도 나옵니다: “{words['graduate']}”. 졸업자도 대상인지 공고에서 확인하세요.")
     elif rows[5][1] == 'mismatch' and words['school_floor']:
-        soften(5, f"API 학력 요건({', '.join(structured['school']['labels'])})과는 다르지만 조건 글에 '○○ 이상'으로 적혀 있습니다: “{words['school_floor']}”. 더 높은 학력도 되는지 공고에서 확인하세요.")
+        soften(5, f"등록된 학력 요건({', '.join(structured['school']['labels'])})과는 다르지만 조건 글에 '○○ 이상'으로 적혀 있습니다: “{words['school_floor']}”. 더 높은 학력도 되는지 공고에서 확인하세요.")
     if rows[7][1] == 'match' and structured['marriage']['unrestricted'] and words['unmarried'] and profile.get('marriage_code') == '0055001':
-        soften(7, f"API 결혼 요건은 '제한없음'인데 조건 글에 미혼이 나옵니다: “{words['unmarried']}”. 기혼자도 대상인지 공고에서 확인하세요.")
-    # 공식 페이지에서 확인해 둔 문장(사람 검수 전)이 API 값과 어긋나면 API 값을 믿지 않는다.
+        soften(7, f"등록된 결혼 요건은 '제한없음'인데 조건 글에 미혼이 나옵니다: “{words['unmarried']}”. 기혼자도 대상인지 공고에서 확인하세요.")
+    # 공식 페이지에서 확인해 둔 문장(사람 검수 전)이 등록 정보와 어긋나면 등록 정보를 믿지 않는다.
     said = next((q for x in notes if x['field'] == 'conditions' for q in x['quotes'] if '소득' in q), None)
     if said and structured['income']['code'] == '0043001':
-        rows[3] = ('income', 'unknown', f'API는 소득 무관으로 적혀 있지만 공식 페이지에 소득 조건이 있습니다(사람 검수 전): “{said}”')
+        rows[3] = ('income', 'unknown', f'온통청년 정보는 소득 무관으로 적혀 있지만 공식 페이지에 소득 조건이 있습니다(사람 검수 전): “{said}”')
     official = next((x['quotes'][0] for x in notes if x['field'] == 'period'), None)
     # 신청 시기 인용들에서 기간이 꼭 하나로 읽힐 때만 쓴다(여러 회차·행사일이 섞이면 쓰지 않는다).
     spans = {w for x in notes if x['field'] == 'period' and confirmed(x) for q in x['quotes']
@@ -454,16 +454,16 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
     if window and window[0] <= on <= window[1]:
         rows[0] = (rows[0][0], rows[0][1], rows[0][2] + f' 공식 페이지에도 신청 시기가 “{official}”로 적혀 있습니다(사람 검수 전).')
     elif window and on > window[1] and rows[0][1] != 'mismatch':
-        # 공식 페이지 확인에서 API는 접수 중인데 회차가 이미 끝난 정책이 여럿 나왔다(사람 검수 전이라 '달라요'로 단정하지는 않는다).
-        rows[0] = ('period', 'unknown', f'공식 페이지에 적힌 신청 시기 “{official}”는 이미 지났습니다(사람 검수 전). API 날짜와 달라 추가 모집이 있는지 확인하세요.')
+        # 공식 페이지 확인에서 온통청년 정보는 접수 중인데 회차가 이미 끝난 정책이 여럿 나왔다(사람 검수 전이라 '달라요'로 단정하지는 않는다).
+        rows[0] = ('period', 'unknown', f'공식 페이지에 적힌 신청 시기 “{official}”는 이미 지났습니다(사람 검수 전). 등록된 날짜와 달라 추가 모집이 있는지 확인하세요.')
     elif official and rows[0][1] == 'match':
-        rows[0] = ('period', 'unknown', f'API 신청기간 안이지만 공식 페이지에 신청 시기가 따로 적혀 있습니다(사람 검수 전): “{official}”. 지금 접수 중인지 대조하세요.')
+        rows[0] = ('period', 'unknown', f'등록된 신청기간 안이지만 공식 페이지에 신청 시기가 따로 적혀 있습니다(사람 검수 전): “{official}”. 지금 접수 중인지 대조하세요.')
     elif official:
         rows[0] = (rows[0][0], rows[0][1], rows[0][2] + f' 공식 페이지에 적힌 신청 시기(사람 검수 전): “{official}”')
-    # 공식 페이지에 나이 문장이 있는데 규칙으로 옮기지 못한 경우(출생연도 기준, 문장이 서로 다름)에는 API 나이로 단정하지 않는다.
+    # 공식 페이지에 나이 문장이 있는데 규칙으로 옮기지 못한 경우(출생연도 기준, 문장이 서로 다름)에는 등록된 나이로 단정하지 않는다.
     aged = next((q for x in notes if x['field'] == 'conditions' for q in x['quotes'] if _AGE_SAID.search(q)), None)
     if aged and not rule and rows[1][1] in ('match', 'mismatch'):
-        rows[1] = ('age', 'unknown', f'공식 페이지의 나이 기준이 API 값과 다를 수 있습니다(사람 검수 전): “{aged}”')
+        rows[1] = ('age', 'unknown', f'공식 페이지의 나이 기준이 등록 정보와 다를 수 있습니다(사람 검수 전): “{aged}”')
     # 이름에 특정 대상이 드러난 정책은, 내가 그 대상이라고 한 경우에만 '맞아요'로 본다. 아니라고 단정하지는 않는다.
     if structured['targets']:
         mine, names = list(profile.get('groups') or []), ', '.join(structured['targets'])
@@ -474,8 +474,8 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
         else:
             rows.append(('target', 'unknown', f'정책 이름에 특정 대상({names})이 있습니다. 해당하는지 공고에서 확인하세요.'))
     if not (structured['access']['has_method'] or structured['access']['has_apply_url']):
-        rows.append(('apply', 'unknown', ("API 신청 방법 칸에 '해당없음'으로 적혀 있습니다. 신청 없이 이용하는 정책인지 공고에서 확인하세요." if structured['access']['method_stated_none']
-                                         else 'API에 신청 방법과 신청 주소가 없습니다. 참고 주소의 공고에서 신청 방법을 확인하세요.')))
+        rows.append(('apply', 'unknown', ("등록된 신청 방법 칸에 '해당없음'으로 적혀 있습니다. 신청 없이 이용하는 정책인지 공고에서 확인하세요." if structured['access']['method_stated_none']
+                                         else '온통청년 정보에 신청 방법과 신청 주소가 없습니다. 참고 주소의 공고에서 신청 방법을 확인하세요.')))
     # 응시료 지원의 대상 시험, 무주택 요건(내 정보의 자격증·시험, 주거 형태와 비교)
     if structured['exam']['fee']:
         rows.append(('exam', *_exam(structured['exam'], profile.get('exams'))))
@@ -484,7 +484,7 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
     # 참여 제한(제외·중복 수혜) 안내가 있으면 해당 여부를 알 수 없으므로 확인 필요로 남긴다.
     limits = structured['exclusions']
     if limits['explicit_none']:
-        rows.append(('exclusion', 'match', "API 참여 제한 칸에 '해당 없음'으로 적혀 있습니다. 공고와 다른 사례가 있어 원문 확인이 필요합니다."))
+        rows.append(('exclusion', 'match', "등록된 참여 제한 칸에 '해당 없음'으로 적혀 있습니다. 공고와 다른 사례가 있어 원문 확인이 필요합니다."))
     if limits['sentences']:
         more = f" 외 {limits['count'] - 1}건" if limits['count'] > 1 else ''
         # 정책의 제한 문장이 '내가 받고 있는 지원'을 가리키는 방향만 본다(반대 방향으로 뒤집지 않는다).
@@ -493,12 +493,12 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
         label, pattern = ('사업자등록', JOB_LIMIT['0013002'][1]) if profile.get('business') else JOB_LIMIT.get(profile.get('job_code'), ('', None))
         job = next((s for s in limits['sentences'] if pattern and re.search(pattern, s) and not _HEDGE.search(s)), None)
         if held:
-            rows.append(('exclusion', 'mismatch', f"API 참여 제한 안내에 받고 있는 지원({held[0]})이 나옵니다: “{held[1]}”. 함께 받을 수 있는지 기관에 확인하세요."))
+            rows.append(('exclusion', 'mismatch', f"등록된 참여 제한 안내에 받고 있는 지원({held[0]})이 나옵니다: “{held[1]}”. 함께 받을 수 있는지 기관에 확인하세요."))
         elif job:
-            rows.append(('exclusion', 'mismatch', f"API 참여 제한 안내에 내 취업 상태({label})가 나옵니다: “{job}”. 해당하는지 공고에서 확인하세요."))
+            rows.append(('exclusion', 'mismatch', f"등록된 참여 제한 안내에 내 취업 상태({label})가 나옵니다: “{job}”. 해당하는지 공고에서 확인하세요."))
         else:
             kinds = f" 확인할 것: {', '.join(limits['kinds'])}." if limits['kinds'] else ''
-            rows.append(('exclusion', 'unknown', f"API에 참여 제한 안내가 있습니다: “{limits['sentences'][0]}”{more}.{kinds} 해당하는지는 공고에서 확인하세요."))
+            rows.append(('exclusion', 'unknown', f"온통청년 정보에 참여 제한 안내가 있습니다: “{limits['sentences'][0]}”{more}.{kinds} 해당하는지는 공고에서 확인하세요."))
     results = {r[1] for r in rows}
     outcome = 'api_mismatch' if 'mismatch' in results else 'needs_check' if 'unknown' in results else 'api_match'
     return {'outcome': outcome, 'qualification_determined': False,
@@ -521,7 +521,7 @@ def engine_view(policy, profile, on):
         facts['region'] = REGION_FACT.get(sido, '기타')
     if profile.get('job_code'):
         facts['employment_status'] = JOB_FACT.get(profile['job_code'], 'other')
-    # 초안 도구가 API 코드 조건을 그대로 옮긴 규칙(sido_code in [...], job_code in [...])에 쓸 값
+    # 초안 도구가 등록된 코드 조건을 그대로 옮긴 규칙(sido_code in [...], job_code in [...])에 쓸 값
     facts.update({k: v for k, v in [('sido_code', sido), *((key, profile.get(key)) for key in PROFILE_FIELDS)] if v})
     out = status_policy(policy, facts, on)
     return {'policy_code': policy['code'], 'status': out['status'], 'missing_facts': out['missing_facts'],
@@ -560,7 +560,7 @@ def screen_catalog(profile, on, query='', outcome='', only_tier='', page=1, page
             check = {**check, 'api_changed_since_check': check['api_sha256'] != row['sha256']}
         if category and item['category'] != category:
             continue
-        # 지역 필터: 그 시도가 등록돼 있거나 전국 대상인 정책. 나이 필터: API 나이 범위가 구간과 겹치는 정책(범위가 없는 정책은 빼지 않는다).
+        # 지역 필터: 그 시도가 등록돼 있거나 전국 대상인 정책. 나이 필터: 등록된 나이 범위가 구간과 겹치는 정책(범위가 없는 정책은 빼지 않는다).
         if sido and sido not in item['region']['sido']:
             continue
         if span and item['age']['kind'] in ('range', 'min_only', 'max_only') and not ((item['age']['min'] or 0) <= span[1] and span[0] <= (item['age']['max'] or 999)):
@@ -586,7 +586,7 @@ def screen_catalog(profile, on, query='', outcome='', only_tier='', page=1, page
                       '_same': (row['name'].strip(), 'nationwide' if item['region']['nationwide'] else ','.join(sorted(item['region']['codes'])))})
     found.sort(key=lambda x: x['external_id'], reverse=True)
     # 주제를 물었을 때는 이름에 그 말이 있는 정책을 먼저, 그 안에서 비교 결과 순으로 보여 준다.
-    # 같은 결과 안에서는 접수 중인 정책을 마감이 가까운 순으로 먼저 보여 준다(API 기재 마감일 기준).
+    # 같은 결과 안에서는 접수 중인 정책을 마감이 가까운 순으로 먼저 보여 준다(등록된 마감일 기준).
     # 사람이 승인한 정책 가운데 신청을 검토할 수 있는 것은 맨 앞에 둔다.
     found.sort(key=lambda x: (bool(words) and not x['name_hit'], not (x['engine'] and x['engine']['status'] == 'review_possible'),
                               ORDER[x['screen']['outcome']] if x['screen'] else 3,

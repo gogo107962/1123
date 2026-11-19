@@ -56,7 +56,7 @@ with sync_playwright() as p:
     page.locator('[data-a=sheet]').first.click()
     expect(page.locator('.sheet')).to_contain_text('지원 조건')
     expect(page.locator('.sheet')).to_contain_text('온통청년 정책 페이지의')     # 근거의 위치
-    expect(page.locator('.sheet')).to_contain_text('API 수집일')
+    expect(page.locator('.sheet')).to_contain_text('정보 수집일')
     page.screenshot(path=str(BASE / '.local/mobile-detail.png'))
     page.locator('.sheet button[data-a=closesheet]').click()
     page.locator('[data-a=back]').click()

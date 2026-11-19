@@ -11,7 +11,7 @@
   "application": {
     "open": "2026-02-01",
     "close": "2026-11-30",
-    "period_note": "API 기재 날짜. 공고와 대조 전."
+    "period_note": "등록된 날짜. 공고와 대조 전."
   },
   "review": {
     "status": "draft",
@@ -22,7 +22,7 @@
     {
       "ref": "api",
       "kind": "api",
-      "title": "온통청년 API 수집값(공고 원문 아님)",
+      "title": "온통청년 등록된 수집값(공고 원문 아님)",
       "url": "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&bcd=notice",
       "anchor": "",
       "excerpt": "",
@@ -50,7 +50,7 @@
           39
         ]
       },
-      "message": "API 연령 18~39세. 공고의 기준일과 출생연도 표현을 확인하세요.",
+      "message": "등록된 연령 18~39세. 공고의 기준일과 출생연도 표현을 확인하세요.",
       "source_ref": "api"
     },
     {
@@ -61,7 +61,7 @@
         "op": "eq",
         "value": "인천"
       },
-      "message": "API 지역 코드가 인천광역시입니다. 주민등록 기준일을 확인하세요.",
+      "message": "등록된 지역 코드가 인천광역시입니다. 주민등록 기준일을 확인하세요.",
       "source_ref": "api"
     },
     {
@@ -72,7 +72,7 @@
         "op": "eq",
         "value": "unemployed"
       },
-      "message": "API 취업 요건: 미취업자. 단기근로·사업자등록 예외를 확인하세요.",
+      "message": "등록된 취업 요건: 미취업자. 단기근로·사업자등록 예외를 확인하세요.",
       "source_ref": "api"
     }
   ],
@@ -80,12 +80,12 @@
     {
       "id": "period",
       "source_ref": "api",
-      "message": "API 신청기간(20260201 ~ 20261130)을 최신 공고의 회차·시작일·마감 시각과 대조하세요."
+      "message": "등록된 신청기간(20260201 ~ 20261130)을 최신 공고의 회차·시작일·마감 시각과 대조하세요."
     },
     {
       "id": "age_flag",
       "source_ref": "api",
-      "message": "API에 연령 범위와 '제한없음' 표기가 함께 적혀 있습니다. 어느 쪽이 맞는지 공고에서 확인하세요."
+      "message": "온통청년 정보에 연령 범위와 '제한없음' 표기가 함께 적혀 있습니다. 어느 쪽이 맞는지 공고에서 확인하세요."
     },
     {
       "id": "district",

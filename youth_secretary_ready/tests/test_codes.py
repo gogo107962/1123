@@ -1,4 +1,4 @@
-"""코드 해석·코드 필터 회귀 (HANDOFF 03 문서 P0-1 표). 모의 응답 기반이며 실제 API 증거가 아니다."""
+"""코드 해석·코드 필터 회귀 (HANDOFF 03 문서 P0-1 표). 모의 응답 기반이며 실제 등록된 증거가 아니다."""
 import httpx
 import pytest
 from test_project import ctx

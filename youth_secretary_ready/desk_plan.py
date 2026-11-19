@@ -1,9 +1,9 @@
-"""신청 계획: 고른 정책들의 서류를 합치고 API 기재 마감일 순서로 늘어놓는다. 읽기 전용.
+"""신청 계획: 고른 정책들의 서류를 합치고 등록된 마감일 순서로 늘어놓는다. 읽기 전용.
 
-검수 전 정책이라 서류 목록은 API의 서류 안내 글에서 '이름이 그대로 나온' 서류만 찾는다.
+검수 전 정책이라 서류 목록은 온통청년의 서류 안내 글에서 '이름이 그대로 나온' 서류만 찾는다.
 - 글이 비어 있으면 '서류 불필요'가 아니라 '안내 없음'으로 남긴다.
 - 발급처는 일반 안내다. 발급일·포함 항목·대체서류는 공고에서 확인해야 한다.
-- 순서는 API에 적힌 마감일 기준이다. 다음 모집일을 추정하지 않는다.
+- 순서는 온통청년에 등록된 마감일 기준이다. 다음 모집일을 추정하지 않는다.
 """
 import re
 from datetime import date
@@ -90,7 +90,7 @@ def build(wid, external_ids, profile, on):
             'period_status': status, 'period_label': label, 'deadline': deadline, 'documents_text': text,
             'amounts': item['amounts'], 'provision': item['provision'], 'channels': item['access']['channels'], 'documents_source': source,
             # 서류 칸에 '해당없음'이라고 적힌 경우와, 목록 없이 붙임파일만 가리키는 경우를 빈칸과 구분해 알린다.
-            'documents_note': ("API 서류 칸에 '해당없음'으로 적혀 있습니다. 실제로 서류가 없는지 공고에서 확인하세요." if docs['stated_none'] and not text
+            'documents_note': ("등록된 서류 칸에 '해당없음'으로 적혀 있습니다. 실제로 서류가 없는지 공고에서 확인하세요." if docs['stated_none'] and not text
                                else '서류 목록이 글에 없고 붙임파일·공고문을 보라고만 적혀 있습니다.' if docs['pointer_only'] and source == 'api' else ''),
             'scale': item['scale'], 'selection': item['selection'],
             'criteria': result['criteria'] if result else None, 'links': links,
@@ -104,4 +104,4 @@ def build(wid, external_ids, profile, on):
     return {'as_of': on.isoformat(), 'policies': policies, 'order': order,
             'documents': [found[key] for key, *_ in DOCS if key in found], 'documents_unlisted': unlisted,
             'conflicts': conflicts(policies), 'overlap_checked': False, 'saved': False, 'estimate': estimate(policies),
-            'notice': NOTICE + ' 서류는 API 서류 안내 글에서 이름을 찾은 것이며, 중복 수혜 제한은 검수하지 않았습니다.'}
+            'notice': NOTICE + ' 서류는 등록된 서류 안내 글에서 이름을 찾은 것이며, 중복 수혜 제한은 검수하지 않았습니다.'}
