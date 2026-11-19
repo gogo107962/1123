@@ -331,6 +331,9 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
             ('region', *_region(structured['region'], profile)), ('income', *_income(structured['income'], profile))]
     rows += [(name, *_coded(structured[name], profile.get(key)))
              for key, name in [('job_code', 'job'), ('school_code', 'school'), ('major_code', 'major'), ('marriage_code', 'marriage')]]
+    # 사업자등록이 있으면 미취업자 요건을 그대로 '맞아요'로 보지 않는다(사업자등록자를 미취업에서 빼는 공고가 많다).
+    if profile.get('business') and profile.get('job_code') == '0013003' and rows[4][1] == 'match' and not structured['job']['unrestricted']:
+        rows[4] = ('job', 'unknown', 'API 취업 요건은 미취업자인데 사업자등록이 있다고 입력했습니다. 사업자등록이 있으면 미취업으로 보지 않는 공고가 많아 확인이 필요합니다.')
     # 공식 페이지에서 확인해 둔 문장(사람 검수 전)이 API 값과 어긋나면 API 값을 믿지 않는다.
     said = next((q for x in notes if x['field'] == 'conditions' for q in x['quotes'] if '소득' in q), None)
     if said and structured['income']['code'] == '0043001':
@@ -358,7 +361,9 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
         rows[1] = ('age', 'unknown', f'공식 페이지의 나이 기준이 API 값과 다를 수 있습니다(사람 검수 전): “{aged}”')
     # 이름에 특정 대상이 드러난 정책은, 내가 그 대상이라고 한 경우에만 '맞아요'로 본다. 아니라고 단정하지는 않는다.
     if structured['targets']:
-        mine, names = profile.get('groups'), ', '.join(structured['targets'])
+        mine, names = list(profile.get('groups') or []), ', '.join(structured['targets'])
+        if profile.get('business'):   # 사업자등록이 있으면 창업 대상 정책의 대상으로 본다
+            mine.append('창업(예비 포함)')
         if mine and set(mine) & set(structured['targets']):
             rows.append(('target', 'match', f'정책 이름의 대상({names})에 내가 고른 항목이 있습니다.'))
         else:
@@ -375,7 +380,7 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
         # 정책의 제한 문장이 '내가 받고 있는 지원'을 가리키는 방향만 본다(반대 방향으로 뒤집지 않는다).
         held = next(((name, s) for name in profile.get('benefits') or [] for s in limits['sentences']
                      if any(word in s.replace(' ', '') for word in BENEFITS[name])), None)
-        label, pattern = JOB_LIMIT.get(profile.get('job_code'), ('', None))
+        label, pattern = ('사업자등록', JOB_LIMIT['0013002'][1]) if profile.get('business') else JOB_LIMIT.get(profile.get('job_code'), ('', None))
         job = next((s for s in limits['sentences'] if pattern and re.search(pattern, s) and not _HEDGE.search(s)), None)
         if held:
             rows.append(('exclusion', 'mismatch', f"API 참여 제한 안내에 받고 있는 지원({held[0]})이 나옵니다: “{held[1]}”. 함께 받을 수 있는지 기관에 확인하세요."))
@@ -415,7 +420,7 @@ def engine_view(policy, profile, on):
             'findings': [{'rule_id': f['rule_id'], 'type': f['type'], 'effect': f['effect'], 'message': f['message'], 'source': f['source']} for f in out['findings']]}
 
 
-def screen_catalog(profile, on, query='', outcome='', only_tier='', page=1, page_size=20, category='', keywords=(), dedupe=True):
+def screen_catalog(profile, on, query='', outcome='', only_tier='', page=1, page_size=20, category='', keywords=(), dedupe=True, sido='', ages='', open_only=False):
     """수집 정책 전체를 걸러 건수와 한 페이지를 돌려준다. 읽기 전용."""
     from ontong import BASE
     from policy_data import load_policies
@@ -428,7 +433,8 @@ def screen_catalog(profile, on, query='', outcome='', only_tier='', page=1, page
     notes = {}
     for x in all_supplements():
         notes.setdefault(x['external_id'], []).append(x)
-    needle = query.strip().lower()
+    needle, phrase = query.strip().lower(), query.strip()
+    span = tuple(int(x) for x in ages.split('-')) if ages else None
     words = [w for w in keywords if w]
     found, outcomes, tiers = [], {k: 0 for k in ORDER}, {'reviewed': 0, 'screenable': 0, 'link_only': 0}
     splits = Counter()   # 비교 가능한 정책 가운데 내 정보 항목마다 그 항목으로 갈리는 정책 수
@@ -436,14 +442,22 @@ def screen_catalog(profile, on, query='', outcome='', only_tier='', page=1, page
         # 대화 검색어는 이름뿐 아니라 수집 원문 전체에서 찾는다(이름에 없는 '응시료' 지원 등).
         if words and not any(w in row['payload_json'] for w in words):
             continue
-        if needle and needle not in (row['name'] + ' ' + row['agency'] + ' ' + row['external_id']).lower():
+        # 검색어는 이름·기관·번호(대소문자 무시)나 수집 글 전체에서 찾는다.
+        if needle and needle not in (row['name'] + ' ' + row['agency'] + ' ' + row['external_id']).lower() and phrase not in row['payload_json']:
             continue
         check = checks.get(row['external_id'])
         if check:
             check = {**check, 'api_changed_since_check': check['api_sha256'] != row['sha256']}
         if category and item['category'] != category:
             continue
+        # 지역 필터: 그 시도가 등록돼 있거나 전국 대상인 정책. 나이 필터: API 나이 범위가 구간과 겹치는 정책(범위가 없는 정책은 빼지 않는다).
+        if sido and sido not in item['region']['sido']:
+            continue
+        if span and item['age']['kind'] in ('range', 'min_only', 'max_only') and not ((item['age']['min'] or 0) <= span[1] and span[0] <= (item['age']['max'] or 999)):
+            continue
         status = period_status(item['application'], on, check)
+        if open_only and status in CLOSED:
+            continue
         policy = approved_policy(row['external_id'], check, approved)
         placed = tier(item, status, bool(policy))
         # 원문 링크만 보여줄 정책은 걸러보기 결과를 만들지 않는다.

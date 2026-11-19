@@ -51,7 +51,8 @@ with sync_playwright() as p:
     page.locator('.cardbtn').first.click()
     expect(page.locator('main')).to_contain_text('조건 대조')
     page.locator('[data-a=sheet]').first.click()
-    expect(page.locator('.sheet')).to_contain_text('API 기재 조건')
+    expect(page.locator('.sheet')).to_contain_text('지원 조건')
+    expect(page.locator('.sheet')).to_contain_text('API 수집일')
     page.screenshot(path=str(BASE / '.local/mobile-detail.png'))
     page.locator('.sheet button[data-a=closesheet]').click()
     page.locator('[data-a=back]').click()
@@ -66,6 +67,14 @@ with sync_playwright() as p:
     expect(page.locator('.warnbox')).to_contain_text('함께 받')
     assert page.evaluate(FITS)
     page.screenshot(path=str(BASE / '.local/mobile-plan.png'))
+    # 서류를 모두 체크해야 신청 전 점검으로 넘어간다
+    if page.locator('input[data-a=doc]').count():
+        assert page.locator('[data-a=check]').count() == 0
+        expect(page.locator('.act')).to_contain_text('남았어요')
+        while page.locator('input[data-a=doc]:not(:checked)').count():
+            left = page.locator('input[data-a=doc]:not(:checked)').count()
+            page.locator('input[data-a=doc]:not(:checked)').first.click()      # 체크하면 화면을 다시 그리므로 개수가 줄었는지로 확인한다
+            expect(page.locator('input[data-a=doc]:not(:checked)')).to_have_count(left - 1)
     page.locator('[data-a=check]').click()
     expect(page.locator('main')).to_contain_text('중복 수혜 여부')
     expect(page.locator('#msg')).to_contain_text('문의드립니다')
@@ -83,7 +92,9 @@ with sync_playwright() as p:
     # 새로고침 뒤 복원
     page.reload(wait_until='networkidle')
     expect(page.locator('.greeting')).to_contain_text('민지 님')
-    expect(page.locator('main')).to_contain_text('확인한 일')
+    # 홈 '이어서 준비하기': 저장한 정책에 서류가 있으면 '서류 준비 n / m', 없으면 '확인한 일 n / m'
+    expect(page.locator('.prep-count')).to_be_visible()
+    assert page.locator('.prep-count span').first.inner_text() in ('서류 준비', '확인한 일')
     # 홈 '이어서 준비하기'에 저장한 정책의 기간 표시(D-day 등)가 붙는다
     expect(page.locator('.policy-line .pill')).to_be_visible()
     assert len(page.locator('.policy-line .pill').inner_text().strip()) >= 2

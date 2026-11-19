@@ -1364,3 +1364,33 @@ def test_unconfirmed_official_notes_only_make_results_more_cautious(ctx, tmp_pat
     plan = plan_of(ctx, ['AC1'])[1].json()
     assert plan['documents'] == [] and plan['documents_unlisted'] == ['AC1']      # 확인 안 된 서류 문장으로 서류 목록을 만들지 않는다
 
+
+# ── v0.30: 지원 찾기의 검색·필터, 사업자등록 ───────────────────────────────────────
+def test_browse_search_and_filters(ctx):
+    seed([good('BF1', plcyNm='청년 월세 지원', lclsfNm='주거', zipCd='11305', plcySprtCn='임차보증금 이자 20만 원'),
+          good('BF2', plcyNm='청년 창업 자금', lclsfNm='일자리', zipCd='26110', sprtTrgtMinAge='30', sprtTrgtMaxAge='39', plcyExplnCn='저금리 대출로 창업을 돕는다'),
+          good('BF3', plcyNm='지난 교통비 지원', lclsfNm='복지문화', zipCd=ALL, aplyYmd='20260101 ~ 20260131', sprtTrgtMinAge='0', sprtTrgtMaxAge='0')])
+    ids = lambda **body: sorted(x['external_id'] for x in post(ctx, {}, **body).json()['items'])
+    assert ids() == ['BF1', 'BF2', 'BF3']
+    assert ids(q='저금리') == ['BF2'] and ids(q='임차보증금 이자') == ['BF1'] and ids(q='bf3') == ['BF3']      # 이름·번호뿐 아니라 내용에서도 찾는다
+    assert ids(category='주거') == ['BF1'] and ids(category='금융･복지･문화') == ['BF3']          # 옛 분류 이름으로 등록된 정책도 새 이름으로 걸린다
+    assert ids(sido='11') == ['BF1', 'BF3'] and ids(sido='26') == ['BF2', 'BF3']                 # 전국 대상은 어느 지역에서나 나온다
+    assert ids(ages='19-24') == ['BF1', 'BF3'] and ids(ages='30-34') == ['BF1', 'BF2', 'BF3']    # 나이 범위가 없는 정책(BF3)은 빼지 않는다
+    assert ids(open_only=True) == ['BF1', 'BF2'] and ids(q='지원', sido='11', open_only=True) == ['BF1']
+    for bad in ({'sido': '1'}, {'ages': '19~24'}, {'ages': 'me'}):
+        assert post(ctx, {}, **bad).status_code == 422
+
+
+def test_business_registration_changes_startup_target_job_and_exclusion():
+    startup = made(plcyNm='청년 창업 자금 대출')
+    assert [verdict(startup, {'business': b})[1]['target'] for b in (True, False, None)] == ['match', 'unknown', 'unknown']
+    jobless = made(jobCd='0013003')
+    assert verdict(jobless, {'job_code': '0013003'})[1]['job'] == 'match'
+    out, results = verdict(jobless, {'job_code': '0013003', 'business': True})
+    assert results['job'] == 'unknown' and '사업자등록' in out['criteria'][4]['basis']
+    assert verdict(made(), {'job_code': '0013003', 'business': True})[1]['job'] == 'match'        # 취업 요건이 '제한없음'인 정책은 그대로
+    barred = made(ptcpPrpTrgtCn='건강보험 직장가입자 및 개인사업자는 제외')
+    out, results = verdict(barred, {'job_code': '0013003', 'business': True})
+    assert results['exclusion'] == 'mismatch' and '사업자등록' in out['criteria'][-1]['basis']
+    assert verdict(barred, {'job_code': '0013003', 'business': False})[1]['exclusion'] == 'unknown'
+

@@ -136,6 +136,8 @@ class ScreenProfile(BaseModel):
     # 내가 해당하는 대상 집단. None=묻지 않음. 이름은 policy_structure.TARGETS에서 검증한다.
     groups: list[Annotated[str,Field(min_length=1,max_length=30)]] | None=Field(default=None,max_length=12)
     household: int | None=Field(default=None,ge=1,le=6)
+    # 사업자등록이 있는가(내 정보의 '사업 · 창업'). None=묻지 않음
+    business: bool | None=None
 
 class ScreenRequest(BaseModel):
     profile: ScreenProfile
@@ -147,6 +149,10 @@ class ScreenRequest(BaseModel):
     tier: str=Field(default='',pattern='^(|reviewed|screenable|link_only)$')
     page: int=Field(default=1,ge=1,le=100000)
     page_size: int=Field(default=20,ge=1,le=100)
+    # 지원 찾기 화면의 필터: 시도 코드, 나이 구간('19-24'), 마감 제외
+    sido: str=Field(default='',pattern='^(|[0-9]{2})$')
+    ages: str=Field(default='',pattern='^(|[0-9]{1,3}-[0-9]{1,3})$')
+    open_only: bool=False
 
 @app.get('/api/integrations/ontong/regions')
 def ontong_regions():
@@ -162,7 +168,7 @@ def ontong_screen(payload:ScreenRequest):
     from temporal import iso_date
     try:
         on=iso_date(payload.on) if payload.on else korean_now().date()
-        return screen_catalog(payload.profile.model_dump(),on,payload.q,payload.outcome,payload.tier,payload.page,payload.page_size,payload.category,payload.keywords)
+        return screen_catalog(payload.profile.model_dump(),on,payload.q,payload.outcome,payload.tier,payload.page,payload.page_size,payload.category,payload.keywords,sido=payload.sido,ages=payload.ages,open_only=payload.open_only)
     except ValueError as exc:raise HTTPException(422,str(exc)) from None
 
 class PlanRequest(BaseModel):
