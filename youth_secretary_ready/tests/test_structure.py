@@ -345,11 +345,11 @@ def test_single_policy_comparison(ctx):
 
 def test_ask_uses_model_only_for_arguments(ctx, monkeypatch):
     catalog(ctx)
-    seed([good('SE', plcyNm='자격증 응시료 지원')])
+    seed([good('SE', plcyNm='자격증 응시료 지원', plcySprtCn='국가기술자격 응시료 지원')])   # 응시료 지원은 내 시험이 대상일 때만 '맞아요'
     monkeypatch.setattr(desk_finder, 'model_status', lambda: {'ready': True})
     monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['응시료'], age=27, sido='11', job_code='0013003'))
     before = snapshot()
-    body = ctx.post(ASK, json={'message': '서울 사는 27살인데 자격증 시험 쳤어. 지원받을 수 있어?', 'profile': PROFILE, 'on': '2026-11-17'}).json()
+    body = ctx.post(ASK, json={'message': '서울 사는 27살인데 자격증 시험 쳤어. 지원받을 수 있어?', 'profile': {**PROFILE, 'exams': ['정보처리기사']}, 'on': '2026-11-17'}).json()
     assert body['keywords'] == ['응시료'] and body['total'] == 1 and body['items'][0]['external_id'] == 'SE'
     assert body['outcomes']['api_match'] == 1 and "'응시료' 관련 정책 1건" in body['answer']
     assert body['answer_origin'] == 'validated_template'
@@ -1393,4 +1393,53 @@ def test_business_registration_changes_startup_target_job_and_exclusion():
     out, results = verdict(barred, {'job_code': '0013003', 'business': True})
     assert results['exclusion'] == 'mismatch' and '사업자등록' in out['criteria'][-1]['basis']
     assert verdict(barred, {'job_code': '0013003', 'business': False})[1]['exclusion'] == 'unknown'
+
+
+# ── v0.31: 응시료 지원의 대상 시험, 무주택 요건, 질문 건너뛰기 ─────────────────────
+def test_exam_fee_policy_compares_exam_names_and_never_mismatches():
+    fee = made(plcyNm='청년 자격증 응시료 지원', plcySprtCn='어학·한국사, 국가기술자격 응시료 실비 지원 (TOEIC, HSK 등)')
+    assert fee['exam']['fee'] and fee['exam']['kinds'] == ['국가기술자격', '어학', '한국사']
+    out, results = verdict(fee, {'exams': ['정보처리기사']})
+    assert results['exam'] == 'match' and '이름으로 보아 국가기술자격' in next(c['basis'] for c in out['criteria'] if c['key'] == 'exam')
+    assert verdict(fee, {'exams': ['바리스타', 'H S K 4급']})[1]['exam'] == 'match'        # 여러 개 중 하나라도 글의 종류(어학)에 들면 맞아요
+    assert verdict(fee, {'exams': ['hsk']})[1]['exam'] == 'match'                          # 글에 이름이 그대로 나온다(대소문자 무시)
+    assert verdict(fee, {'exams': ['오픽']})[1]['exam'] == 'match'                          # 이름은 없지만 어학 시험이고 글에 '어학'이 있다
+    for names in (['바리스타 2급'], ['자격증'], None, []):
+        out, results = verdict(fee, {'age': 26, 'exams': names})
+        assert results['exam'] == 'unknown' and out['outcome'] == 'needs_check', names     # 글에 없다고 '달라요'가 아니다
+    only_toeic = made(plcyNm='토익 응시료 지원', plcySprtCn='TOEIC 응시료 지원')
+    assert only_toeic['exam']['kinds'] == [] and verdict(only_toeic, {'exams': ['JLPT']})[1]['exam'] == 'unknown'   # 토익만 적힌 글을 어학 전체로 넓히지 않는다
+    assert verdict(only_toeic, {'exams': ['toeic']})[1]['exam'] == 'match'
+    plain = made(plcyNm='청년 월세 지원')
+    assert plain['exam'] == {'fee': False, 'kinds': [], 'text': ''} and 'exam' not in verdict(plain, {'exams': ['정보처리기사']})[1]
+
+
+def test_no_home_requirement_compares_housing():
+    rent = made(plcyNm='청년월세 지원', addAplyQlfcCndCn='부모님과 별도 거주하는 19~34세 무주택 청년')
+    basis = lambda out: next(c['basis'] for c in out['criteria'] if c['key'] == 'housing')
+    out, results = verdict(rent, {'housing': '자가'})
+    assert results['housing'] == 'mismatch' and out['outcome'] == 'api_mismatch' and '무주택 청년' in basis(out)
+    for kind in ('월세', '전세', None):
+        assert verdict(rent, {'age': 26, 'housing': kind})[1]['housing'] == 'unknown', kind   # 월세·전세로는 주택 소유 여부를 알 수 없다
+    out, results = verdict(rent, {'housing': '가족과 거주'})
+    assert results['housing'] == 'unknown' and '부모인지' in basis(out)
+    # 주택 구입 지원이나 우대 조건의 '무주택'은 자가라도 단정하지 않는다.
+    for text in ('(무주택조건) 주택을 소유한 사실이 없는 생애 최초 주택 구입자', '무주택 청년 우대'):
+        assert verdict(made(addAplyQlfcCndCn=text), {'housing': '자가'})[1]['housing'] == 'unknown', text
+    assert made()['housing'] == {'no_home': None, 'apart': None, 'hedged': False} and 'housing' not in verdict(made(), {'housing': '자가'})[1]
+
+
+def test_exam_and_housing_reach_the_api_and_bad_housing_is_rejected(ctx):
+    seed([good('EH1', plcyNm='자격증 응시료 지원', plcySprtCn='국가기술자격 응시료 지원', addAplyQlfcCndCn='무주택 청년')])
+    item = post(ctx, {'age': 26, 'exams': ['정보처리기사'], 'housing': '자가'}).json()['items'][0]
+    results = {c['key']: c['result'] for c in item['screen']['criteria']}
+    assert results['exam'] == 'match' and results['housing'] == 'mismatch'
+    assert post(ctx, {'housing': '고시원'}).status_code == 422 and post(ctx, {'exams': ['가'] * 6}).status_code == 422
+
+
+def test_skipped_question_is_not_asked_again():
+    import desk_finder
+    assert desk_finder.next_question({}, {}, skip=['sido'])['key'] == 'age'
+    assert desk_finder.next_question({'sido': '11', 'age': 26}, {}, {'job_code': 3, 'benefits': 1}, skip=['job_code'])['key'] == 'benefits'
+    assert desk_finder.next_question({'sido': '11', 'age': 26}, {}, {'job_code': 3}, skip=['job_code']) is None
 

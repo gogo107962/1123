@@ -104,6 +104,8 @@ def validate_profile(profile):
         value = profile.get(key)
         if value and value[:2] not in SIDO:
             raise ValueError(f'{key}: 확인된 시도 코드가 아닙니다.')
+    if profile.get('housing') not in (None, '', *HOUSING):
+        raise ValueError('housing: 목록에 없는 주거 형태입니다.')
     if profile.get('income_band') not in (None, *INCOME_BANDS):
         raise ValueError('income_band: 목록에 없는 소득 구간입니다.')
     if profile.get('sido') and profile.get('region_code') and profile['region_code'][:2] != profile['sido']:
@@ -303,6 +305,41 @@ def _income(item, profile):
                        + '금액 단위·개인/가구 기준이 확인되지 않아 비교하지 않았습니다.')
 
 
+# 내 정보의 시험 이름에서 종류를 읽는 표. 국가기술자격의 등급 이름(기술사·기능장·기사·산업기사·기능사)과 널리 쓰는 어학 시험 이름만 본다.
+EXAM_ALIAS = {'국가기술자격': r'(기술사|기능장|기사|기능사)$', '한국사': r'한국사',
+              '어학': r'toeic|토익|toefl|토플|teps|텝스|opic|오픽|ielts|아이엘츠|jlpt|jpt|hsk|g-?telp|지텔프'}
+HOUSING = ('월세', '전세', '자가', '가족과 거주')
+
+
+def _exam(item, names):
+    """응시료 지원의 대상 시험. 글에 내 시험이 보이면 맞아요, 보이지 않으면 확인 필요(글에 없다고 '달라요'로 보지 않는다)."""
+    listed = f" 글에 적힌 시험 종류: {', '.join(item['kinds'])}." if item['kinds'] else ''
+    if not names:
+        return 'unknown', '응시료 지원입니다. 내 정보에 자격증·시험이 없어 대상 시험인지 비교하지 않았습니다.' + listed
+    for name in names:
+        key = ''.join(name.split()).lower()
+        if len(key) >= 2 and key not in ('자격증', '시험', '응시료', '어학') and key in item['text']:
+            return 'match', f'API 안내 글에 입력한 시험({name})이 나옵니다. 응시일·횟수 기준은 공고에서 확인하세요.'
+        kind = next((k for k, pattern in EXAM_ALIAS.items() if re.search(pattern, key)), None)
+        if kind in item['kinds']:
+            return 'match', f'입력한 시험: {name}. 이름으로 보아 {kind}에 해당하고, API 안내 글에 {kind} 항목이 대상 시험으로 나옵니다. 종목·응시일 기준은 공고에서 확인하세요.'
+    return 'unknown', f"입력한 시험({', '.join(names)})이 API 안내 글에 보이지 않습니다. 대상 시험인지 공고에서 확인하세요." + listed
+
+
+def _housing(item, kind):
+    """무주택 요건. 자가라고 입력했을 때만 '달라요'가 될 수 있고, 월세·전세로는 주택 소유 여부를 알 수 없어 확인 필요로 둔다."""
+    said = f"“{item['no_home']}”"
+    if kind == '자가':
+        if item['hedged']:
+            return 'unknown', f'API 안내 글에 무주택이 나오지만 주택 구입·우대 같은 다른 경우가 함께 적혀 있어 단정하지 않았습니다: {said}. 공고에서 확인하세요.'
+        return 'mismatch', f'API 안내 글에 무주택 요건이 있는데 주거 형태를 자가로 입력했습니다: {said}. 해당하는지 공고에서 확인하세요.'
+    if kind == '가족과 거주' and item['apart']:
+        return 'unknown', f"API 안내 글에 부모와 따로 사는 청년이 대상이라고 적혀 있는데 가족과 거주한다고 입력했습니다: “{item['apart']}”. 함께 사는 가족이 부모인지에 따라 달라지니 공고에서 확인하세요."
+    if kind:
+        return 'unknown', f'API 안내 글에 무주택 요건이 있습니다: {said}. 주거 형태({kind})만으로는 주택 소유 여부를 알 수 없어 확인이 필요합니다.'
+    return 'unknown', f'API 안내 글에 무주택 요건이 있습니다: {said}. 내 정보에 주거 형태가 없어 비교하지 않았습니다.'
+
+
 def restricts(item):
     """이 정책의 API 값이 가르는 내 정보 항목. 질문 선택기가 찾은 정책들에서 이것을 세어 무엇을 물을지 고른다."""
     keys, area, limits = set(), item['region'], item['exclusions']['kinds']
@@ -371,6 +408,11 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
     if not (structured['access']['has_method'] or structured['access']['has_apply_url']):
         rows.append(('apply', 'unknown', ("API 신청 방법 칸에 '해당없음'으로 적혀 있습니다. 신청 없이 이용하는 정책인지 공고에서 확인하세요." if structured['access']['method_stated_none']
                                          else 'API에 신청 방법과 신청 주소가 없습니다. 참고 주소의 공고에서 신청 방법을 확인하세요.')))
+    # 응시료 지원의 대상 시험, 무주택 요건(내 정보의 자격증·시험, 주거 형태와 비교)
+    if structured['exam']['fee']:
+        rows.append(('exam', *_exam(structured['exam'], profile.get('exams'))))
+    if structured['housing']['no_home']:
+        rows.append(('housing', *_housing(structured['housing'], profile.get('housing'))))
     # 참여 제한(제외·중복 수혜) 안내가 있으면 해당 여부를 알 수 없으므로 확인 필요로 남긴다.
     limits = structured['exclusions']
     if limits['explicit_none']:

@@ -30,6 +30,7 @@ PROFILES = [
     {'age': 34, 'sido': '41', 'job_code': '0013001', 'major_code': '0011003', 'marriage_code': '0055002', 'benefits': []},
     {'age': 39, 'sido': '12', 'job_code': '0013006', 'benefits': ['기초생활수급(생계·주거급여)', '실업급여(구직급여)']},
     {'benefits': ['청년도약계좌']},
+    {'age': 26, 'sido': '11', 'exams': ['정보처리기사', '토익'], 'housing': '자가'}, {'exams': ['없는시험'], 'housing': '월세'},
 ]
 failures = []
 
@@ -96,6 +97,10 @@ def main():
             if age is not None and a['kind'] == 'range':
                 # 범위 밖인데 '제한없음' 표기가 함께 있으면 어긋난 값이라 '확인 필요'다.
                 check(got['age'] == ('match' if a['min'] <= age <= a['max'] else 'unknown' if a['no_limit'] else 'mismatch'), f'age range {eid}', (age, a))
+            # 대상 시험은 응시료 지원에만 나오고 '달라요'가 될 수 없다. 주거는 무주택 문장이 있을 때만 나오고, 자가라고 했을 때만 '달라요'가 될 수 있다.
+            check(('exam' in got) == st['exam']['fee'] and got.get('exam') != 'mismatch', f'exam {eid}', got.get('exam'))
+            check(('housing' in got) == bool(st['housing']['no_home']), f'housing row {eid}', got.get('housing'))
+            check(got.get('housing') != 'mismatch' or (profile.get('housing') == '자가' and not st['housing']['hedged']), f'housing {eid}', profile.get('housing'))
             # 빈 프로필은 어떤 정책에서도 '달라요'가 나올 수 없다(기간 제외).
             if not provided(profile):
                 check(all(r != 'mismatch' for k, r in got.items() if k != 'period'), f'empty profile {eid}', got)

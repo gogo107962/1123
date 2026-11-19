@@ -55,15 +55,16 @@ SCHEMA = {'type': 'object', 'properties': {
     'required': ['keywords', 'age', 'sido', 'job_code'], 'additionalProperties': False}
 
 
-def next_question(profile, suggestion, splits=None):
+def next_question(profile, suggestion, splits=None, skip=()):
     """되물을 것 하나. 찾은 정책들을 가장 많이 가르는 항목을 고른다(splits: 항목별로 그 항목 때문에 갈리는 정책 수).
-    같으면 지역(시도 → 시군구) → 나이 → 취업 상태 → 받고 있는 지원 순이고, 어느 항목도 가르지 못하면 묻지 않는다."""
+    같으면 지역(시도 → 시군구) → 나이 → 취업 상태 → 받고 있는 지원 순이고, 어느 항목도 가르지 못하면 묻지 않는다.
+    skip: 사용자가 '잘 모르겠어요'로 넘긴 항목. 다시 묻지 않는다."""
     def missing(key):
-        return profile.get(key) in (None, '') and key not in suggestion
+        return profile.get(key) in (None, '') and key not in suggestion and key not in skip
     sido = profile.get('sido') or (profile.get('region_code') or '')[:2]
     asks = []
-    if not sido and missing('sido'):
-        asks.append(QUESTIONS[0])
+    if not sido:
+        asks += [QUESTIONS[0]] if missing('sido') else []
     elif sido in SIGUNGU_COMPLETE and missing('region_code') and sum(c[:2] == sido for c in SIGUNGU) > 1:   # 세종은 시군구가 하나라 묻지 않는다
         asks.append(('region_code', '어느 구·시·군에 사세요? 같은 시도 안에서도 정책이 달라서 여쭤봐요.',
                      {c: n for c, n in sorted(SIGUNGU.items(), key=lambda x: x[1]) if c[:2] == sido}))
@@ -123,7 +124,7 @@ def check(result):
     return {'keywords': words, 'age': age, 'sido': result['sido'], 'job_code': result['job_code']}
 
 
-def find(message, profile, on):
+def find(message, profile, on, skip=()):
     validate_profile(profile)
     picked, ai = None, 'unavailable'
     if model_status()['ready']:
@@ -162,7 +163,7 @@ def find(message, profile, on):
         suggestion = {}
     compared = provided(profile)
     # 아직 모르는 정보 중 하나만 묻는다. 방금 말에서 읽어 제안한 값은 다시 묻지 않는다.
-    question = next_question(profile, suggestion, result['splits'])
+    question = next_question(profile, suggestion, result['splits'], skip)
     topic = "'" + '·'.join(words) + "' 관련" if words else '수집된 전체'
     o, t = result['outcomes'], result['tiers']
     if not result['total']:

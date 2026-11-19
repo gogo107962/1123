@@ -138,6 +138,9 @@ class ScreenProfile(BaseModel):
     household: int | None=Field(default=None,ge=1,le=6)
     # 사업자등록이 있는가(내 정보의 '사업 · 창업'). None=묻지 않음
     business: bool | None=None
+    # 자격증·시험 이름(응시료 지원의 대상 시험과 비교)과 주거 형태(무주택 요건과 비교). 값은 screening.HOUSING에서 검증한다.
+    exams: list[Annotated[str,Field(min_length=1,max_length=30)]] | None=Field(default=None,max_length=5)
+    housing: str | None=Field(default=None,max_length=10)
 
 class ScreenRequest(BaseModel):
     profile: ScreenProfile
@@ -192,6 +195,8 @@ class AskRequest(BaseModel):
     message: str=Field(min_length=1,max_length=600)
     profile: ScreenProfile=ScreenProfile()
     on: str | None=None
+    # '잘 모르겠어요'로 넘긴 질문. 이 대화에서는 다시 묻지 않는다.
+    skip: list[Annotated[str,Field(min_length=1,max_length=20)]]=Field(default=[],max_length=10)
 
 # 대화로 정책 찾기. 로컬 모델이 검색어를 고르고 걸러보기·문장은 코드가 만든다. 저장하지 않는다.
 @app.post('/api/integrations/ontong/ask')
@@ -201,7 +206,7 @@ def ontong_ask(payload:AskRequest):
     try:
         on=iso_date(payload.on) if payload.on else korean_now().date()
         if not payload.message.strip():raise ValueError('질문을 입력해 주세요.')
-        return find(payload.message.strip(),payload.profile.model_dump(),on)
+        return find(payload.message.strip(),payload.profile.model_dump(),on,payload.skip)
     except ValueError as exc:raise HTTPException(422,str(exc)) from None
 
 # 정책 하나를 내 정보와 비교한다. API 기재값 비교이며 자격 판정이 아니다.

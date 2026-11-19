@@ -18,9 +18,9 @@ from policy_structure import CLOSED, period_status, structure, tier  # noqa: E40
 from screening import age_rule, screen  # noqa: E402
 
 FULL = {'age': 26, 'region_code': '11305', 'job_code': '0013003', 'school_code': '0049007', 'major_code': '0011003',
-        'marriage_code': '0055002', 'income_monthly': 180, 'household': 1, 'income_bracket': 5, 'residence_months': 24, 'benefits': [], 'groups': []}
+        'marriage_code': '0055002', 'income_monthly': 180, 'household': 1, 'income_bracket': 5, 'residence_months': 24, 'benefits': [], 'groups': [], 'exams': ['정보처리기사'], 'housing': '월세'}
 NAMES = {'period': '신청기간', 'age': '나이', 'region': '거주지', 'income': '소득', 'job': '취업 상태', 'school': '학력', 'major': '전공',
-         'marriage': '결혼', 'target': '대상 집단', 'exclusion': '참여 제한', 'apply': '신청 방법'}
+         'marriage': '결혼', 'target': '대상 집단', 'exclusion': '참여 제한', 'apply': '신청 방법', 'exam': '응시료 대상 시험', 'housing': '주거(무주택)'}
 
 
 def pct(part, whole):

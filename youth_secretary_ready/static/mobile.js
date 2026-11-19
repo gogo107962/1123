@@ -13,7 +13,7 @@ const NOFILTER={q:'',outcome:'',kind:'',sido:'',ages:'',open:false};
 const shortSido=name=>({'충청북도':'충북','충청남도':'충남','경상북도':'경북','경상남도':'경남','전남광주통합특별시':'전남 · 광주'})[name]||name.replace(/(특별자치도|특별자치시|특별시|광역시|도)$/,'');
 const OUT={api_match:['조건 맞아요','ok'],needs_check:['확인 필요','warn'],api_mismatch:['조건 달라요','bad']};
 const RES={match:['맞아요','ok'],unknown:['확인 필요','warn'],mismatch:['달라요','bad']};
-const CRIT={period:'신청기간',age:'나이',region:'거주지',income:'소득',job:'취업 상태',school:'학력',major:'전공',marriage:'결혼',exclusion:'참여 제한',target:'대상',apply:'신청 방법'};
+const CRIT={period:'신청기간',age:'나이',region:'거주지',income:'소득',job:'취업 상태',school:'학력',major:'전공',marriage:'결혼',exclusion:'참여 제한',target:'대상',apply:'신청 방법',exam:'대상 시험',housing:'주거'};
 const PERIOD={open:'접수 중(API)',rolling:'상시(API)',upcoming:'시작 전(API)',unknown:'기간 확인 필요',ended:'API 기간 지남',closed_code:'마감(API)',closed_official:'공식 공고 종료'};
 const REASON={closed:'마감됐어요',no_application_route:'신청 방법 정보가 없어요',no_region_code:'지역 정보가 없어요'};
 const TOPICS={'자격증 응시료':'자격증 시험 쳤는데 응시료 지원받을 수 있어?','월세 지원':'월세 지원 받을 수 있어?','구직 수당':'취업 준비 중인데 구직 수당 받을 수 있어?','교통비':'교통비 지원 받을 수 있어?'};
@@ -39,7 +39,7 @@ const monthsSince=m=>{if(!m)return null;const [y,mo]=m.split('-').map(Number),no
 const ageOf=b=>{const m=monthsSince(b);return m==null||m<0?null:Math.floor(m/12)};
 const stayed=m=>{const v=monthsSince(m);return v==null||v<0?null:[60,36,24,12,6,0].find(x=>v>=x)};
 const ym=m=>m?`${+m.slice(0,4)}년 ${+m.slice(5,7)}월`:'';
-const mine=(p=S.profile)=>({age:p?.birth?ageOf(p.birth):p?.age??null,sido:p?.sido||null,region_code:p?.region_code||null,job_code:p?.job_code||null,school_code:p?.school_code||null,benefits:p?.benefits??null,groups:p?.groups??null,income_monthly:p?.income_monthly??null,income_band:p?.income_band||null,household:p?.household||null,residence_months:p?.moved?stayed(p.moved):p?.residence_months??null,income_bracket:p?.income_bracket??null,business:p?.business==='yes'?true:p?.business==='no'?false:null});
+const mine=(p=S.profile)=>({age:p?.birth?ageOf(p.birth):p?.age??null,sido:p?.sido||null,region_code:p?.region_code||null,job_code:p?.job_code||null,school_code:p?.school_code||null,benefits:p?.benefits??null,groups:p?.groups??null,income_monthly:p?.income_monthly??null,income_band:p?.income_band||null,household:p?.household||null,residence_months:p?.moved?stayed(p.moved):p?.residence_months??null,income_bracket:p?.income_bracket??null,business:p?.business==='yes'?true:p?.business==='no'?false:null,exams:p?.exams?.length?p.exams.map(x=>x.name):null,housing:p?.housing||null});
 // '받는 지원 없음'만으로는 비교했다고 하지 않는다(서버의 provided와 같은 기준).
 const compared=()=>Object.values(mine()).some(v=>v!==null&&!(Array.isArray(v)&&!v.length));
 // 출처 페이지에서 인용 문장이 자동 대조로 확인된 보완 기록인가
@@ -92,10 +92,12 @@ function cond(key,d){const st=d.bundle.structured,p=d.bundle.public_fields,a=st.
  if(key==='region')return st.region.nationwide?'전국(시도 16곳 등록)':st.region.sido_names.join(', ')||'기재 없음';
  if(key==='exclusion')return st.exclusions.explicit_none?'해당 없음으로 기재':`안내 ${st.exclusions.count}건`+(st.exclusions.kinds.length?` (${st.exclusions.kinds.join(', ')})`:'');
  if(key==='apply')return '기재 없음';
+ if(key==='exam')return st.exam.kinds.length?'글에 적힌 종류: '+st.exam.kinds.join(', '):'응시료 지원 · 대상 시험은 공고에서 확인';
+ if(key==='housing')return st.housing.no_home.length>64?st.housing.no_home.slice(0,62)+'…':st.housing.no_home;
  if(key==='target')return st.targets.join(', ');
  if(key==='income')return st.income.labels.concat(st.income.annual?[`${st.income.annual.max.toLocaleString()}만원 이하`]:[],st.income.median_pct.map(x=>`중위소득 ${x}%`)).join(', ')||'기재 없음';
  return st[key].labels.join(', ')||'기재 없음';}
-function myValue(key){const p=mine();return {period:'오늘 기준',apply:'공고에서 확인',age:p.age!=null?p.age+'세':'',region:area(p),target:p.groups?.length?p.groups.join(', '):'해당 항목 선택 안 함',income:p.income_monthly!=null&&p.household?`월 ${p.income_monthly}만원 · ${p.household}인 가구`:'소득 입력 안 함',exclusion:p.benefits?.length?'받는 지원: '+p.benefits.join(', '):p.benefits?'받는 지원 없음':'받는 지원 입력 안 함',job:S.names.job_code[p.job_code],school:S.names.school_code[p.school_code]}[key]||'입력 안 함'}
+function myValue(key){const p=mine();return {period:'오늘 기준',apply:'공고에서 확인',age:p.age!=null?p.age+'세':'',region:area(p),target:p.groups?.length?p.groups.join(', '):'해당 항목 선택 안 함',income:p.income_monthly!=null&&p.household?`월 ${p.income_monthly}만원 · ${p.household}인 가구`:'소득 입력 안 함',exclusion:p.benefits?.length?'받는 지원: '+p.benefits.join(', '):p.benefits?'받는 지원 없음':'받는 지원 입력 안 함',job:S.names.job_code[p.job_code],school:S.names.school_code[p.school_code],exam:p.exams?.join(', '),housing:p.housing}[key]||'입력 안 함'}
 const rows=d=>d.cmp?.screen?d.cmp.screen.criteria.filter(c=>c.result!=='skipped'):[];
 
 const V={
@@ -118,7 +120,7 @@ ${hp&&hp.documents.length?`<div class="prep-count"><span>서류 준비</span><st
  :`<button class="next-row" style="margin-top:22px" data-a="tab" data-s="browse"><span>첫 지원 찾아보기</span>${chev}</button>`}</section>
 <section class="feed-card"><button class="section-heading" data-a="tab" data-s="browse">나에게 필요한 지원 ${chev}</button>
 <div class="category-grid">${CATS.map(([label,icon,topic])=>`<button class="category" data-a="topic" data-t="${topic}"><span class="category-icon">${ms(icon)}</span><span>${label}</span></button>`).join('')}</div></section>
-<section class="feed-card"><button class="section-heading" data-a="tab" data-s="browse">놓치기 전에 살펴봐요 ${chev}</button>
+<section class="feed-card"><button class="section-heading" ${compared()&&top?`data-a="detail" data-id="${esc(top.external_id)}"`:'data-a="tab" data-s="browse"'}>놓치기 전에 살펴봐요 ${chev}</button>
 ${!compared()?`<button class="next-row" style="margin-top:22px" data-a="tab" data-s="profile"><span>내 정보를 입력하면 맞는 지원부터 보여드려요</span>${chev}</button>`
  :!c?'<p class="sub" style="margin-top:14px">내 조건과 비교하고 있어요…</p>'
  :`${top?`<button class="recommend-line" data-a="detail" data-id="${esc(top.external_id)}"><span class="soft-icon mint">${ms('school')}</span><span class="policy-copy"><strong>${esc(top.name)}</strong><span>내 조건 확인하고 신청 준비하기</span></span>${chev}</button>`:''}
@@ -130,7 +132,7 @@ ${!compared()?`<button class="next-row" style="margin-top:22px" data-a="tab" dat
 chat:()=>{const bot=inner=>`<div class="m bot"><img class="av" src="/static/quokka.png" alt=""><div><p class="who">청년비서</p>${inner}</div></div>`;
  const msgs=S.chat.map((m,i)=>m.who!=='bot'?`<div class="m user"><div><p class="who r">${esc(S.profile?.name||'나')}</p><div class="bub">${esc(m.t)}</div></div>${ME}</div>`
   :m.pending?bot('<div class="bub"><span class="typing" role="status" aria-label="답변을 쓰고 있어요"><i></i><i></i><i></i></span></div>')
-  :bot(`<div class="bub">${esc(m.t)}</div>${m.cta?`<button class="btn sm" data-a="results" data-i="${i}">결과 보기</button>`:''}${m.suggest?`<button class="btn line sm wrap" data-a="apply" data-i="${i}">내 정보에 반영하고 다시 찾기 · ${esc(chips(m.suggest).join(' · '))}</button>`:''}${m.ask?`<div class="bub" style="margin-top:8px"><strong>${esc(m.ask.text)}</strong></div>${m.ask.options.length?`<div class="opts">${m.ask.options.map(o=>`<button class="btn line" data-a="answer" data-i="${i}" data-v="${esc(o.value)}">${esc(o.label)}</button>`).join('')}</div>`:''}`:''}${m.tools?`<p class="tiny" style="margin-top:6px">실행한 도구: ${m.tools.filter(t=>t.status==='ok').map(t=>TOOLS[t.tool]).join(' → ')} · ${m.ai==='used'?'로컬 AI가 검색어를 고르고, 건수와 문장은 코드가 만들었어요.':'AI 없이 정해 둔 낱말로 찾았어요. 건수와 문장은 코드가 만들었어요.'}</p>`:''}`)).join('');
+  :bot(`${m.known?`<div class="bub" style="margin-bottom:8px">내 정보(${esc(m.known.join(' · '))})가 저장돼 있어서 다시 묻지 않을게요.</div>`:''}<div class="bub">${esc(m.t)}</div>${m.cta?`<button class="btn sm" data-a="results" data-i="${i}">결과 보기</button>`:''}${m.suggest?`<button class="btn line sm wrap" data-a="apply" data-i="${i}">내 정보에 반영하고 다시 찾기 · ${esc(chips(m.suggest).join(' · '))}</button>`:''}${m.ask?`<div class="bub" style="margin-top:8px"><strong>${esc(m.ask.text)}</strong></div><div class="opts">${m.ask.options.map(o=>`<button class="btn line" data-a="answer" data-i="${i}" data-v="${esc(o.value)}">${esc(o.label)}</button>`).join('')}<button class="btn line" data-a="skipask" data-i="${i}">잘 모르겠어요</button></div>`:''}${m.tools?`<p class="tiny" style="margin-top:6px">실행한 도구: ${m.tools.filter(t=>t.status==='ok').map(t=>TOOLS[t.tool]).join(' → ')} · ${m.ai==='used'?'로컬 AI가 검색어를 고르고, 건수와 문장은 코드가 만들었어요.':'AI 없이 정해 둔 낱말로 찾았어요. 건수와 문장은 코드가 만들었어요.'}</p>`:''}`)).join('');
  const opts=S.chat.length<=1&&!S.busy?[S.profile?.exams?.[0]?`${S.profile.exams[0].name} 봤는데 응시료 지원돼?`:TOPICS['자격증 응시료'],TOPICS['월세 지원'],'나에게 맞는 정책 찾아줘']:[];
  return bar('챗봇 상담','x','<button class="new-chat" data-a="newchat">새 대화</button>')+`<main class="pad chat" aria-live="polite">${msgs}</main>
 ${opts.length?`<div class="chat-suggestions"><div class="opts one">${opts.map(o=>`<button class="btn line" data-a="say" data-t="${esc(o)}">${esc(o)}</button>`).join('')}</div></div>`:''}
@@ -146,8 +148,8 @@ results:()=>{const L=S.list,q=S.query,cmp=compared(),tab=S.listTab,myAge=mine().
  const card=x=>{const link=cmp&&x.tier==='link_only',bad=x.screen?.outcome==='api_mismatch',st=!cmp?null:x.screen?OUT[x.screen.outcome]:['원문 링크만','gray'];
   const line=!cmp?esc(x.category||'분야 확인 필요'):link?x.reasons.map(r=>REASON[r]).join(' · ')+' · 원문에서 확인해 주세요'
    :bad?x.screen.criteria.filter(c=>c.result==='mismatch').map(c=>CRIT[c.key]).join(', ')+' 조건이 API 기재값과 달라요'
-   :`조건 ${x.screen.criteria.filter(k=>k.result==='match').length}개 맞아요`+(x.screen.to_confirm.length?` · 확인 필요 ${x.screen.to_confirm.length}개 (${x.screen.to_confirm.map(k=>CRIT[k]).join(', ')})`:' · 공고 원문 확인');
-  return `<div class="card ${bad||link?'dim':''}"><div class="rowt"><input type="checkbox" class="cb" data-a="sel" data-id="${esc(x.external_id)}" data-n="${esc(x.name)}" ${S.selected[x.external_id]?'checked':''} aria-label="${esc(x.name)} 함께 준비"><button class="cardbtn" data-a="detail" data-id="${esc(x.external_id)}"><span class="tiny">${esc(x.agency||'기관 확인 필요')}</span><span class="h16">${esc(x.name)}</span><span class="pills">${x.engine?pill('검수 완료','ok')+pill(...ENGINE[x.engine.status]):st?pill(...st):''}${pill(x.period_status==='open'?esc(x.period_label):PERIOD[x.period_status])}${x.same_policy_count>1?pill('같은 정책 '+x.same_policy_count+'건 등록'):''}</span><span class="${bad?'red':'sub'} s13">${line}</span>${money(x)?`<span class="tiny">${esc(money(x))}</span>`:''}</button></div></div>`};
+   :`맞아요 ${x.screen.criteria.filter(k=>k.result==='match').length} · 확인 필요 ${x.screen.to_confirm.length}${x.screen.to_confirm.length?` (${x.screen.to_confirm.map(k=>CRIT[k]).join(', ')})`:''}`+(x.summary?' · '+esc(x.summary):'');
+  return `<div class="card ${bad||link?'dim':''}"><div class="rowt"><input type="checkbox" class="cb" data-a="sel" data-id="${esc(x.external_id)}" data-n="${esc(x.name)}" ${S.selected[x.external_id]?'checked':''} aria-label="${esc(x.name)} 함께 준비"><button class="cardbtn" data-a="detail" data-id="${esc(x.external_id)}"><span class="tiny">${esc(x.agency||'기관 확인 필요')}</span><span class="h16">${esc(x.name)}</span><span class="pills">${x.engine?pill('검수 완료','ok')+pill(...ENGINE[x.engine.status]):st?pill(...st):''}${pill(x.period_status==='open'?esc(short(x.period_label)):PERIOD[x.period_status])}${x.same_policy_count>1?pill('같은 정책 '+x.same_policy_count+'건 등록'):''}</span><span class="${bad?'red':'sub'} s13">${line}</span>${money(x)&&(bad||link||!x.summary)?`<span class="tiny">${esc(money(x))}</span>`:''}</button></div></div>`};
  const item=x=>{const closed=x.reasons.includes('closed'),st=closed?['마감','gray']:!cmp?null:x.screen?OUT[x.screen.outcome]:['원문 링크만','gray'],where=x.nationwide?'전국':(x.sido_names[0]||x.agency||'지역 확인 필요')+(x.sido_names.length>1?' 외':'');
   return `<button class="feed-card browse-item" data-a="detail" data-id="${esc(x.external_id)}"><span class="tiny">${esc(where)} · ${esc(x.period_label.replace(/\s*\(.*?\)/g,''))}</span><strong>${esc(x.name)}</strong><span class="sub">${esc(x.summary||x.category||'지원 내용은 공고에서 확인')}</span><span class="pills">${x.engine?pill('검수 완료','ok')+pill(...ENGINE[x.engine.status]):st?pill(...st):''}</span></button>`};
    const outs=cmp?`<div class="chips">${[['',`전체 ${n(all)}`],['api_match',`맞아요 ${n(o.api_match)}`],['needs_check',`확인 필요 ${n(o.needs_check)}`],['api_mismatch',`달라요 ${n(o.api_mismatch)}`]].map(([k,l])=>`<button class="chip ${q.outcome===k?'on':''}" data-a="filter" data-k="${k}">${l}</button>`).join('')}</div>`:'';
@@ -277,8 +279,10 @@ async function say(text,quiet){if(S.busy||!text)return;
  if(last?.ask?.key==='age'&&age&&+age[1]<=120){saveProfile({...(S.profile||{}),age:+age[1]});last.ask=null;S.chat.push({who:'user',t:text});text=last.asked;quiet=true}
  else if(last?.ask)last.ask=null;
  if(!quiet)S.chat.push({who:'user',t:text});S.chat.push({who:'bot',pending:true,t:''});render();
- try{const r=await api('/api/integrations/ontong/ask','POST',{message:text,profile:mine()});
-  S.chat[S.chat.length-1]={who:'bot',t:r.answer,cta:r.total>0,keywords:r.keywords,suggest:Object.keys(r.profile_suggestion).length?r.profile_suggestion:null,ask:r.question,tools:r.tools,ai:r.ai,asked:text};
+ try{const r=await api('/api/integrations/ontong/ask','POST',{message:text,profile:mine(),skip:S.skip||[]});
+  // 이 대화에서 처음 답할 때만, 비교에 쓰는 저장값(지역 · 나이 · 취업 상태 · 시험)을 알려 준다.
+  const p=mine(),known=S.chat.some(m=>m.known)?[]:[area(p),p.age!=null?p.age+'세':'',S.names.job_code[p.job_code],...(p.exams||[])].filter(Boolean);
+  S.chat[S.chat.length-1]={who:'bot',known:known.length?known:null,t:r.answer,cta:r.total>0,keywords:r.keywords,suggest:Object.keys(r.profile_suggestion).length?r.profile_suggestion:null,ask:r.question,tools:r.tools,ai:r.ai,asked:text};
  }catch(e){S.chat[S.chat.length-1]={who:'bot',t:e.message}}
  S.busy=false;if(S.screen==='chat')render()}
 function saveProfile(next){S.profile=next;store.set('youth-desk-profile',next);S.draft=null;S.counts=null;S.list=null;S.plan=null}
@@ -294,8 +298,9 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!
  else if(a==='tab'){S.draft=null;if(d.s==='plan')run(()=>showPlan(true));else if(d.s==='browse')run(()=>showResults([],true));else{S.back=[];S.screen=d.s;S.sheet=null;render(true);if(d.s==='home')run(async()=>{if(!S.counts||!S.homePlan)await loadCounts()})}}
  else if(a==='openchat')openChat();else if(a==='topic')openChat(TOPICS[d.t]);else if(a==='say')say(d.t);
  else if(a==='results')run(()=>showResults(S.chat[d.i].keywords));else if(a==='browse')run(()=>showResults([],true));
- else if(a==='newchat'){if(!S.busy){S.chat=[];openChat()}}else if(a==='attach')toast('체험판에서는 파일을 첨부할 수 없어요');else if(a==='notice')toast('새로운 알림이 없어요');
+ else if(a==='newchat'){if(!S.busy){S.chat=[];S.skip=[];openChat()}}else if(a==='attach')toast('체험판에서는 파일을 첨부할 수 없어요');else if(a==='notice')toast('새로운 알림이 없어요');
  else if(a==='apply'){const m=S.chat[d.i];saveProfile({...(S.profile||{}),...m.suggest});m.suggest=null;m.ask=null;say(m.asked,true)}
+ else if(a==='skipask'){const m=S.chat[d.i];S.skip=[...(S.skip||[]),m.ask.key];S.chat.push({who:'user',t:'잘 모르겠어요'});m.ask=null;say(m.asked,true)}
  else if(a==='answer'){const m=S.chat[d.i];saveProfile({...(S.profile||{}),[m.ask.key]:m.ask.key==='benefits'?(d.v?[d.v]:[]):d.v});S.chat.push({who:'user',t:el.textContent});m.ask=null;say(m.asked,true)}
  else if(a==='filter'){S.query.outcome=d.k;run(()=>loadList())}else if(a==='more')run(()=>loadList(S.list.page+1));
  else if(a==='cleartopic'){S.query.keywords=[];run(()=>loadList())}

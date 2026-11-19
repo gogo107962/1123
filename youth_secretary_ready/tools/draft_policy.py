@@ -92,6 +92,11 @@ def draft(payload, supplements=()):
         checks.append({'id': 'target', 'source_ref': 'api', 'message': f"정책 이름·특화 요건에 특정 대상({', '.join(st['targets'])})이 있습니다. 대상 요건을 공고에서 확인해 규칙으로 옮기세요."})
     if not (st['access']['has_method'] or st['access']['has_apply_url']):
         checks.append({'id': 'apply', 'source_ref': 'api', 'message': 'API에 신청 방법과 신청 주소가 없습니다. 공고에서 신청 방법을 확인하세요.'})
+    if st['exam']['fee']:
+        checks.append({'id': 'exam', 'source_ref': 'api', 'message': '응시료 지원입니다. 대상 시험 종목과 응시일 기준을 공고에서 확인해 규칙으로 옮기세요.'
+                       + (f" 글에 적힌 시험 종류: {', '.join(st['exam']['kinds'])}." if st['exam']['kinds'] else '')})
+    if st['housing']['no_home']:
+        checks.append({'id': 'housing', 'source_ref': 'api', 'message': f"무주택 문장: “{st['housing']['no_home']}” — 주택 소유 기준(본인·세대)을 공고에서 확인하세요."})
     income = st['income']
     if income['code'] != '0043001':
         checks.append({'id': 'income', 'source_ref': 'api', 'message': (

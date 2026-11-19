@@ -314,6 +314,31 @@ def summary(payload):
     return ''
 
 
+# 응시료 지원 글에 적힌 대상 시험 종류. 넓은 말만 읽는다(토익만 적힌 글을 '어학 전체'로 넓히지 않는다).
+# 국가자격은 국가기술자격과 국가전문자격을 함께 이르는 말이다(자격기본법).
+EXAM_KINDS = {'국가기술자격': r'국가\s?기술\s?자격|국가\s?자격', '어학': r'어학|외국어', '한국사': r'한국사'}
+# 무주택 문장에 이 낱말이 함께 있으면 '자가라서 달라요'로 단정하지 않는다(주택 구입 지원, 우대 조건 등).
+_HOME_HEDGE = re.compile(r'우대|가능|예외|무관|관계\s?없|구입|구매|매입|분양|취득|생애')
+_APART = re.compile(r'부모[^.]{0,8}(별도|따로)')
+
+
+def exam(payload):
+    """응시료 지원인가(이름·설명·지원 내용에 '응시료'), 글에 적힌 시험 종류, 시험 이름을 찾아볼 글(띄어쓰기 없이 소문자)."""
+    core = ' '.join(_text(payload, f) for f in ('plcyNm', 'plcyExplnCn', 'plcySprtCn'))
+    if '응시료' not in core:
+        return {'fee': False, 'kinds': [], 'text': ''}
+    full = core + ' ' + _text(payload, 'addAplyQlfcCndCn')
+    return {'fee': True, 'kinds': [k for k, pattern in EXAM_KINDS.items() if re.search(pattern, full)], 'text': ''.join(full.split()).lower()}
+
+
+def housing(payload):
+    """조건·지원 내용·참여 제한 글의 무주택 문장과 '부모와 따로 거주' 문장. 없으면 None(주거 요건이 없다는 뜻은 아니다)."""
+    lines = [_BULLET.sub('', raw).strip()[:200] for f in ('addAplyQlfcCndCn', 'plcySprtCn', 'ptcpPrpTrgtCn') for raw in _SPLIT.split(str(payload.get(f) or ''))]
+    no_home = next((s for s in lines if '무주택' in s), None)
+    return {'no_home': no_home, 'apart': next((s for s in lines if _APART.search(s)), None),
+            'hedged': bool(no_home and _HOME_HEDGE.search(str(payload.get('plcyNm') or '') + ' ' + no_home))}
+
+
 def targets(payload):
     """정책 이름에 드러난 특정 대상 집단과 정책특화 요건코드. 없으면 빈 목록(누구나 대상이라는 뜻은 아니다)."""
     named = [group for group, pattern in TARGETS.items() if re.search(pattern, str(payload.get('plcyNm') or ''))]
@@ -346,6 +371,7 @@ def structure(payload):
             'category': CATEGORY_ALIAS.get(str(payload.get('lclsfNm') or '').strip(), str(payload.get('lclsfNm') or '').strip()),
             'age': age(payload), 'application': application(payload), 'region': region(payload),
             'income': income(payload), 'exclusions': exclusions(payload), 'targets': targets(payload), 'amounts': amounts(payload), 'summary': summary(payload),
+            'exam': exam(payload), 'housing': housing(payload),
             'special': _codes(payload, 'sbizCd'), 'provision': provision(payload),
             'subcategory': CATEGORY_ALIAS.get(str(payload.get('mclsfNm') or '').strip(), str(payload.get('mclsfNm') or '').strip()), 'operator': str(payload.get('operInstCdNm') or '').strip(),
             'scale': scale(payload), 'project': project(payload, application(payload)), 'documents': documents(payload),
