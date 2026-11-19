@@ -7,7 +7,7 @@ from fastapi import APIRouter,HTTPException
 from pydantic import BaseModel,Field
 from db import connect
 from functools import lru_cache
-from ontong import BASE,review_bundle,safe_url
+from ontong import BASE,review_bundle,safe_url,source_check
 
 router=APIRouter(prefix='/api/desk')
 
@@ -29,6 +29,27 @@ def gone_links():
     return _gone(LINK_CHECKS.stat().st_mtime_ns) if LINK_CHECKS.exists() else frozenset()
 
 
+# 준비 작업(공고에서 확인할 일)과 관계없는 칸. 이 칸만 바뀌었을 때는 저장한 작업을 '자료가 바뀌었어요'로 만들지 않는다.
+# (2026-11-19 재수집에서 코드 칸 4개가 더해지고 키워드 칸만 바뀌었는데 저장된 작업 전부가 다시 승인하라고 나왔다.)
+IGNORED=('plcyKywdNm','sbizCd','plcyPvsnMthdCd','plcyAprvSttsCd','pvsnInstGroupCd','lastMdfcnDt','frstRegDt')
+
+def _core(payload):
+    return hashlib.sha256(json.dumps({k:v for k,v in payload.items() if k not in IGNORED},sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+
+def still_valid(external_id,stored,fingerprint):
+    """저장한 작업의 지문이 지금 자료와 같은 내용을 가리키는가. 옛 방식(수집 해시 전체)으로 저장된 지문은,
+    그때의 수집본과 지금 수집본의 내용(IGNORED 제외)이 같으면 유효하다고 본다. 공식 대조 기록이 있는 정책의 옛 지문은 되살리지 않는다."""
+    if stored==fingerprint:return True
+    with connect() as con:
+        now=con.execute('SELECT payload_json,sha256 FROM ontong_candidates WHERE external_id=?',(external_id,)).fetchone()
+        if not now or source_check(external_id,now['sha256']):return False
+        core=_core(json.loads(now['payload_json']))
+        for snap in con.execute('SELECT sha256,payload_json FROM ontong_snapshots WHERE external_id=?',(external_id,)):
+            legacy=hashlib.sha256(json.dumps({'sha':snap['sha256'],'check':None,'contract':1},sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+            if legacy==stored and _core(json.loads(snap['payload_json']))==core:return True
+    return False
+
+
 def evidence(external_id):
     bundle=review_bundle(external_id)
     if not bundle:raise HTTPException(404,'정책을 찾을 수 없습니다.')
@@ -40,7 +61,9 @@ def evidence(external_id):
         url=safe_url(value)
         if url and url not in gone_links() and not any(x['url']==url for x in links):links.append({'title':title,'url':url})
     # Include review evidence in the fingerprint: API data may be unchanged when a notice is corrected.
-    fingerprint=hashlib.sha256(json.dumps({'sha':bundle['sha256'],'check':check,'contract':1},sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+    # 수집 해시 전체가 아니라 작업에 영향을 주는 칸으로 만든다. 대조 기록에서는 수집 해시와 그 메모를 뺀다(내용이 같으면 같은 지문).
+    seen={k:v for k,v in check.items() if k not in ('api_sha256','api_sha256_note')} if check else None
+    fingerprint=hashlib.sha256(json.dumps({'core':_core(p),'check':seen,'contract':2},sort_keys=True,ensure_ascii=False).encode()).hexdigest()
     return bundle,links,fingerprint
 
 
@@ -100,7 +123,7 @@ def workspace(wid:str):
     for row in rows:
         eid=row['external_id']
         if eid not in fingerprints:fingerprints[eid]=evidence(eid)[2]
-        row['outdated']=row.pop('evidence_hash')!=fingerprints[eid]
+        row['outdated']=not still_valid(eid,row.pop('evidence_hash'),fingerprints[eid])
         row['sources']=json.loads(row.pop('sources_json'));row.pop('workspace_id')
     return {'id':wid,'bookmarks':saved,'tasks':rows}
 
@@ -140,14 +163,16 @@ def confirm(wid:str,external_id:str,payload:Approval):
         exists=con.execute('SELECT 1 FROM desk_tasks WHERE workspace_id=? AND external_id=?',(wid,external_id)).fetchone()
         if count>=100 and not exists:raise HTTPException(422,'동시에 준비할 수 있는 정책은 최대 100개입니다.')
         keys=[t['key'] for t in plan['tasks']]
+        before=con.execute('SELECT evidence_hash FROM desk_tasks WHERE workspace_id=? AND external_id=? LIMIT 1',(wid,external_id)).fetchone()
+        same=int(bool(before) and still_valid(external_id,before['evidence_hash'],plan['evidence_hash']))   # 내용이 그대로면 체크해 둔 상태를 지킨다
         con.execute('DELETE FROM desk_tasks WHERE workspace_id=? AND external_id=? AND task_key NOT IN ('+','.join('?' for _ in keys)+')',[wid,external_id,*keys])
         for task in plan['tasks']:
             con.execute('''INSERT INTO desk_tasks(id,workspace_id,external_id,task_key,title,instructions,sources_json,evidence_hash)
                 VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(workspace_id,external_id,task_key) DO UPDATE SET
                 title=excluded.title,instructions=excluded.instructions,sources_json=excluded.sources_json,
-                status=CASE WHEN desk_tasks.evidence_hash=excluded.evidence_hash THEN desk_tasks.status ELSE 'todo' END,
+                status=CASE WHEN ?=1 THEN desk_tasks.status ELSE 'todo' END,
                 evidence_hash=excluded.evidence_hash''',
-                (uuid.uuid4().hex,wid,external_id,task['key'],task['title'],task['instructions'],json.dumps(task['sources'],ensure_ascii=False),plan['evidence_hash']))
+                (uuid.uuid4().hex,wid,external_id,task['key'],task['title'],task['instructions'],json.dumps(task['sources'],ensure_ascii=False),plan['evidence_hash'],same))
     return workspace(wid)
 
 
@@ -157,7 +182,7 @@ def update_task(wid:str,task_id:str,payload:TaskStatus):
         con.execute('BEGIN IMMEDIATE');require_workspace(wid,con)
         row=con.execute('SELECT * FROM desk_tasks WHERE id=? AND workspace_id=?',(task_id,wid)).fetchone()
         if not row:raise HTTPException(404,'이 준비 공간의 작업을 찾을 수 없습니다.')
-        if evidence(row['external_id'])[2]!=row['evidence_hash']:raise HTTPException(409,'정보가 바뀐 작업입니다. 정책 상세에서 준비할 일을 다시 확인해 주세요.')
+        if not still_valid(row['external_id'],row['evidence_hash'],evidence(row['external_id'])[2]):raise HTTPException(409,'정보가 바뀐 작업입니다. 정책 상세에서 준비할 일을 다시 확인해 주세요.')
         con.execute('UPDATE desk_tasks SET status=? WHERE id=?',(payload.status,task_id))
     return {'updated':True}
 

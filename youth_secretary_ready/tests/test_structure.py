@@ -1606,3 +1606,36 @@ def test_every_criterion_says_where_its_evidence_comes_from():
     official = screen(made(), PROFILE, 'open', notes=[note], on=date(2026, 11, 17))['criteria'][0]
     assert official['where'].endswith('따로 확인한 공식 페이지(사람 검수 전)')
 
+
+# ── v0.37: 준비 작업과 관계없는 칸만 바뀌면 '자료가 바뀌었어요'가 나오지 않는다 ────────
+def test_saved_tasks_survive_changes_in_unrelated_fields_only(ctx):
+    seed([good('KEEP1', plcyKywdNm='보조금')])
+    wid = ctx.post('/api/desk/workspaces').json()['id']
+    plan = ctx.get(f'/api/desk/workspaces/{wid}/policies/KEEP1/preview').json()
+    saved = ctx.post(f'/api/desk/workspaces/{wid}/policies/KEEP1/confirm', json={'approved': True, 'preview_token': plan['preview_token']}).json()['tasks']
+    assert ctx.patch(f'/api/desk/workspaces/{wid}/tasks/{saved[0]["id"]}', json={'status': 'done'}).status_code == 200
+    outdated = lambda: [t['outdated'] for t in ctx.get(f'/api/desk/workspaces/{wid}').json()['tasks']]
+    seed([good('KEEP1', plcyKywdNm='보조금,청년', plcyPvsnMthdCd='0042006', sbizCd='0014010')])      # 키워드와 새 코드 칸만 바뀜
+    assert not any(outdated())
+    again = ctx.get(f'/api/desk/workspaces/{wid}/policies/KEEP1/preview').json()
+    kept = ctx.post(f'/api/desk/workspaces/{wid}/policies/KEEP1/confirm', json={'approved': True, 'preview_token': again['preview_token']}).json()['tasks']
+    assert kept[0]['status'] == 'done'                                                              # 다시 승인해도 체크가 지워지지 않는다
+    seed([good('KEEP1', plcyKywdNm='보조금,청년', aplyYmd='20261201 ~ 20261231')])                    # 신청기간이 바뀌면 다시 확인해야 한다
+    assert all(outdated())
+
+
+def test_tasks_saved_with_the_old_fingerprint_stay_valid_when_content_is_the_same(ctx):
+    import hashlib
+    seed([good('OLDFP')])
+    wid = ctx.post('/api/desk/workspaces').json()['id']
+    plan = ctx.get(f'/api/desk/workspaces/{wid}/policies/OLDFP/preview').json()
+    ctx.post(f'/api/desk/workspaces/{wid}/policies/OLDFP/confirm', json={'approved': True, 'preview_token': plan['preview_token']})
+    with connect() as con:      # 옛 방식(수집 해시 전체)의 지문으로 바꿔 놓고, 관계없는 칸만 바뀐 새 수집본을 넣는다
+        sha = con.execute("SELECT sha256 FROM ontong_candidates WHERE external_id='OLDFP'").fetchone()[0]
+        legacy = hashlib.sha256(json.dumps({'sha': sha, 'check': None, 'contract': 1}, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+        con.execute("UPDATE desk_tasks SET evidence_hash=? WHERE external_id='OLDFP'", (legacy,))
+    seed([good('OLDFP', sbizCd='0014010', plcyPvsnMthdCd='0042006')])
+    assert not any(t['outdated'] for t in ctx.get(f'/api/desk/workspaces/{wid}').json()['tasks'])
+    seed([good('OLDFP', sbizCd='0014010', sbmsnDcmntCn='주민등록등본')])                              # 서류 안내가 바뀌면 옛 지문은 유효하지 않다
+    assert all(t['outdated'] for t in ctx.get(f'/api/desk/workspaces/{wid}').json()['tasks'])
+

@@ -58,7 +58,8 @@ def test_approval_task_toggle_and_repeat_keep_completion(ctx):
 def test_changed_evidence_blocks_old_approval_and_completion(ctx):
     base=setup(ctx);old=plan(ctx,base);task=approve(ctx,base).json()['tasks'][0]
     ctx.patch(base+'/tasks/'+task['id'],json={'status':'done'})
-    with connect() as con:con.execute("UPDATE ontong_candidates SET sha256='different' WHERE external_id='0001'")
+    # 수집 해시가 아니라 준비 작업에 영향을 주는 내용(신청기간)이 바뀌어야 '자료가 바뀌었어요'가 된다.
+    with connect() as con:con.execute("UPDATE ontong_candidates SET payload_json=json_set(payload_json,'$.aplyYmd','20270101 ~ 20270131') WHERE external_id='0001'")
     assert all(t['outdated'] for t in ctx.get(base).json()['tasks'])
     assert approve(ctx,base,token=old['preview_token']).status_code==409
     assert ctx.patch(base+'/tasks/'+task['id'],json={'status':'done'}).status_code==409
