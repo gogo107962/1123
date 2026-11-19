@@ -5,7 +5,9 @@ const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const n=v=>Number(v||0).toLocaleString();
 const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
-const DEMO={name:'민지',birth:'2000-03',moved:'2024-02',age:26,sido:'11',region_code:'11440',job_code:'0013003',school_code:'',household:1,housing:'월세',exams:[{name:'정보처리기사',month:'2026-10'}]};
+const DEMO={name:'민지',birth:'2000-03',moved:'2024-02',age:26,sido:'11',region_code:'11440',job_code:'0013003',school_code:'',household:1,housing:'월세',exams:[{name:'정보처리기사',month:(d=>{d.setDate(1);d.setMonth(d.getMonth()-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')})(new Date())}]};
+// 오늘 날짜(한국 시간). D-day와 접수 상태는 서버가 요청 때마다 오늘 기준으로 계산하고, 화면은 날짜가 바뀌면 다시 불러온다.
+const today=()=>new Date(Date.now()+9*3600e3).toISOString().slice(0,10);
 // 지원 찾기의 종류 버튼. 앞의 다섯은 정책 대분류, 'k:'로 시작하는 둘은 글에서 찾는 낱말이다.
 const KINDS=[['','전체'],['일자리','일자리'],['주거','주거'],['교육･직업훈련','교육 · 훈련'],['금융･복지･문화','금융 · 복지 · 문화'],['참여･기반','참여 · 기반'],['k:자격증,응시료','자격증 · 시험'],['k:어학','어학']];
 const AGES=[['0-18','18세 이하'],['19-24','19~24세'],['25-29','25~29세'],['30-34','30~34세'],['35-39','35~39세'],['40-120','40세 이상']];
@@ -170,7 +172,7 @@ ${q.keywords.length?`<p class="tiny">찾는 주제: ${esc(q.keywords.join(' · '
 <form class="qform" data-f="q"><label class="sr" for="q">정책 이름으로 좁히기</label><input id="q" class="round" type="search" maxlength="80" value="${esc(q.q)}" placeholder="정책 이름 · 내용으로 좁히기"><button class="rb" aria-label="검색">${ms('search')}</button></form>${outs}`}
 ${L.items.map(tab?item:card).join('')||(tab?'<div class="card"><h3>찾은 정책이 없어요</h3><p class="sub">검색어나 필터를 바꿔 보세요.</p><button class="btn line w" style="margin-top:12px" data-a="clearfilters">검색 · 필터 지우기</button></div>':'<div class="card"><h3>찾은 정책이 없어요</h3><p class="sub">다른 말로 물어보거나 주제를 지워 보세요.</p></div>')}
 ${L.page<L.pages?`<button class="btn line w" data-a="more">더 보기 (${n(L.items.length)} / ${n(L.total)})</button>`:''}
-<p class="tiny mt">2026-11-19 온통청년 정보와 비교한 결과이며 자격 판정이 아니에요 · 카드를 누르면 근거를 볼 수 있어요</p></main>
+<p class="tiny mt">오늘(${esc(L.as_of)}) 기준 · 온통청년 정보${S.collected?`(${esc(S.collected)} 수집)`:''}와 비교한 결과이며 자격 판정이 아니에요 · 카드를 누르면 근거를 볼 수 있어요</p></main>
 ${tab?(sel?`<div class="act floating"><span class="b s14">${sel}개 선택</span><button class="btn f1" data-a="plan">신청 계획 만들기</button></div>`:'')+dock('browse'):`<div class="act"><span class="b s14">${sel}개 선택</span><button class="btn f1" data-a="plan" ${sel?'':'disabled'}>신청 계획 만들기</button></div>`}`;},
 
 detail:()=>{const d=S.detail;if(!d)return wait('정책 상세');
@@ -358,6 +360,10 @@ document.addEventListener('submit',e=>{e.preventDefault();const f=e.target.datas
 
 // 글꼴은 화면을 막지 않게 스크립트로 불러온다(인라인 핸들러를 쓰지 않아 CSP를 지킨다). 인터넷이 없으면 기기 글꼴로 보인다.
 document.head.append(Object.assign(document.createElement('link'),{rel:'stylesheet',href:'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap'}));
+// 화면을 켜 둔 채 날짜가 바뀌면(자정을 넘기거나 다음 날 다시 열면) D-day와 접수 상태가 어제 것이므로 다시 불러온다.
+let loadedOn=today();
+const freshen=()=>{if(document.visibilityState==='visible'&&today()!==loadedOn)location.reload()};
+document.addEventListener('visibilitychange',freshen);setInterval(freshen,60000);
 (async function init(){render();
  try{let wid=localStorage.getItem('youth-desk-workspace');
   if(wid){try{S.space=await api('/api/desk/workspaces/'+encodeURIComponent(wid))}catch(e){if(e.status!==404)throw e;wid=null}}
@@ -366,6 +372,7 @@ document.head.append(Object.assign(document.createElement('link'),{rel:'styleshe
   // '제한없음'은 정책 쪽 표기라 내 상태로 고를 수 없다.
   for(const [key,field,skip] of [['job_code','jobCd','0013010'],['school_code','schoolCd','0049010']])S.names[key]=Object.fromEntries(Object.entries(codebook.groups[field].codes).filter(([code])=>code!==skip).map(([code,item])=>[code,item.label]));
   S.benefits=regions.benefits;S.groups=regions.groups;
+  api('/api/integrations/ontong').then(r=>{S.collected=(r.last_run?.finished_at||'').slice(0,10)},()=>{});
   if(S.profile){S.screen='home';render();await loadCounts()}else render();
  }catch(e){toast(e.message+' 새로고침해 주세요.')}
 })();
