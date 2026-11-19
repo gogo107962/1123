@@ -30,11 +30,14 @@ PARENT = {k: p for k, n in SIGUNGU.items() if ' ' in n
 # 시군구 이름이 빠짐없이 있는 시도. 되물을 때는 이런 시도만 고르게 한다(일부만 있는 목록을 내밀지 않는다).
 SIGUNGU_COMPLETE = {s for s, sets in SIDO_SETS.items() if sets and all(c in SIGUNGU for c in max(sets, key=len))}
 # 각 분류에서 '제한없음'을 뜻하는 코드 (코드표 원문 기준)
+# '기타' 코드. 정책에 이 코드가 있으면 코드표에 없는 다른 요건이 있다는 뜻이라, 내 값이 목록에 없어도 다르다고 단정하지 않는다.
+OTHER = {'jobCd': '0013009', 'schoolCd': '0049009', 'plcyMajorCd': '0011008'}
 UNRESTRICTED = {'jobCd': '0013010', 'schoolCd': '0049010', 'plcyMajorCd': '0011009', 'mrgSttsCd': '0055003', 'sbizCd': '0014010'}
 PROFILE_FIELDS = {'job_code': 'jobCd', 'school_code': 'schoolCd', 'major_code': 'plcyMajorCd', 'marriage_code': 'mrgSttsCd'}
 WINDOW = re.compile(r'(\d{8})\s*~\s*(\d{8})')
 # 주관기관명이 지자체로 보이는지에 대한 참고 표시. 기관 소재지로 지원 지역을 정하지 않는다.
-LOCAL_AGENCY = re.compile(r'특별시|광역시|특별자치시|특별자치도|통합특별시|[가-힣](도|시|군|구)$')
+# 주관기관이 지자체인가. '경상북도 의성군 관광복지국'처럼 부서 이름으로 끝나는 기관도 읽는다(전국 등록 정책 26건이 이 모양이었다).
+LOCAL_AGENCY = re.compile(r'특별시|광역시|특별자치시|특별자치도|통합특별시|[가-힣](도|시|군|구)(\s|$)')
 CLOSED = ('ended', 'closed_code', 'closed_official')
 # 제외·중복 수혜를 말하는 문장을 찾는 표지. 문장을 해석하지 않고 그대로 보존하는 데만 쓴다.
 EXCLUDE = re.compile(r'제외|중복|불가|제한|유사')
@@ -95,7 +98,21 @@ DOCS = [
 ]
 _SPLIT = re.compile(r'[\r\n]+|\s/\s|(?<=[.。])\s+')
 _BULLET = re.compile(r'^(?:[\s\-–·•○□▪◦※*]+|[①-⑳]\s*|\d{1,2}[.)]\s+)+')
-_RESIDENCE = re.compile(r'(\d{1,2})\s*(년|개월)\s*이상\s*(?:계속\s*|연속\s*|연속하여\s*)?(?:거주|주민등록)')
+# 'N년(개월) 이상 (계속) (○○시에) 거주·주민등록·주소', '전입한 지 N개월 이상'. 재직 기간·창업 기간 같은 다른 기간은 읽지 않는다.
+_RESIDENCE = re.compile(r'(\d{1,2})\s*(년|개월)\s*이상\s*(?:계속(?:하여|해서)?\s*|연속(?:하여)?\s*)?(?:[가-힣]{1,8}(?:시|군|구|도|市|내)에?\s*)?(?:거주|주민등록|주소)'
+                        r'|전입한?\s*지\s*(\d{1,2})\s*(년|개월)\s*이상')
+# 지역에 사는 기간이 아니라 고시원·시설에 머문 기간을 말하는 문장, 우대·유형별 조건인 문장은 거주 기간 조건으로 단정하지 않는다.
+_NOT_RESIDENCE = re.compile(r'고시원|쪽방|반지하|시설|기숙사|환경')
+_SOFT = re.compile(r'우대|가점|가산|유형|추가')
+# 조건을 적은 글에서 코드 값과 견줄 말. 코드와 글이 어긋나면 걸러보기가 단정하지 않는다(screening.screen).
+_AGE_RANGE = re.compile(r'(?:만\s*)?(\d{2})\s*세?\s*(?:이상)?\s*[~∼～\-]\s*(?:만\s*)?(\d{2})\s*세')
+SAID = {'unemployed': r'미취업|구직 ?중|구직자|취업 ?준비', 'employed': r'재직 ?중|재직자|근로자|직장인',
+        'short_work': r'단기 ?근로|주 ?\d+ ?시간 ?(?:이하|미만)|아르바이트|재직자[^.\n]{0,12}(?:가능|포함)',
+        'income': r'중위 ?소득|소득[^.\n]{0,12}(?:이하|이내|미만)|차상위|수급자|저소득|건강보험료',
+        'student': r'재학생|대학생|대학원생|휴학생|졸업 ?예정자|고등학생',
+        'school_floor': r'(?:고졸|고등학교 ?졸업|대졸|전문대 ?졸업|학사|석사)[^.\n]{0,6}이상',
+        'unmarried': r'미혼', 'child': r'보호자|부모|자녀|아동|영아|출생아|임산부|양육|아이', 'graduate': r'졸업 ?후|졸업생|졸업자',
+        'early_close': r'예산 ?소진|조기 ?(?:마감|종료)|선착순 ?(?:접수|마감|모집)'}
 # 정렬 순서: 접수 중(마감 빠른 순) → 시작 전 → 상시 → 기간 미기재 → 마감
 RANK = {'open': 0, 'upcoming': 1, 'rolling': 2, 'unknown': 3, 'ended': 4, 'closed_code': 4, 'closed_official': 4}
 LABEL = {'rolling': '상시(API)', 'unknown': '기간 확인 필요', 'ended': 'API 기간 지남',
@@ -164,7 +181,24 @@ def _codes(payload, field):
     known = CODEBOOK['groups'][field]['codes']
     return {'codes': codes, 'labels': [known[c]['label'] for c in codes if c in known],
             'unknown_codes': [c for c in codes if c not in known], 'missing': not codes,
-            'unrestricted': UNRESTRICTED.get(field) in codes}
+            'unrestricted': UNRESTRICTED.get(field) in codes, 'other': OTHER.get(field) in codes}
+
+
+def _conditions(payload):
+    """대상·조건을 적는 두 칸(추가 조건, 지원 내용)의 글. 줄바꿈과 겹친 빈칸은 한 칸으로 줄인다."""
+    return ' '.join(' '.join(str(payload.get(f) or '') for f in ('addAplyQlfcCndCn', 'plcySprtCn')).split())
+
+
+def said(payload):
+    """조건 글에 그 말이 나오면 앞뒤 글(근거로 보여 줄 인용), 없으면 None. 조기 마감 표현은 신청 방법·기타 칸까지 본다."""
+    cond = _conditions(payload)
+    wide = cond + ' ' + ' '.join(' '.join(str(payload.get(f) or '') for f in ('plcyAplyMthdCn', 'etcMttrCn', 'bizPrdEtcCn', 'plcyExplnCn')).split())
+    out = {}
+    for key, pattern in SAID.items():
+        text = wide if key == 'early_close' else cond
+        m = re.search(pattern, text)
+        out[key] = text[max(0, m.start() - 20):m.end() + 20].strip() if m else None
+    return out
 
 
 def age(payload):
@@ -177,7 +211,9 @@ def age(payload):
     return {'min': low, 'max': high, 'kind': kind,
             # 명세에는 Y/N의 뜻이 없지만 온통청년 누리집은 Y를 '제한없음'으로 보여 준다(data/api_field_notes.json).
             # 실제 수집본에서 범위가 빈 1,120건 중 1,046건이 Y다. 범위와 Y가 함께 적힌 741건은 서로 어긋난 값이다.
-            'no_limit': flag == 'Y', 'limit_flag_raw': flag, 'limit_flag_verified': False}
+            'no_limit': flag == 'Y', 'limit_flag_raw': flag, 'limit_flag_verified': False,
+            # 조건 글에 적힌 나이 범위('만 19~39세'). 나이 칸과 다르면 걸러보기가 단정하지 않는다. 10세 미만으로 시작하는 범위(자녀 나이 등)는 뺀다.
+            'text_ranges': sorted({(int(a), int(b)) for a, b in _AGE_RANGE.findall(_conditions(payload)) if 10 <= int(a) < int(b) <= 70})}
 
 
 def application(payload):
@@ -232,10 +268,22 @@ def region(payload):
     sido = sorted({c[:2] for c in valid})
     unknown = [s for s in sido if s not in SIDO]
     # 글에 적힌 '1년 이상 거주' 같은 조건. 전입일을 모르므로 지역이 맞아도 확인 필요로 내리는 데 쓴다.
-    stay = _RESIDENCE.search(' '.join(str(payload.get(f) or '') for f in ('addAplyQlfcCndCn', 'ptcpPrpTrgtCn', 'plcySprtCn', 'plcyExplnCn', 'etcMttrCn')))
-    return {'codes': valid, 'invalid_codes': [c for c in codes if c not in valid], 'count': len(valid),
+    text = ' '.join(' '.join(str(payload.get(f) or '') for f in ('addAplyQlfcCndCn', 'ptcpPrpTrgtCn', 'plcySprtCn', 'plcyExplnCn', 'etcMttrCn')).split())
+    stays = [m for m in _RESIDENCE.finditer(text) if not _NOT_RESIDENCE.search(text[max(0, m.start() - 25):m.start()])]
+    months = sorted({int(m.group(1) or m.group(3)) * (12 if (m.group(2) or m.group(4)) == '년' else 1) for m in stays})
+    # 기간이 여러 가지이거나 우대·유형별 조건으로 적힌 글은 어느 기간이 내게 해당하는지 알 수 없다.
+    unclear = len(months) > 1 or any(_SOFT.search(text[max(0, m.start() - 30):m.end() + 30]) for m in stays)
+    # 시도의 시·군·구(구가 있는 시는 시 단위로 센다) 가운데 꼭 하나만 빠진 등록. 실제 수집본에서 충남 전체 정책 102건에 서산시만 빠져 있어
+    # 등록 누락으로 보이지만 확인할 수 없으므로, 그 한 곳에 사는 사람에게 '달라요'로 단정하지 않는 데 쓴다.
+    missing_one = {}
+    for s in sido:
+        units = {PARENT.get(c, c) for c in SIGUNGU if c[:2] == s}
+        left = units - {PARENT.get(c, c) for c in valid if c in SIGUNGU}
+        if len(units) >= 5 and len(left) == 1:
+            missing_one[s] = left.pop()
+    return {'codes': valid, 'invalid_codes': [c for c in codes if c not in valid], 'count': len(valid), 'missing_one': missing_one,
             'sido': sido, 'sido_names': [SIDO[s] for s in sido if s in SIDO], 'unknown_sido': unknown,
-            'residence_min_months': int(stay.group(1)) * (12 if stay.group(2) == '년' else 1) if stay else None,
+            'residence_min_months': months[0] if months else None, 'residence_unclear': unclear,
             'nationwide': bool(valid) and not unknown and set(sido) == set(SIDO),
             'full_sido': [s for s in sido if any(full <= set(valid) for full in SIDO_SETS.get(s, []))],
             'local_agency_hint': bool(LOCAL_AGENCY.search(str(payload.get('sprvsnInstCdNm') or '').strip()))}
@@ -318,7 +366,7 @@ def summary(payload):
 # 국가자격은 국가기술자격과 국가전문자격을 함께 이르는 말이다(자격기본법).
 EXAM_KINDS = {'국가기술자격': r'국가\s?기술\s?자격|국가\s?자격', '어학': r'어학|외국어', '한국사': r'한국사'}
 # 무주택 문장에 이 낱말이 함께 있으면 '자가라서 달라요'로 단정하지 않는다(주택 구입 지원, 우대 조건 등).
-_HOME_HEDGE = re.compile(r'우대|가능|예외|무관|관계\s?없|구입|구매|매입|분양|취득|생애')
+_HOME_HEDGE = re.compile(r'우대|우선|가능|예외|무관|관계\s?없|구입|구매|매입|분양|취득|생애')
 _APART = re.compile(r'부모[^.]{0,8}(별도|따로)')
 
 
@@ -384,7 +432,7 @@ def structure(payload):
             'category': CATEGORY_ALIAS.get(str(payload.get('lclsfNm') or '').strip(), str(payload.get('lclsfNm') or '').strip()),
             'age': age(payload), 'application': application(payload), 'region': region(payload),
             'income': income(payload), 'exclusions': exclusions(payload), 'targets': targets(payload), 'amounts': amounts(payload), 'summary': summary(payload),
-            'exam': exam(payload), 'housing': housing(payload),
+            'exam': exam(payload), 'housing': housing(payload), 'said': said(payload),
             'special': _codes(payload, 'sbizCd'), 'provision': provision(payload),
             # 정책 승인 상태(수집본은 모두 '승인')와 제공 기관 구분(중앙부처·지자체)
             'approval': _label(payload, 'plcyAprvSttsCd'), 'provider_group': _label(payload, 'pvsnInstGroupCd'),

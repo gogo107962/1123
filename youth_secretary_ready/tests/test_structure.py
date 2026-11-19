@@ -1493,3 +1493,103 @@ def test_approval_and_provider_group_are_read():
     assert st['approval'] == {'code': '0044002', 'label': '승인'} and st['provider_group']['label'] == '중앙부처'
     assert made()['approval'] == {'code': '', 'label': ''} and made(pvsnInstGroupCd='9999999')['provider_group']['label'] == ''   # 없는 값을 지어내지 않는다
 
+
+# ── v0.35: 코드 칸과 조건 글이 어긋나면 단정하지 않는다 ─────────────────────────────
+def test_age_field_and_age_written_in_text_must_agree():
+    free = made(sprtTrgtMinAge='0', sprtTrgtMaxAge='0', sprtTrgtAgeLmtYn='Y', plcySprtCn='대상: 만 19~39세 청년')
+    assert free['age']['text_ranges'] == [(19, 39)]
+    assert verdict(free, {'age': 26})[1]['age'] == 'match'            # 칸('제한없음')과 글(19~39세) 어느 쪽으로 봐도 맞다
+    out, results = verdict(free, {'age': 45})
+    assert results['age'] == 'unknown' and "'제한없음'" in out['criteria'][1]['basis'] and '19~39세' in out['criteria'][1]['basis']
+    wider = made(sprtTrgtMinAge='19', sprtTrgtMaxAge='45', addAplyQlfcCndCn='19세 ~ 39세 미취업 청년')
+    assert [verdict(wider, {'age': a})[1]['age'] for a in (26, 42, 50)] == ['match', 'unknown', 'mismatch']   # 둘 다 안 / 칸만 안 / 둘 다 밖
+    same = made(plcySprtCn='만 19세~34세 청년에게 지원')                  # 칸(19~34)과 글이 같으면 그대로
+    assert [verdict(same, {'age': a})[1]['age'] for a in (26, 40)] == ['match', 'mismatch']
+    assert made(plcySprtCn='만 6~12세 자녀를 둔 청년')['age']['text_ranges'] == []     # 자녀 나이는 읽지 않는다
+
+
+def test_free_codes_do_not_match_when_the_text_states_a_condition():
+    income = made(addAplyQlfcCndCn='기준 중위소득 150% 이하 가구')
+    out, results = verdict(income, PROFILE)
+    assert results['income'] == 'unknown' and '중위소득 150%' in out['criteria'][3]['basis']
+    assert verdict(made(), PROFILE)[1]['income'] == 'match'
+    jobless = made(plcySprtCn='미취업 청년에게 면접 정장 대여')              # 취업 요건 칸은 '제한없음'
+    assert [verdict(jobless, {'job_code': j})[1]['job'] for j in ('0013001', '0013003', '0013004')] == ['unknown', 'match', 'match']
+    workers = made(plcySprtCn='관내 중소기업 재직자 대상 교육')
+    assert [verdict(workers, {'job_code': j})[1]['job'] for j in ('0013001', '0013003')] == ['match', 'unknown']
+    both = made(plcySprtCn='미취업 청년 및 재직자 모두 참여')                # 양쪽이 다 나오면 단정할 근거가 없으므로 칸대로 둔다
+    assert [verdict(both, {'job_code': j})[1]['job'] for j in ('0013001', '0013003')] == ['match', 'match']
+    students = made(plcySprtCn='도내 대학 재학생 대상', schoolCd='0049010')
+    assert [verdict(students, {'school_code': c})[1]['school'] for c in ('0049005', '0049007')] == ['match', 'unknown']
+    single = made(addAplyQlfcCndCn='무주택 미혼 청년 세대주', mrgSttsCd='0055003')
+    assert [verdict(single, {'marriage_code': c})[1]['marriage'] for c in ('0055001', '0055002')] == ['unknown', 'match']
+
+
+def test_coded_mismatch_is_softened_when_the_text_is_wider():
+    short = made(jobCd='0013003', addAplyQlfcCndCn='미취업자(주 30시간 이하 단기근로자 포함)')
+    out, results = verdict(short, {'job_code': '0013001'})
+    assert results['job'] == 'unknown' and '단기근로' in out['criteria'][4]['basis']
+    assert verdict(made(jobCd='0013003'), {'job_code': '0013001'})[1]['job'] == 'mismatch'
+    floor = made(schoolCd='0049004', addAplyQlfcCndCn='고졸 이상 학력 소지자')
+    assert verdict(floor, {'school_code': '0049007'})[1]['school'] == 'unknown'
+    assert verdict(made(schoolCd='0049004'), {'school_code': '0049007'})[1]['school'] == 'mismatch'
+
+
+def test_open_period_with_early_closing_words_is_not_a_match():
+    early = made(etcMttrCn='※ 예산 소진 시 조기 마감')
+    out, results = verdict(early, PROFILE)
+    assert results['period'] == 'unknown' and '예산 소진' in out['criteria'][0]['basis']
+    assert verdict(made(plcySprtCn='대면 상담 참여자 선착순 50명에게 기념품'), PROFILE)[1]['period'] == 'match'   # 신청 마감 얘기가 아닌 선착순
+
+
+def test_residence_duration_reads_address_phrases_and_skips_other_durations():
+    months = lambda text: made(addAplyQlfcCndCn=text)['region']['residence_min_months']
+    assert [months(t) for t in ('신청일 기준 1년 이상 영광군에 주소를 둔 청년', '부부 모두 익산시에 6개월 이상 주소를 두고 있는 자',
+                                '6개월 이상 계속하여 북구에 주민등록을 둔 경우', '강진에 전입한 지 3개월 이상인 청년')] == [12, 6, 6, 3]
+    assert [months(t) for t in ('관내 중소기업에 1년 이상 재직 중이며 관내 주소지를 둔 청년', '창업기간 6개월 이상 5년 미만',
+                                '고시원·쪽방 등 열악한 환경에서 3개월 이상 거주하는 자')] == [None, None, None]
+    typed = made(addAplyQlfcCndCn='1유형: 전입 청년 / 2유형(장기거주청년형): 5년 이상 익산시에 주소를 두고 있는 청년')
+    assert typed['region']['residence_unclear'] is True
+    assert verdict(typed, {'region_code': '11305', 'residence_months': 0})[1]['region'] == 'unknown'       # 유형별 조건은 '달라요'로 단정하지 않는다
+
+
+def test_other_code_child_age_small_income_cap_and_one_missing_district_are_not_firm_mismatches():
+    # '기타' 코드가 있는 정책은 내 값이 목록에 없어도 다르다고 단정하지 않는다
+    assert verdict(made(jobCd='0013009'), {'job_code': '0013003'})[1]['job'] == 'unknown'
+    assert verdict(made(jobCd='0013001,0013009'), {'job_code': '0013001'})[1]['job'] == 'match'
+    assert verdict(made(schoolCd='0049009'), {'school_code': '0049007'})[1]['school'] == 'unknown'
+    assert verdict(made(jobCd='0013001'), {'job_code': '0013003'})[1]['job'] == 'mismatch'
+    # 나이 칸이 자녀 나이인 정책
+    child = made(sprtTrgtMinAge='0', sprtTrgtMaxAge='1', plcySprtCn='(대상) 0~23개월 아동의 보호자')
+    out, results = verdict(child, {'age': 26})
+    assert results['age'] == 'unknown' and '자녀의 나이' in out['criteria'][1]['basis']
+    assert verdict(made(sprtTrgtMinAge='16', sprtTrgtMaxAge='18', plcySprtCn='직업계고 학생 대상 교육'), {'age': 26})[1]['age'] == 'mismatch'
+    # 졸업자도 적힌 글
+    loan = made(schoolCd='0049005', plcySprtCn='대학(원)생(재·휴학생), 졸업 후 5년 이내 미취업자')
+    assert [verdict(loan, {'school_code': c})[1]['school'] for c in ('0049007', '0049005', '0049001')] == ['unknown', 'match', 'mismatch']
+    # 연소득 상한으로 보기 어려운 작은 값
+    small = made(earnCndSeCd='0043002', earnMinAmt='0', earnMaxAmt='534')
+    assert verdict(small, {'income_monthly': 250, 'household': 1})[1]['income'] == 'unknown'
+    assert verdict(made(earnCndSeCd='0043002', earnMinAmt='0', earnMaxAmt='2400'), {'income_monthly': 250, 'household': 1})[1]['income'] == 'mismatch'
+    # 무주택 '우선'은 요건이 아니다
+    assert verdict(made(plcySprtCn='입주자격(무주택자 우선) 등'), {'housing': '자가'})[1]['housing'] == 'unknown'
+
+
+def test_single_missing_district_in_a_province_is_unknown_not_mismatch():
+    from policy_structure import SIGUNGU, PARENT
+    units = sorted({PARENT.get(c, c) for c in SIGUNGU if c[:2] == '44'})
+    assert '44210' in units and len(units) >= 5
+    wide = made(zipCd=','.join(c for c in units if c != '44210'))                    # 충남의 시·군이 서산시만 빼고 모두 등록된 모양(실제 102건)
+    assert wide['region']['missing_one'] == {'44': '44210'}
+    assert verdict(wide, {'region_code': '44210'})[1]['region'] == 'unknown'
+    assert verdict(wide, {'region_code': '44131'})[1]['region'] == 'match'           # 천안시 동남구는 천안시 코드로 등록돼 있다
+    two = made(zipCd=','.join(c for c in units if c not in ('44210', '44250')))      # 둘 이상 빠지면 일부 지역만 대상인 정책으로 본다
+    assert two['region']['missing_one'] == {} and verdict(two, {'region_code': '44210'})[1]['region'] == 'mismatch'
+
+
+def test_local_agency_with_department_name_keeps_nationwide_region_unconfirmed():
+    for agency, hint in (('경상북도 의성군 관광복지국', True), ('경기도 철도항만물류국 물류항만과', True), ('성북구', True),
+                         ('고용노동부', False), ('국토교통부 주거복지정책관', False), ('한국장학재단', False)):
+        assert made(zipCd=ALL, sprvsnInstCdNm=agency)['region']['local_agency_hint'] is hint, agency
+    assert verdict(made(zipCd=ALL, sprvsnInstCdNm='경상북도 의성군 관광복지국'), PROFILE)[1]['region'] == 'unknown'
+

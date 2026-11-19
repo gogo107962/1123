@@ -39,6 +39,9 @@ def draft(payload, supplements=()):
     rules, checks = [], [{'id': 'period', 'source_ref': 'api',
                           'message': f"API 신청기간({st['application']['raw'] or '기재 없음'})을 최신 공고의 회차·시작일·마감 시각과 대조하세요."}]
     age = st['age']
+    if age['text_ranges'] and (age['min'], age['max']) not in [tuple(r) for r in age['text_ranges']]:
+        checks.append({'id': 'age_text', 'source_ref': 'api', 'message': 'API 나이 칸과 조건 글에 적힌 나이('
+                       + ', '.join(f'{a}~{b}세' for a, b in age['text_ranges']) + ')가 다릅니다. 공고의 나이 기준으로 규칙을 고치세요.'})
     if age['kind'] == 'range' and age['max'] >= 99:
         # 상한 99·100·120·999는 '상한 없음'을 뜻하는 자리표시로 보인다. 하한만 규칙으로 옮기고 상한은 사람이 확인한다.
         rules.append({'id': 'age', 'type': 'required', 'predicate': {'fact': 'age', 'op': 'gte', 'value': age['min']},

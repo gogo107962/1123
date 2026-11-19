@@ -125,6 +125,20 @@ def age_rule(supplements):
 
 
 def _age(item, value, rule=None):
+    """나이. 공식 페이지에서 확인한 규칙이 있으면 그것을 쓰고, 없으면 API 나이 칸으로 본 결과를 조건 글에 적힌 나이 범위와 견준다.
+    둘이 다른 결과를 내면(칸은 '제한없음'인데 글은 19~39세 등) 어느 쪽도 믿지 않고 확인 필요로 둔다."""
+    result, basis = _age_field(item, value, rule)
+    ranges = item['text_ranges']
+    if rule or result not in ('match', 'mismatch') or not ranges or (item['min'], item['max']) in ranges:
+        return result, basis
+    text = ', '.join(f'{a}~{b}세' for a, b in ranges)
+    if {'match' if a <= value <= b else 'mismatch' for a, b in ranges} != {result}:
+        field = "'제한없음'" if item['kind'] == 'unspecified' else f"{item['min'] or '?'}~{item['max'] or '?'}세"
+        return 'unknown', f'API 나이 칸({field})과 조건 글에 적힌 나이({text})가 다릅니다. 어느 쪽이 맞는지 공고에서 확인하세요.'
+    return result, basis + f' 조건 글에는 {text}로 적혀 있습니다.'
+
+
+def _age_field(item, value, rule=None):
     if value is None:
         return 'skipped', '나이를 입력하지 않았습니다.'
     if rule:
@@ -152,6 +166,8 @@ def _age(item, value, rule=None):
 def _region(item, profile):
     result, basis = _area(item, profile)
     need, lived = item['residence_min_months'], profile.get('residence_months')
+    if result == 'match' and need and item['residence_unclear']:
+        return 'unknown', '지역은 맞지만 API 글에 거주 기간 조건이 여러 가지이거나 우대·유형별 조건으로 적혀 있습니다. 내게 해당하는 기간을 공고에서 확인하세요.'
     if result == 'match' and need and lived is not None:
         # 내 정보의 거주 기간은 구간(6개월~1년 등)의 아래쪽 값이다. 구간 전체가 조건 위·아래에 있을 때만 정한다.
         upper = next((b for b in RESIDENCE_BANDS if b > lived), None)
@@ -176,6 +192,8 @@ def _area(item, profile):
     if code and code not in item['codes'] and sido not in item['full_sido'] and PARENT.get(code) not in item['codes']:
         if any(PARENT.get(c) == code for c in item['codes']):
             return 'unknown', '같은 시의 일부 구만 등록돼 있습니다. 내가 사는 구가 대상인지 공고에서 확인하세요.'
+        if item['missing_one'].get(sido) == PARENT.get(code, code):
+            return 'unknown', '이 시도의 다른 시·군·구는 모두 등록돼 있고 내가 사는 곳만 빠져 있습니다. 등록 누락일 수 있어 대상 지역을 공고에서 확인하세요.'
         old = [ABOLISHED[c] for c in item['codes'] if c in ABOLISHED and c[:2] == sido]
         if old:   # 폐지 코드가 어느 새 구로 이어지는지는 공식 코드 목록에 없다
             return 'unknown', f"행정구역 개편 전 시군구 코드({', '.join(old)})로 등록돼 있어 지금의 시군구와 견줄 수 없습니다. 대상 지역을 공고에서 확인하세요."
@@ -198,6 +216,8 @@ def _coded(item, value):
         return 'match', 'API 기재: ' + ', '.join(item['labels'] or item['codes'])
     if item['unknown_codes']:
         return 'unknown', '코드표에 없는 코드가 있어 확인이 필요합니다.'
+    if item['other']:   # '기타'가 적힌 정책은 코드표에 없는 요건이 있다는 뜻이라 다르다고 단정하지 않는다
+        return 'unknown', "API 기재: " + ', '.join(item['labels']) + ". '기타'로 적힌 요건이 무엇인지 알 수 없어 공고에서 확인하세요."
     return 'mismatch', 'API 기재: ' + ', '.join(item['labels'])
 
 
@@ -289,6 +309,8 @@ def _income(item, profile):
             # 실제 47건 중 8건에 두 값이 있고 어느 뜻인지 가릴 수 없어 견주지 않는다.
             return 'unknown', (f"API 소득 칸에 {annual['min']:,}만원과 {annual['max']:,}만원 두 값이 적혀 있습니다. 하한·상한인지 대상별 상한인지 알 수 없어 견주지 않았습니다. "
                                '공고에서 내 대상의 소득 기준을 확인하세요.')
+        if annual['max'] < 1000:   # 실제 수집본의 '연 534만원 이하'(공공분양주택)처럼 연소득 상한으로 보기 어려운 값은 견주지 않는다
+            return 'unknown', f'API 소득 기준이 {text}로 적혀 있습니다. 연소득 상한으로 보기에는 값이 작아 월 단위이거나 잘못 적힌 값일 수 있습니다. 공고에서 확인하세요.'
         if pay is None:
             return 'unknown', f'API 소득 기준은 {text}입니다(단위는 온통청년 누리집 표시 기준). 월 소득을 넣으면 견줘 봅니다.'
         yearly = pay * 12
@@ -310,6 +332,8 @@ def _income(item, profile):
 EXAM_ALIAS = {'국가기술자격': r'(기술사|기능장|기사|기능사)$', '한국사': r'한국사',
               '어학': r'toeic|토익|toefl|토플|teps|텝스|opic|오픽|ielts|아이엘츠|jlpt|jpt|hsk|g-?telp|지텔프'}
 HOUSING = ('월세', '전세', '자가', '가족과 거주')
+STUDENT = ('0049002', '0049003', '0049005', '0049006')   # 학력 코드: 고교 재학, 고졸 예정, 대학 재학, 대졸 예정
+GRADUATE = ('0049004', '0049007', '0049008')            # 고교 졸업, 대학 졸업, 석·박사
 
 
 def _exam(item, names):
@@ -372,6 +396,33 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
     # 사업자등록이 있으면 미취업자 요건을 그대로 '맞아요'로 보지 않는다(사업자등록자를 미취업에서 빼는 공고가 많다).
     if profile.get('business') and profile.get('job_code') == '0013003' and rows[4][1] == 'match' and not structured['job']['unrestricted']:
         rows[4] = ('job', 'unknown', 'API 취업 요건은 미취업자인데 사업자등록이 있다고 입력했습니다. 사업자등록이 있으면 미취업으로 보지 않는 공고가 많아 확인이 필요합니다.')
+    # 코드 칸은 '제한 없음'이거나 한 가지 값인데 같은 정책의 조건 글이 다르게 말하면 단정하지 않는다.
+    # (비교 가능한 1,448건에서 센 어긋남: 소득 21, 취업 54+6, 학력 43+3, 조기 마감 9. VALIDATION.md v0.35)
+    words, job, school = structured['said'], profile.get('job_code'), profile.get('school_code')
+
+    def soften(i, why):
+        rows[i] = (rows[i][0], 'unknown', why)
+    if rows[1][1] == 'mismatch' and not rule and (structured['age']['max'] or 99) < 19 and words['child']:
+        soften(1, f"API 나이 칸이 {structured['age']['min'] or '?'}~{structured['age']['max']}세인데 글에 자녀·아동·보호자가 나옵니다: “{words['child']}”. 신청하는 사람이 아니라 자녀의 나이일 수 있어 공고에서 확인하세요.")
+    if rows[0][1] == 'match' and words['early_close']:
+        soften(0, f"API 신청기간 안이지만 글에 예산 소진·선착순·조기 마감이 적혀 있습니다: “{words['early_close']}”. 지금도 접수하는지 공고나 기관에서 확인하세요.")
+    if rows[3][1] == 'match' and structured['income']['code'] == '0043001' and words['income']:
+        soften(3, f"API 소득 칸은 '무관'인데 조건 글에 소득과 관련된 말이 있습니다: “{words['income']}”. 소득 조건이 있는지 공고에서 확인하세요.")
+    if rows[4][1] == 'match' and structured['job']['unrestricted']:
+        if job == '0013001' and words['unemployed'] and not words['employed']:
+            soften(4, f"API 취업 요건은 '제한없음'인데 조건 글에 미취업·구직 청년이 나옵니다: “{words['unemployed']}”. 재직자도 대상인지 공고에서 확인하세요.")
+        elif job == '0013003' and words['employed'] and not words['unemployed']:
+            soften(4, f"API 취업 요건은 '제한없음'인데 조건 글에 재직자·근로자가 나옵니다: “{words['employed']}”. 미취업자도 대상인지 공고에서 확인하세요.")
+    elif rows[4][1] == 'mismatch' and words['short_work']:
+        soften(4, f"API 취업 요건({', '.join(structured['job']['labels'])})과는 다르지만 조건 글에 단기근로·아르바이트 등을 함께 적었습니다: “{words['short_work']}”. 내 근로 형태가 해당하는지 공고에서 확인하세요.")
+    if rows[5][1] == 'match' and structured['school']['unrestricted'] and words['student'] and school not in STUDENT:
+        soften(5, f"API 학력 요건은 '제한없음'인데 조건 글에 재학생·대학생이 나옵니다: “{words['student']}”. 재학생만 대상인지 공고에서 확인하세요.")
+    elif rows[5][1] == 'mismatch' and school in GRADUATE and words['graduate']:
+        soften(5, f"API 학력 요건({', '.join(structured['school']['labels'])})과는 다르지만 조건 글에 졸업자도 나옵니다: “{words['graduate']}”. 졸업자도 대상인지 공고에서 확인하세요.")
+    elif rows[5][1] == 'mismatch' and words['school_floor']:
+        soften(5, f"API 학력 요건({', '.join(structured['school']['labels'])})과는 다르지만 조건 글에 '○○ 이상'으로 적혀 있습니다: “{words['school_floor']}”. 더 높은 학력도 되는지 공고에서 확인하세요.")
+    if rows[7][1] == 'match' and structured['marriage']['unrestricted'] and words['unmarried'] and profile.get('marriage_code') == '0055001':
+        soften(7, f"API 결혼 요건은 '제한없음'인데 조건 글에 미혼이 나옵니다: “{words['unmarried']}”. 기혼자도 대상인지 공고에서 확인하세요.")
     # 공식 페이지에서 확인해 둔 문장(사람 검수 전)이 API 값과 어긋나면 API 값을 믿지 않는다.
     said = next((q for x in notes if x['field'] == 'conditions' for q in x['quotes'] if '소득' in q), None)
     if said and structured['income']['code'] == '0043001':

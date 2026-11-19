@@ -97,11 +97,21 @@ def main():
             age, a = profile.get('age'), st['age']
             if age is not None and a['kind'] == 'range':
                 # 범위 밖인데 '제한없음' 표기가 함께 있으면 어긋난 값이라 '확인 필요'다.
-                check(got['age'] == ('match' if a['min'] <= age <= a['max'] else 'unknown' if a['no_limit'] else 'mismatch'), f'age range {eid}', (age, a))
+                expected = 'match' if a['min'] <= age <= a['max'] else 'unknown' if a['no_limit'] else 'mismatch'
+                # 조건 글에 다른 나이 범위가 적힌 정책은 '확인 필요'로 내려갈 수 있다. 그 밖에는 칸의 값 그대로다.
+                clash = (a['text_ranges'] and (a['min'], a['max']) not in [tuple(r) for r in a['text_ranges']]) or (a['max'] < 19 and st['said']['child'])   # 자녀 나이로 보이는 칸
+                check(got['age'] == expected or (clash and got['age'] == 'unknown'), f'age range {eid}', (age, a))
             # 대상 시험은 응시료 지원에만 나오고 '달라요'가 될 수 없다. 주거는 무주택 문장이 있을 때만 나오고, 자가라고 했을 때만 '달라요'가 될 수 있다.
             check(('exam' in got) == st['exam']['fee'] and got.get('exam') != 'mismatch', f'exam {eid}', got.get('exam'))
             check(('housing' in got) == bool(st['housing']['no_home']), f'housing row {eid}', got.get('housing'))
             check(got.get('housing') != 'mismatch' or (profile.get('housing') == '자가' and not st['housing']['hedged']), f'housing {eid}', profile.get('housing'))
+            # 글과 코드가 어긋날 때의 규칙은 판정을 '확인 필요'로만 내린다: 소득 무관 표기 + 글의 소득 문구는 '맞아요'가 될 수 없다.
+            check(not (st['income']['code'] == '0043001' and st['said']['income']) or got['income'] != 'match', f'income text {eid}', got['income'])
+            check(not st['said']['early_close'] or got['period'] != 'match', f'early close {eid}', got['period'])
+            # '기타' 코드가 있는 정책의 취업·학력·전공은 '달라요'가 될 수 없고, 한 곳만 빠진 시도의 그 한 곳은 지역 '달라요'가 될 수 없다.
+            check(all(not st[k]['other'] or got[k] != 'mismatch' for k in ('job', 'school', 'major')), f'other code {eid}', got)
+            mine = profile.get('region_code')
+            check(not mine or st['region']['missing_one'].get(mine[:2]) != PARENT.get(mine, mine) or got['region'] != 'mismatch', f'missing one {eid}', got['region'])
             # 빈 프로필은 어떤 정책에서도 '달라요'가 나올 수 없다(기간 제외).
             if not provided(profile):
                 check(all(r != 'mismatch' for k, r in got.items() if k != 'period'), f'empty profile {eid}', got)
