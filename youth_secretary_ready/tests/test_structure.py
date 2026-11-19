@@ -1713,3 +1713,54 @@ def test_planner_endpoint_returns_the_small_result_for_tools(ctx):
     assert small == full.json()['planner'] and small['order'] == full.json()['order'] == ['X2', 'X1']
     assert small['groups'][0]['policies'] == ['X1', 'X2'] and 'policies' not in small and small['notice']
     assert planner.TOOL['parameters']['required'] == ['external_ids']
+
+
+def _papers(eid, text, status='open', label='D-13', deadline='2026-11-30', note=''):
+    return {'external_id': eid, 'name': '정책 ' + eid, 'documents_text': text, 'documents_note': note,
+            'period_status': status, 'period_label': label, 'deadline': deadline}
+
+
+def test_docboard_merges_splits_have_and_orders_what_to_get():
+    from datetime import date
+    from docboard import board
+    out = board([_papers('A', '① 신청서 1부 ② 재직증명서 1부(건강보험 자격득실 확인서로 대체 가능) ③ 주민등록등본(전입일, 주민등록번호 포함, 공고일 이후 발급분) 1부\n④ 통장 사본', deadline='2026-11-25', label='D-8'),
+                 _papers('B', '주민등록등본, 신분증 사본, 장애인증명서(해당자에 한함), 활동 증빙자료', status='rolling', label='상시', deadline=None),
+                 _papers('C', ''), _papers('D', '공고문 참조')], ['resident_register', 'id_card', 'nope'], date(2026, 11, 17))
+    assert out['counts'] == {'documents': 7, 'ready': 2, 'to_get': 5} and out['saved'] is False
+    # 남에게 요청(재직증명서) → 직접 작성(신청서) → 온라인·앱 발급. 가진 것은 따로.
+    assert [d['key'] for d in out['to_get']] == ['employment_cert', 'application', 'insurance_status', 'bankbook', 'disability']
+    assert [d['key'] for d in out['ready']] == ['resident_register', 'id_card']
+    by = {d['key']: d for d in out['to_get'] + out['ready']}
+    reg = by['resident_register']
+    # 정책마다 다른 조건은 그 정책의 문장으로 보여 준다. 괄호 안의 쉼표에서 자르지 않는다.
+    assert reg['policies'][0]['quote'] == '주민등록등본(전입일, 주민등록번호 포함, 공고일 이후 발급분) 1부' and reg['policies'][0]['issue_rule'] == '공고일 이후 발급분'
+    assert [x['external_id'] for x in reg['policies']] == ['A', 'B'] and reg['need_by'] == '2026-11-25' and reg['sites'] == [{'name': '정부24', 'url': 'https://www.gov.kr'}]
+    assert any('신청 직전' in r for r in reg['reasons']) and any('8일 남음' in r for r in reg['reasons'])
+    # '또는·대체'로 함께 적힌 서류는 그중 하나만 내는 것일 수 있다고 알린다. 닫는 괄호가 빠진 글에서도 문장을 놓치지 않는다.
+    assert by['employment_cert']['policies'][0]['one_of'] == ['건강보험 자격득실확인서'] and by['insurance_status']['policies'][0]['one_of'] == ['재직증명서']
+    assert board([_papers('E', '② 재직증명서 1부(자격득실 확인서 대체 가능 ③ 혼인관계 증명서(상세)')])['to_get'][0]['policies'][0]['quote'].startswith('재직증명서 1부')
+    assert made(sbmsnDcmntCn='혼인관계 증명서, 최초 본인 확인')['documents']['known'] == ['marriage']   # 띄어 쓴 이름은 찾고, '최초 본인'을 초본으로 읽지 않는다
+    assert by['disability']['only_if'] is True and by['disability']['need_by'] is None and by['employment_cert']['lead'] == 'request'
+    pol = {p['external_id']: p for p in out['policies']}
+    assert pol['A']['missing'] == ['employment_cert', 'application', 'insurance_status', 'bankbook'] and pol['A']['status'] == 'missing'
+    assert pol['B']['missing'] == ['disability'] and pol['B']['other_lines'] == ['활동 증빙자료'] and pol['B']['deadline'] is None
+    # 빈 글은 '서류 없음'이 아니라 '안내 없음', 이름을 못 찾은 글은 '읽지 못함'이다. 어느 쪽도 준비 끝이 아니다.
+    assert (pol['C']['status'], pol['D']['status']) == ('unlisted', 'unread')
+    done = board([_papers('B', '주민등록등본, 신분증 사본')], ['resident_register', 'id_card'])
+    assert done['policies'][0]['status'] == 'found_all' and '전체 목록은 공고에서 확인' in done['brief'][-1] and done['as_of'] is None
+
+
+def test_docboard_endpoint_takes_have_and_writes_nothing(ctx):
+    import docboard
+    seed([good('D1', sbmsnDcmntCn='신청서, 주민등록초본, 성적증명서, 통장사본'), good('D2', sbmsnDcmntCn='')])
+    wid = ctx.post('/api/desk/workspaces').json()['id']
+    before = snapshot()
+    body = {'external_ids': ['D1', 'D2'], 'profile': PROFILE, 'on': '2026-11-17', 'have': ['bankbook']}
+    small = ctx.post(f'/api/desk/workspaces/{wid}/docboard', json=body).json()
+    full = ctx.post(f'/api/desk/workspaces/{wid}/plan', json=body).json()
+    assert snapshot() == before and small == full['docboard']
+    assert [d['key'] for d in small['to_get']] == ['application', 'resident_abstract', 'transcript'] and [d['key'] for d in small['ready']] == ['bankbook']
+    assert [p['status'] for p in small['policies']] == ['missing', 'unlisted'] and small['to_get'][0]['need_by'] == '2026-11-30'
+    # 기존 칸은 그대로다(화면이 쓰는 값).
+    assert {d['key'] for d in full['documents']} == {'application', 'resident_abstract', 'transcript', 'bankbook'} and full['documents_unlisted'] == ['D2']
+    assert set(docboard.TOOL['parameters']['properties']) == {'external_ids', 'have'}

@@ -18,7 +18,7 @@ sys.path.insert(0, str(BASE))
 from policy_codes import CODEBOOK, api_field  # noqa: E402
 from policy_structure import SIDO, UNRESTRICTED, period_status, structure, tier  # noqa: E402
 from screening import screen  # noqa: E402
-from desk_plan import DOCS  # noqa: E402
+from desk_plan import DOCS, doc_hit  # noqa: E402
 from ontong import CURRENT  # noqa: E402
 
 ON = date.fromisoformat(sys.argv[1]) if len(sys.argv) > 1 else date(2026, 11, 17)
@@ -135,7 +135,7 @@ def main():
         # 서류·링크
         text = p.get('sbmsnDcmntCn', '').strip()
         flags['doc_text_rows'] += bool(text)
-        hit = [key for key, _, needles, _ in DOCS if any(n in text for n in needles)]
+        hit = [key for key, _, needles, _ in DOCS if doc_hit(text, needles)]
         flags['doc_text_no_known_name'] += bool(text) and not hit
         for key in hit:
             docs[key] += 1
