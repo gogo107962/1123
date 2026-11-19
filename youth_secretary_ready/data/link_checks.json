@@ -1,0 +1,602 @@
+{
+ "checked_on": "2026-11-19",
+ "method": "공개 주소를 한 번씩 열어 응답 코드만 확인(자동). 내용이 그 정책의 공고인지는 보지 않는다. 사람 검수 아님.",
+ "summary": {
+  "urls": {
+   "ok": 3086,
+   "unreachable": 67,
+   "gone": 49,
+   "error": 28
+  },
+  "policies_with_link": 3386,
+  "policies_all_links_dead": 86,
+  "policies_notice_ok": 2901,
+  "policies_apply_ok": 1151,
+  "policies_notice_listed": 2980,
+  "policies_apply_listed": 1196,
+  "tls_unverified": 40,
+  "redirected_to_other_host": 276
+ },
+ "urls": {
+  "http://2025jobara.com/main/index.html": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "http://edu.busanit.or.kr/resources/bdia/index.html": {
+   "state": "gone",
+   "status": 404
+  },
+  "http://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020701.jsp": {
+   "state": "unreachable",
+   "reason": "timeout"
+  },
+  "http://recruit.incruit.com/ngovol/": {
+   "state": "gone",
+   "status": 404
+  },
+  "http://www.cifaljeju.org/bbs/board.php?bo_table=sub05_3&wr_id=204": {
+   "state": "gone",
+   "status": 404
+  },
+  "http://www.kaum.or.kr/bbs/board.php?bo_table=recruitment": {
+   "state": "gone",
+   "status": 404
+  },
+  "http://www.niied.go.kr/user/nd81540.do": {
+   "state": "gone",
+   "status": 404
+  },
+  "http://www.spacen.or.kr/cre_hr_pst/mgm_cntl_bsn.do": {
+   "state": "unreachable",
+   "reason": "timeout"
+  },
+  "https://9988law.com/startlaw": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://academy.kisa.or.kr/cont/programInfo/eduIntroAI.do": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://academy.kisa.or.kr/cont/programInfo/kShieldJunior.do": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://academy.kisa.or.kr/edu/apply/applyEduDetail.do?APPLY=03&SQ=9695": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://academy.kisa.or.kr/edu/apply/applyEduDetail.do?APPLY=04&SQ=9708": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://academy.kisa.or.kr/edu/apply/applyEduDetail.do?APPLY=04&SQ=9886": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://busanjob.net/08_wyou/wyou08_1.asp": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://bye-addiction.or.kr/wp_main/index": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://data.jntp.or.kr/jntp/content/business/announcement/view.jsp?idx=896": {
+   "state": "unreachable",
+   "reason": "timeout"
+  },
+  "https://djhousing.or.kr": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://forms.gle/mQZEGDmkF9JUAyYS8": {
+   "state": "error",
+   "status": 401,
+   "final_host": "docs.google.com"
+  },
+  "https://gadlex.kr/": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://gjyouthcenter.kr/index.do?command=view&amp;wr_id=2372&amp;contentId=184": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://gjyouthcenter.kr/index.do?command=view&wr_id=2346&contentId=184": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://happydorm.or.kr/cheonan/ko/index": {
+   "state": "error",
+   "status": 403
+  },
+  "https://happydorm.or.kr/sejong": {
+   "state": "error",
+   "status": 403
+  },
+  "https://ilovebonus.bccard.com/ilovebonus": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://infoedu.gunpo.go.kr/www/selectEminwonView.do?pageUnit=1&pageIndex=7&searchCnd=all&key=3907&jndinm=&context=&method=&methodnm=&wkly_event_mgt_no=&subCheck=&ofr_pageSize=1&homepage_pbs_yn=&initValue=&wkly_se_code=&countYn=&event_sj=&Not_ancmt_se_code=&title=&cha_dep_code_nm=&countYnAC=&list_gubun=N&not_ancmt_sj=&not_ancmt_cn=&not_ancmt_mgt_no=43771": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://jejuyouthdream.com/jeju-dream": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://jejuyouthdream.com/support-policy/100": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://jejuyouthdream.com/support-policy/102": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://jejuyouthdream.com/support-policy/103": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://jejuyouthdream.com/support-policy/3": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://jejuyouthdream.com/support-policy/61": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://jejuyouthdream.com/support-policy/99": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://jnfarm.jeonnam.go.kr/content/view.do?=undefined&menuCd=farm014001": {
+   "state": "error",
+   "status": 400
+  },
+  "https://jnfarm.jeonnam.go.kr/content/view.do?menuCd=farm002001009001001": {
+   "state": "error",
+   "status": 400
+  },
+  "https://job.chungju.go.kr/": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://job.chungju.go.kr/introduceCenter/notice?srl_board=2345&order=read": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://labor.moel.go.kr": {
+   "state": "error",
+   "status": 503
+  },
+  "https://m.site.naver.com/20wYE": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://mgyc.co.kr/main/main.html": {
+   "state": "error",
+   "status": 403
+  },
+  "https://mwpt.mma.go.kr/caisBMHS/index_mwps.jsp?menuNo=22315": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://robotcontest.kr": {
+   "state": "error",
+   "status": 403
+  },
+  "https://saha.go.kr/job/main.do": {
+   "state": "unreachable",
+   "reason": "timeout"
+  },
+  "https://sanhak.kongju.ac.kr/M00015/14157/subview.do": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://sanhak.kongju.ac.kr/bbs/M00015/562/424900/artclView.do": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://satrec.kaist.ac.kr/03_17.php": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://scholar.hissf.or.kr": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://scholar.hissf.or.kr/hmpg/user/logi/login.do": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://search.gb.go.kr/index.do?category=EMP&srchFd=all&reSrchFlag=false&xwd=&sitenm=KTips&endDate=&lang=ko&date=0&startDate=&preKwd=K-U&kwd=K-U&detailSearch=false&st=d&categy=CHIS&groupNm=&": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://senior.nipa.kr/index.do": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://sjepa.or.kr/page/main": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://sjepa.or.kr/page/sub4_2": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://sjyouth.sjepa.or.kr/": {
+   "state": "unreachable",
+   "reason": "timeout"
+  },
+  "https://space1bu.ifac.or.kr/": {
+   "state": "error",
+   "status": 403,
+   "tls": "unverified"
+  },
+  "https://sso.chungbuk.go.kr/young/contents.do?key=4959": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://suc.or.kr/ko/index": {
+   "state": "error",
+   "status": 403
+  },
+  "https://thevc.kr/grants/6c698aa8dd93cbecd0b83884": {
+   "state": "error",
+   "status": 403
+  },
+  "https://unist-kor.unist.ac.kr/about-unist/": {
+   "state": "unreachable",
+   "reason": "timeout"
+  },
+  "https://withbook.gunpo.go.kr/www/selectEminwonView.do?pageUnit=1&pageIndex=4&searchCnd=all&key=3909&jndinm=&context=&method=&methodnm=&wkly_event_mgt_no=&subCheck=&ofr_pageSize=1&homepage_pbs_yn=&initValue=&wkly_se_code=&countYn=&event_sj=&Not_ancmt_se_code=&title=&cha_dep_code_nm=&countYnAC=&list_gubun=N&not_ancmt_sj=&not_ancmt_cn=&not_ancmt_mgt_no=43982": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.4242.or.k": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.ares.chungbuk.kr": {
+   "state": "unreachable",
+   "reason": "ReadError"
+  },
+  "https://www.blog.naver.com/run-learn": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.busanjob.net/08_wyou/wyou05_0.asp": {
+   "state": "gone",
+   "status": 404,
+   "final_host": "busanjob.net"
+  },
+  "https://www.cha.go.kr/": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.chungbuk.go.kr/brand/contents.do?key=4735": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.chungbuk.go.kr/brand/contents.do?key=5320": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.chungbuk.go.kr/young/contents.do?key=1316": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.compa.re.kr/kor/centerIntro/rnw-v2/pubResUtilLabStartup5.do?goMenuNo=1228000": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.dgist.ac.kr/kor/sub03_06_01.do": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.econcamp.re.kr/": {
+   "state": "error",
+   "status": 503
+  },
+  "https://www.egbiz.or.kr/index.do": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.fablab-jeju.org": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.fill4young.kinfa.or.kr": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.gbsa.or.kr/mobile/pages/rise_support.do": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.gc.go.kr/design/main/index.html": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.ggdorm.or.kr": {
+   "state": "error",
+   "status": 403
+  },
+  "https://www.ggeea.or.kr/index.php": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.gjtp.or.kr/home/business.cs?act=view&amp;bsnssId=2156&amp;ctg01=01,02,03,04,05,06,09,07,08,10,11,12&amp;ctg02=06&amp;ctg03=14&amp;pageIndex=1&amp;pageUnit=30&amp;searchKeyword=": {
+   "state": "error",
+   "status": 400
+  },
+  "https://www.gjtp.or.kr/home/business.cs?act=view&amp;bsnssId=2222&amp;ctg01=01,02,03,04,05,06,09,07,08,10,11,12&amp;ctg02=04&amp;ctg03=14&amp;pageIndex=1&amp;pageUnit=30&amp;searchKeyword=": {
+   "state": "error",
+   "status": 400
+  },
+  "https://www.gjtp.or.kr/home/business.cs?act=view&amp;bsnssId=2258&amp;ctg01=01,02,03,04,05,06,09,07,08,10,11,12&amp;ctg02=04&amp;ctg03=14&amp;pageIndex=1&amp;pageUnit=30&amp;searchKeyword=": {
+   "state": "error",
+   "status": 400
+  },
+  "https://www.gn.go.kr/welfare/contents.do?key=6645": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.gn.go.kr/www/selectBbsNttView.do?key=258&bbsNo=12&nttNo=178860": {
+   "state": "unreachable",
+   "reason": "timeout"
+  },
+  "https://www.gn.go.kr/yeyak/index.do": {
+   "state": "unreachable",
+   "reason": "timeout"
+  },
+  "https://www.gn.go.kr/yeyak/selectUserOnlineReceptionView.do?key=5540&programKey=19": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.gwgs.go.kr/prog/saeolGosi/GOSI/kor/sub04_030401/list.do": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.happydorm.or.kr/daegu/ko/index": {
+   "state": "error",
+   "status": 403
+  },
+  "https://www.hissf.or.kr/Programs/user/news/ssfnews/read.asp?gbn_no=&idx=3934&pageno=1&searchType=&searchVal=": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.hissf.or.kr/programs/user/news/ssfnews/read.asp?gbn_no=&idx=3976&pageno=&searchType=&searchVal=": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.icjg.go.kr/krcm01b/282987?curPage=1": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.jbct.or.kr/bizNotice_infoView.php?id=1975": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.jbct.or.kr/bizNotice_infoView.php?id=2009": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.jbct.or.kr/bizNotice_infoView.php?id=2022": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.jungnang.go.kr/health/bbs/view/B0000117/164097?menuNo=400493": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://www.kaia.re.kr/portal/contents.do?menuNo=201270": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.kaia.re.kr/portal/main.do": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.kiat.or.kr/front/board/boardContentsView.do": {
+   "state": "error",
+   "status": 500
+  },
+  "https://www.kimst.re.kr/": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.kitribob.kr/": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.kongju.ac.kr/KNU/index.do#": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.koreadokdo.or.kr/": {
+   "state": "error",
+   "status": 403,
+   "tls": "unverified"
+  },
+  "https://www.losims.go.kr/sp/pbcnSlctnRsltCntt?id=20260344785&fyr=2026": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.mma.go.kr/byjr/01/index.do": {
+   "state": "error",
+   "status": 403
+  },
+  "https://www.modoo.or.kr/": {
+   "state": "error",
+   "status": 429
+  },
+  "https://www.namgu.gwangju.kr/board.es?mid=a10604010000&amp;bid=0001": {
+   "state": "error",
+   "status": 500
+  },
+  "https://www.ncs.go.kr/index.do": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.nrf.re.kr/biz/info/info/view?menu_no=378&biz_no=645": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.oss.kr/": {
+   "state": "error",
+   "status": 403
+  },
+  "https://www.pccf.or.kr/page.do?PAGE=sub03_03": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.socialservice.or.kr": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.socialservice.or.kr/": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.sri.re.kr/dms/contents/dms/header/02/content.02.01.motion?mnucd=MENU0100057": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.todaktodakjob.com/bbs/content.php?co_id=narae_interview": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.ubc.co.kr/wp/": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.uri.re.kr/": {
+   "state": "error",
+   "status": 403
+  },
+  "https://www.wfps.or.kr/webuser/notice/view.html?bd_id=811?%3E": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.wfps.or.kr/webuser/page/foryouth.html": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.wfps.or.kr/webuser/page/main.html": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.work.go.kr/schoolToWork/index.do": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://www.yongin.go.kr/home/job/jobCenter/programGuide.jsp": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.yongin.go.kr/user/bbs/BD_selectBbs.do?q_bbsCode=1001&amp;q_clCode=1&amp;q_bbscttSn=20250106162710905": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://www.yongin.go.kr/user/web/sidjbustdt/BD_selectSidjbUstdtList.do": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://young.busan.go.kr/article/view.nm": {
+   "state": "error",
+   "status": 500
+  },
+  "https://youngplus.univjobcenter.kr/opportunity/13777": {
+   "state": "error",
+   "status": 402
+  },
+  "https://youngplus.univjobcenter.kr/region/gyeongbuk/%EC%98%81%EC%B2%9C%EC%8B%9C": {
+   "state": "error",
+   "status": 402
+  },
+  "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20250415CT000000000002231": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20250421CT000000000002265": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20250421CT000000000002267": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://youth.chungnam.go.kr/web/main/customSupp/M030-02/view?bizId=A20250415CT000000000002209": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://youth.chungnam.go.kr/web/main/customSupp/M030-02/view?bizId=A20250421CT000000000002270": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://youth.chungnam.go.kr/web/main/customSupp/M030-04/view?bizId=A20250415CT000000000002211": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://youth.chungnam.go.kr/web/main/customSupp/M030-04/view?bizId=A20250421CT000000000002273": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://youth.chungnam.go.kr/web/main/customSupp/M040-05/view?bizId=A20250422CT00000000000228": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20250416CT000000000002238": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20250416CT000000000002243": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://youth.chungnam.go.kr/web/main/customSupp/M050-08/view?bizId=A20250422CT000000000002285": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20250416CT000000000002246": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20260402LC0000000000031": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://youth.chungnam.go.kr/web/main/customSupp/M060-11/view?bizId=A20250416CT000000000002248": {
+   "state": "unreachable",
+   "reason": "RemoteProtocolError"
+  },
+  "https://youth.gg.go.kr/gg/intro/youth-policy-job-test.do?mode=view&articleNo=7663&article.offset=0&articleLimit=10": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://youth.gyeongnam.go.kr/youth/youthPolicySearchView.es?page_no=1&mid=a10101000000&start_date=&end_date=&apply_availablity=&policy_title=&keyword=&boardId=4&orderby=LATEST&policy_no=1568": {
+   "state": "gone",
+   "status": 404
+  },
+  "https://youth.wanju.go.kr/youth/board/view.wanju?boardId=BBS_0000001&menuCd=DOM_000000101002000000&paging=ok&startPage=1&dataSid=1856": {
+   "state": "error",
+   "status": 500
+  },
+  "https://yslib.yeosu.go.kr": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://yslib.yeosu.go.kr/youth": {
+   "state": "unreachable",
+   "reason": "connect"
+  },
+  "https://yslib.yeosu.go.kr/youth/front": {
+   "state": "unreachable",
+   "reason": "connect"
+  }
+ }
+}

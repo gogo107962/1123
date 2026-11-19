@@ -6,7 +6,8 @@ import uuid
 from fastapi import APIRouter,HTTPException
 from pydantic import BaseModel,Field
 from db import connect
-from ontong import review_bundle,safe_url
+from functools import lru_cache
+from ontong import BASE,review_bundle,safe_url
 
 router=APIRouter(prefix='/api/desk')
 
@@ -14,6 +15,18 @@ router=APIRouter(prefix='/api/desk')
 def require_workspace(wid,con):
     if not con.execute('SELECT 1 FROM desk_workspaces WHERE id=?',(wid,)).fetchone():
         raise HTTPException(404,'준비 공간을 찾을 수 없습니다. 새 공간을 만들어 주세요.')
+
+
+LINK_CHECKS=BASE/'data'/'link_checks.json'
+
+@lru_cache(maxsize=1)
+def _gone(stamp):
+    return frozenset(u for u,r in json.loads(LINK_CHECKS.read_text(encoding='utf-8'))['urls'].items() if r['state']=='gone')
+
+def gone_links():
+    """링크 점검(tools/check_links.py)에서 페이지가 없다고(404·410) 확인된 주소. 점검 파일이 없으면 아무것도 빼지 않는다.
+    연결 실패나 접속 차단(error·unreachable)은 사람이 열면 열릴 수 있어 빼지 않는다."""
+    return _gone(LINK_CHECKS.stat().st_mtime_ns) if LINK_CHECKS.exists() else frozenset()
 
 
 def evidence(external_id):
@@ -25,7 +38,7 @@ def evidence(external_id):
                         ('참고 안내',p.get('refUrlAddr1','')),('추가 안내',p.get('refUrlAddr2','')),
                         ('신청 안내 사이트',p.get('aplyUrlAddr',''))]:
         url=safe_url(value)
-        if url and not any(x['url']==url for x in links):links.append({'title':title,'url':url})
+        if url and url not in gone_links() and not any(x['url']==url for x in links):links.append({'title':title,'url':url})
     # Include review evidence in the fingerprint: API data may be unchanged when a notice is corrected.
     fingerprint=hashlib.sha256(json.dumps({'sha':bundle['sha256'],'check':check,'contract':1},sort_keys=True,ensure_ascii=False).encode()).hexdigest()
     return bundle,links,fingerprint

@@ -1443,3 +1443,18 @@ def test_skipped_question_is_not_asked_again():
     assert desk_finder.next_question({'sido': '11', 'age': 26}, {}, {'job_code': 3, 'benefits': 1}, skip=['job_code'])['key'] == 'benefits'
     assert desk_finder.next_question({'sido': '11', 'age': 26}, {}, {'job_code': 3}, skip=['job_code']) is None
 
+
+# ── v0.33: 링크 점검에서 없어진 것으로 확인된 주소는 보여 주지 않는다 ───────────────
+def test_gone_links_are_dropped_but_blocked_or_unreachable_ones_stay(ctx, monkeypatch, tmp_path):
+    import desk_service
+    seed([good('LK1', refUrlAddr1='https://example.go.kr/gone', refUrlAddr2='https://example.go.kr/blocked', aplyUrlAddr='https://example.go.kr/apply')])
+    urls = lambda: [x['url'] for x in desk_service.evidence('LK1')[1]]
+    assert urls() == ['https://example.go.kr/gone', 'https://example.go.kr/blocked', 'https://example.go.kr/apply']
+    checks = tmp_path / 'link_checks.json'
+    checks.write_text(json.dumps({'urls': {'https://example.go.kr/gone': {'state': 'gone', 'status': 404}, 'https://example.go.kr/blocked': {'state': 'error', 'status': 403},
+                                           'https://example.go.kr/apply': {'state': 'unreachable', 'reason': 'timeout'}}}), encoding='utf-8')
+    monkeypatch.setattr(desk_service, 'LINK_CHECKS', checks)
+    assert urls() == ['https://example.go.kr/blocked', 'https://example.go.kr/apply']
+    monkeypatch.setattr(desk_service, 'LINK_CHECKS', tmp_path / 'missing.json')      # 점검 파일이 없으면 아무것도 빼지 않는다
+    assert len(urls()) == 3
+
