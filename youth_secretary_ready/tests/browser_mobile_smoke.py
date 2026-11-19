@@ -50,6 +50,9 @@ with sync_playwright() as p:
     page.screenshot(path=str(BASE / '.local/mobile-results.png'))
     page.locator('.cardbtn').first.click()
     expect(page.locator('main')).to_contain_text('조건 대조')
+    # 공식 사이트: 온통청년 정책 페이지는 모든 정책에 있고, '공식 공고' 버튼은 항상 주소가 있다
+    expect(page.locator('main a[href^="https://www.youthcenter.go.kr/youthPolicy/ythPlcyTotalSearch/ythPlcyDetail/"]')).to_have_text('온통청년 정책 페이지')
+    assert page.locator('.act a.btn').get_attribute('href').startswith('https://')
     page.locator('[data-a=sheet]').first.click()
     expect(page.locator('.sheet')).to_contain_text('지원 조건')
     expect(page.locator('.sheet')).to_contain_text('API 수집일')
@@ -78,6 +81,9 @@ with sync_playwright() as p:
     page.locator('[data-a=check]').click()
     expect(page.locator('main')).to_contain_text('중복 수혜 여부')
     expect(page.locator('#msg')).to_contain_text('문의드립니다')
+    expect(page.locator('main a[href^="https://www.youthcenter.go.kr/youthPolicy/ythPlcyTotalSearch/ythPlcyDetail/"]')).to_have_count(2)                 # 고른 정책마다 공식 사이트 링크
+    assert page.locator('.act a.btn').inner_text() in ('공식 신청 페이지로 이동', '공식 공고로 이동')
+    assert page.locator('.act a.btn').get_attribute('href').startswith('https://')
     # 승인 전에는 아무것도 저장되지 않는다.
     assert page.evaluate("fetch('/api/desk/workspaces/'+localStorage.getItem('youth-desk-workspace')).then(r=>r.json()).then(d=>d.tasks.length)") == 0
     page.locator('[data-a=approve]').click()
