@@ -103,15 +103,16 @@ _RESIDENCE = re.compile(r'(\d{1,2})\s*(년|개월)\s*이상\s*(?:계속(?:하여
                         r'|전입한?\s*지\s*(\d{1,2})\s*(년|개월)\s*이상')
 # 지역에 사는 기간이 아니라 고시원·시설에 머문 기간을 말하는 문장, 우대·유형별 조건인 문장은 거주 기간 조건으로 단정하지 않는다.
 _NOT_RESIDENCE = re.compile(r'고시원|쪽방|반지하|시설|기숙사|환경')
-_SOFT = re.compile(r'우대|가점|가산|유형|추가')
+# '3년 이상 계속 또는 합산 10년 이상 거주'처럼 둘 중 하나면 되는 조건, '본인 또는 직계존속이 1년 이상'처럼 가족이 채워도 되는 조건도 여기에 든다.
+_SOFT = re.compile(r'우대|가점|가산|유형|추가|또는|합산|직계존속|부·모|부모')
 # 조건을 적은 글에서 코드 값과 견줄 말. 코드와 글이 어긋나면 걸러보기가 단정하지 않는다(screening.screen).
 _AGE_RANGE = re.compile(r'(?:만\s*)?(\d{2})\s*세?\s*(?:이상)?\s*[~∼～\-]\s*(?:만\s*)?(\d{2})\s*세')
-SAID = {'unemployed': r'미취업|구직 ?중|구직자|취업 ?준비', 'employed': r'재직 ?중|재직자|근로자|직장인',
+SAID = {'unemployed': r'미취업|구직 ?중|구직자|취업 ?준비', 'employed': r'재직 ?중|재직자|(?<!도시)(?<!기간제 )(?<!외국인 )(?<!상시 )(?<!건설)근로자(?!의 날)|직장인',
         'short_work': r'단기 ?근로|주 ?\d+ ?시간 ?(?:이하|미만)|아르바이트|재직자[^.\n]{0,12}(?:가능|포함)',
         'income': r'중위 ?소득|소득[^.\n]{0,12}(?:이하|이내|미만)|차상위|수급자|저소득|건강보험료',
         'student': r'재학생|대학생|대학원생|휴학생|졸업 ?예정자|고등학생',
         'school_floor': r'(?:고졸|고등학교 ?졸업|대졸|전문대 ?졸업|학사|석사)[^.\n]{0,6}이상',
-        'unmarried': r'미혼', 'child': r'보호자|부모|자녀|아동|영아|출생아|임산부|양육|아이', 'graduate': r'졸업 ?후|졸업생|졸업자',
+        'unmarried': r'미혼', 'child': r'보호자|부모|자녀|아동|영아|출생아|임산부|양육|아이', 'graduate': r'졸업생|졸업자|졸업 ?후 ?\d+ ?년 ?(?:이내|미만)',
         'early_close': r'예산 ?소진|조기 ?(?:마감|종료)|선착순 ?(?:접수|마감|모집)'}
 # 정렬 순서: 접수 중(마감 빠른 순) → 시작 전 → 상시 → 기간 미기재 → 마감
 RANK = {'open': 0, 'upcoming': 1, 'rolling': 2, 'unknown': 3, 'ended': 4, 'closed_code': 4, 'closed_official': 4}
@@ -198,6 +199,15 @@ def said(payload):
         text = wide if key == 'early_close' else cond
         m = re.search(pattern, text)
         out[key] = text[max(0, m.start() - 20):m.end() + 20].strip() if m else None
+    # 다른 대상과 함께 적힌 글은 '그 대상만'이라는 근거가 못 된다(표본을 읽어 보니 절반쯤이 이런 글이었다).
+    # 재직자만: 학생·일반인·주민·예비 창업자 같은 다른 대상이 함께 나오지 않을 때
+    out['employed_only'] = out['employed'] if out['employed'] and not out['unemployed'] and not re.search(r'학생|일반인|주민|군민|시민|도민|예비|누구나', cond) else None
+    # 미혼: 신혼·기혼·부부가 함께 나오면('미혼 3억원, 신혼 4억원') 미혼만 대상이 아니다
+    if out['unmarried'] and re.search(r'신혼|기혼|부부|혼인', cond):
+        out['unmarried'] = None
+    # 재학생: 앞뒤에 청년·졸업생·재직자 같은 다른 대상이 함께 적히면('대학생 및 지역 청년') 재학생만 대상이 아니다
+    if out['student'] and re.search(r'청년|졸업생|졸업 ?후|재직|일반인|교직원|포함', out['student']):
+        out['student'] = None
     return out
 
 
@@ -295,6 +305,10 @@ INCOME_KINDS = {'기준 중위소득': r'중위', '도시근로자 월평균소�
                 '공고에서 확인': r'공고|문의|참조|참고'}
 
 
+def _income_text(payload):
+    return ' '.join(_text(payload, f) for f in ('earnEtcCn', 'addAplyQlfcCndCn'))
+
+
 def income(payload):
     kind = _codes(payload, 'earnCndSeCd')
     # 연소득(0043002)의 금액은 만원 단위다(온통청년 누리집 표시 기준, data/api_field_notes.json). 최대 금액이 있을 때만 비교에 쓴다.
@@ -314,7 +328,9 @@ def income(payload):
             # 방향까지 읽힌 기준만 비교에 쓴다. 방향이 없는 숫자가 하나라도 섞이면('?') 비교하지 않는다.
             'median_bounds': _median(str(payload.get('earnEtcCn') or '')),
             # 개인/가구·산정연도 근거는 없다. 연소득 구분이 아니면 숫자를 비교하지 않는다.
-            'annual': annual, 'unit': '만원/년' if annual else None, 'comparable': bool(annual)}
+            'annual': annual, 'unit': '만원/년' if annual else None, 'comparable': bool(annual),
+            # 소득 글이 내 가구가 아닌 기준을 말하는가: 부모·원가구 소득, 또는 'N인 가구 기준'처럼 가구원 수를 정해 둔 기준.
+            'parents': bool(re.search(r'원가구|부모', _income_text(payload))), 'fixed_household': bool(re.search(r'\d\s*인\s*(?:가구|가족)\s*기준', _income_text(payload)))}
 
 
 def exclusions(payload):
@@ -346,6 +362,9 @@ def _median(text):
     """'중위소득' 뒤 40자 안의 'N% 이하/초과'를 모두 읽는다('중위소득 60% 초과 150% 이하'의 뒤쪽 상한을 놓치지 않게)."""
     found = []
     for mention in _MEDIAN.finditer(text):
+        span = re.search(r'(\d{2,3})\s*%?\s*[~∼～\-]\s*\d{2,3}\s*%', text[mention.end():mention.end() + 40])
+        if span and {'pct': int(span.group(1)), 'kind': 'min'} not in found:   # 'N ~ M%'의 N은 하한이다
+            found.append({'pct': int(span.group(1)), 'kind': 'min'})
         for pct, word in _PERCENT.findall(text[mention.end():mention.end() + 40]):
             bound = {'pct': int(pct), 'kind': 'max' if word in ('이하', '이내', '미만') else 'min' if word else '?'}
             if bound not in found:

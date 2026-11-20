@@ -1649,3 +1649,39 @@ def test_ask_falls_back_to_topic_words_in_the_message_when_model_keywords_find_n
     none = ctx.post(ASK, json={'message': '정보처리기사 봤어', 'profile': PROFILE, 'on': '2026-11-17'}).json()
     assert none['total'] == 0 and '없어요' in none['answer']
 
+
+# ── v0.40: 글을 읽는 규칙이 엉뚱한 문장에 걸리지 않게, 내 가구가 아닌 소득 기준 ──────
+def test_text_rules_ignore_unrelated_sentences():
+    said = lambda **f: made(**f)['said']
+    for text in ('전년도 도시근로자 가구원수별 월평균 소득의 100% 이하', '근로자의 날 휴무', '기간제 근로자를 매년 공개 채용', '상시 근로자 3인 이상 중소기업'):
+        assert said(plcySprtCn=text)['employed'] is None, text
+    assert said(plcySprtCn='관내 중소기업 재직자 대상 교육')['employed_only']
+    assert said(plcySprtCn='예비 취·창업자, 대학생, 재직자 등')['employed_only'] is None          # 다른 대상과 함께 적힘
+    assert verdict(made(plcySprtCn='교육대상: 대학생, 재직자 등'), {'job_code': '0013003'})[1]['job'] == 'match'
+    assert said(plcySprtCn='재학생이 졸업 후 농산업분야로 취업')['graduate'] is None
+    assert said(plcySprtCn='졸업 후 5년 이내 미취업자')['graduate'] and said(plcySprtCn='대학생 및 고등학교 졸업생')['graduate']
+    assert said(plcySprtCn='한도: 미혼 3억원, 신혼 4억원 이내')['unmarried'] is None and said(plcySprtCn='무주택 미혼 청년 세대주')['unmarried']
+    assert said(plcySprtCn='고려대학교 재학생 및 지역 청년을 대상')['student'] is None and said(plcySprtCn='중·고등학생 대상 반도체 교실')['student']
+
+
+def test_income_range_floor_and_other_household_bases():
+    money = lambda item, pay: verdict(item, {'income_monthly': pay, 'household': 1})[1]['income']
+    ranged = made(earnCndSeCd='0043003', earnEtcCn='기준중위소득 60 ~ 160%이하인 무주택 청년 가구')
+    assert {'pct': 60, 'kind': 'min'} in ranged['income']['median_bounds'] and {'pct': 160, 'kind': 'max'} in ranged['income']['median_bounds']
+    assert [money(ranged, pay) for pay in (100, 250, 500)] == ['mismatch', 'match', 'mismatch']      # 1인 가구 중위소득의 약 39% / 97% / 195%
+    parents = made(earnCndSeCd='0043003', earnEtcCn='(원가구) 기준중위소득 100% 이하')
+    assert parents['income']['parents'] and [money(parents, pay) for pay in (100, 500)] == ['unknown', 'mismatch']   # 내 소득만으로 '맞아요'라고 하지 않는다
+    fixed = made(earnCndSeCd='0043003', earnEtcCn='4인 가족 기준 중위소득 140% 미만')
+    assert fixed['income']['fixed_household'] and [money(fixed, pay) for pay in (100, 500)] == ['unknown', 'unknown']
+    plain = made(earnCndSeCd='0043003', earnEtcCn='기준 중위소득 150% 이하')
+    assert [money(plain, pay) for pay in (100, 500)] == ['match', 'mismatch']
+
+
+def test_residence_condition_with_alternatives_is_not_compared():
+    for text in ('만 24세 청년 중 3년 이상 계속 또는 합산 10년 이상 거주한 경우', '본인 또는 직계존속이 1년 이상 도내에 주소를 둔 자'):
+        item = made(addAplyQlfcCndCn=text)
+        assert item['region']['residence_min_months'] and item['region']['residence_unclear'], text
+        assert verdict(item, {'region_code': '11305', 'residence_months': 0})[1]['region'] == 'unknown', text      # 짧게 살았어도 '달라요'로 단정하지 않는다
+    plain = made(addAplyQlfcCndCn='신청일 기준 6개월 이상 삼척시에 주민등록을 두고 있는 청년')
+    assert plain['region']['residence_unclear'] is False and verdict(plain, {'region_code': '11305', 'residence_months': 0})[1]['region'] == 'mismatch'
+
