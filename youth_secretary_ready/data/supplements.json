@@ -3665,5 +3665,62 @@
   "checked_on": "2026-11-18",
   "checked_by": "Claude Code 웹 확인; 사람 검수 아님",
   "verified": false
+ },
+ {
+  "external_id": "20260422005400212862",
+  "field": "period",
+  "value": "신청기간은 2026. 8. 6.(목)부터 예산 소진 시까지이며, 홈페이지에서 신청한 뒤 제출서류를 이메일로 보낸다.",
+  "quotes": [
+   "2026. 8. 6. (목) ~ 예산 소진 시까지 (※ 예산 소진 시 조기마감)",
+   "홈페이지 신청 후 제출서류를 이메일로 보내주시기 바랍니다. 서류 확인 후 접수완료 안내 메일을 회신드릴 예정이오니,"
+  ],
+  "source_url": "https://seogwipo.go.kr/group/selfgoverning/planning/application/intro.htm",
+  "source_title": "서귀포시 기획예산과 · 청년 자격증 응시료 지원사업 접수안내 및 신청",
+  "checked_on": "2026-11-20",
+  "checked_by": "Claude Code 웹 확인; 사람 검수 아님",
+  "verified": false
+ },
+ {
+  "external_id": "20260407005400212557",
+  "field": "period",
+  "value": "광주상공회의소 근로자 지원사업 게시판의 [2차] 2026년 고용이음 안착지원금(비자발적 퇴사) 접수기간은 2026. 07. 27 ~ 2026. 12. 31이고 접수방법은 인터넷접수로 적혀 있다.",
+  "quotes": [
+   "2026. 07. 27 (월요일) ~ 2026. 12. 31 (목요일)",
+   "[2차] 2026년 고용이음 안착지원금(비자발적 퇴사)"
+  ],
+  "source_url": "https://www.gjcci.or.kr/user/sub305120/view?proj_no=20260727-110003&page=1",
+  "source_title": "광주상공회의소 · 근로자 지원사업 - [2차] 2026년 고용이음 안착지원금(비자발적 퇴사)",
+  "checked_on": "2026-11-20",
+  "checked_by": "Claude Code 웹 확인; 사람 검수 아님",
+  "verified": false
+ },
+ {
+  "external_id": "20261104005400214719",
+  "field": "period",
+  "value": "운영기간은 2026.4.6.(월)~11.30.(월)이고 매월 첫주 월요일 09:00부터 선착순 250명을 접수한다. 11월 접수를 마지막으로 사업이 종료될 예정이라고 적혀 있다.",
+  "quotes": [
+   "※ 11월 접수를 마지막으로 본 사업 종료 예정입니다.",
+   "매월 첫주 월요일 09:00 부터 선착순 250명 접수예정"
+  ],
+  "source_url": "https://www.dgyouth.kr/board/notice.asp?pmode=VIEW&num=2625",
+  "source_title": "대구광역시청년센터 · [센터사업] 대구청년 부동산 중개수수료 지원 사업 참여자 모집",
+  "checked_on": "2026-11-20",
+  "checked_by": "Claude Code 웹 확인; 사람 검수 아님",
+  "verified": false
+ },
+ {
+  "external_id": "20261101005400214690",
+  "field": "period",
+  "value": "신청 기간은 2026. 10. 21.(수)부터 선착순 마감까지이고, 구글폼 신청페이지로 신청한다. 운영은 2026. 11. 4.(수) ~ 12. 2.(수) 매주 수요일 저녁.",
+  "quotes": [
+   "[신청 기간] 2026. 10. 21.(수) ~ 선착순 마감까지",
+   "↓아래 링크 클릭 시 신청페이지(구글폼) 이동",
+   "[모집 인원] 회차별 15명(선착순 모집)"
+  ],
+  "source_url": "https://www.dgyouth.kr/board/notice.asp?pmode=VIEW&num=2813",
+  "source_title": "대구광역시청년센터 · [센터사업] 2026 대구 청년을 위한 노동법·생활법률 교육 (시즌3) 참여자 모집",
+  "checked_on": "2026-11-20",
+  "checked_by": "Claude Code 웹 확인; 사람 검수 아님",
+  "verified": false
  }
 ]

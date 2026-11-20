@@ -57,6 +57,8 @@ def evidence(external_id):
     links=[]
     for title,value in [('공식 대조 출처',check.get('source_url','') if check else ''),
                         ('참고 안내',p.get('refUrlAddr1','')),('추가 안내',p.get('refUrlAddr2','')),
+                        # 온통청년 정보에 공고 주소가 없을 때를 위해, 따로 찾아 문장까지 확인한 공식 페이지도 넣는다(사람 검수 전)
+                        *(('공식 안내(따로 확인)',x['source_url']) for x in bundle['supplements'] if x.get('auto_check','found')=='found'),
                         ('신청 안내 사이트',p.get('aplyUrlAddr',''))]:
         url=safe_url(value)
         if url and url not in gone_links() and not any(x['url']==url for x in links):links.append({'title':title,'url':url})

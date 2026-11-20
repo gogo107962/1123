@@ -16,7 +16,7 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
-from desk_plan import DOCS  # noqa: E402
+from desk_plan import DOCS, doc_hit  # noqa: E402
 from policy_data import https_url, validate_policy  # noqa: E402
 from policy_structure import structure  # noqa: E402
 
@@ -120,7 +120,7 @@ def draft(payload, supplements=()):
             text, ref = ' '.join(x['quotes']), f'web{n}'
     documents = [{'code': key, 'title': name, 'source_ref': ref, 'constraints': {},
                   'instructions': how + ' · 발급일, 포함 항목, 대체서류는 공고에서 확인하세요.', 'alternatives': []}
-                 for key, name, needles, how in DOCS if any(w in text for w in needles)]
+                 for key, name, needles, how in DOCS if doc_hit(text, needles)]
     checks.append({'id': 'documents', 'source_ref': ref, 'message': ('서류 안내 글에서 이름을 찾은 서류만 옮겼습니다. 목록 전체를 공고와 대조하세요.' if text
                                                                      else '서류 안내가 없습니다. 서류가 필요 없다는 뜻이 아닙니다.')})
     if st['scale']['first_come']:

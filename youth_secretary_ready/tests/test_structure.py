@@ -1685,3 +1685,42 @@ def test_residence_condition_with_alternatives_is_not_compared():
     plain = made(addAplyQlfcCndCn='신청일 기준 6개월 이상 삼척시에 주민등록을 두고 있는 청년')
     assert plain['region']['residence_unclear'] is False and verdict(plain, {'region_code': '11305', 'residence_months': 0})[1]['region'] == 'mismatch'
 
+
+# ── v0.41: 서류가 아닌 말에 걸리지 않게, 해당자만 내는 서류 표시 ──────────────────────
+def test_document_words_do_not_match_non_documents_and_optional_ones_are_marked(ctx):
+    from policy_structure import doc_hit, doc_optional, DOCS
+    needles = {key: n for key, _, n, _ in DOCS}
+    assert not doc_hit('○ 필수 신청서류 ① 주민등록등본', needles['application']) and doc_hit('① 지원 신청서 ② 동의서', needles['application'])
+    assert not doc_hit('① 응시료 지원사업 신청서 ② 응시원서', needles['exam']) and doc_hit('시험응시 증빙서류(성적표, 응시확인서 등)', needles['exam'])
+    assert not doc_hit('고용보험(상용)에 가입되어 있는 자', needles['employment_insurance']) and doc_hit('고용보험 피보험 자격이력내역서', needles['employment_insurance'])
+    text = '시험 결제영수증(필수)\n통장사본(본인명의)(필수)\n단기근로자 증빙서류(정부일자리 참여 확인서, 근로계약서 등)(선택)'
+    assert doc_optional(text, needles['labor_contract']) and not doc_optional(text, needles['bankbook'])
+    seed([good('DOC1', sbmsnDcmntCn=text), good('DOC2', sbmsnDcmntCn='근로계약서 1부, 통장사본')])
+    wid = ctx.post('/api/desk/workspaces').json()['id']
+    one = {d['key']: d['optional'] for d in ctx.post(f'/api/desk/workspaces/{wid}/plan', json={'external_ids': ['DOC1']}).json()['documents']}
+    assert one == {'bankbook': False, 'receipt': False, 'labor_contract': True}
+    both = {d['key']: d['optional'] for d in ctx.post(f'/api/desk/workspaces/{wid}/plan', json={'external_ids': ['DOC1', 'DOC2']}).json()['documents']}
+    assert both['labor_contract'] is False                      # 다른 정책에서 필수면 필수로 본다
+
+
+def test_ask_widens_narrow_keywords_only_when_nothing_usable_was_found(ctx, monkeypatch):
+    seed([good('WD1', plcyNm='청년 어학시험 응시료 지원'), good('WD2', plcyNm='토익 특강', zipCd='26110')])
+    monkeypatch.setattr(desk_finder, 'model_status', lambda: {'ready': True})
+    monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['토익']))
+    body = ctx.post(ASK, json={'message': '토익 시험비 지원해 주는 데 있어?', 'profile': PROFILE, 'on': '2026-11-17'}).json()
+    assert body['keywords'][0] == '토익' and '어학' in body['keywords']                 # 내 지역에 해당하는 '토익' 정책이 없어 넓혀 찾음
+    assert {x['external_id'] for x in body['items']} == {'WD1', 'WD2'} and "'토익·어학" in body['answer']
+    seed([good('WD3', plcyNm='토익 응시료 환급')])
+    narrow = ctx.post(ASK, json={'message': '토익 시험비 지원해 주는 데 있어?', 'profile': PROFILE, 'on': '2026-11-17'}).json()
+    assert narrow['keywords'] == ['토익']                                               # 해당하는 결과가 있으면 넓히지 않는다
+
+
+def test_confirmed_supplement_page_becomes_an_official_link(ctx, monkeypatch):
+    import desk_service
+    seed([good('SL1', refUrlAddr1='', refUrlAddr2='', aplyUrlAddr='https://example.go.kr/apply')])
+    note = {'external_id': 'SL1', 'field': 'documents', 'value': '신청서', 'quotes': ['신청서 1부'], 'source_url': 'https://example.go.kr/notice', 'source_title': '공고', 'checked_on': '2026-11-20'}
+    monkeypatch.setattr(ontong, 'supplements', lambda eid: [{**note, 'auto_check': 'found'}])
+    assert [(x['title'], x['url']) for x in desk_service.evidence('SL1')[1]] == [('공식 안내(따로 확인)', 'https://example.go.kr/notice'), ('신청 안내 사이트', 'https://example.go.kr/apply')]
+    monkeypatch.setattr(ontong, 'supplements', lambda eid: [{**note, 'auto_check': 'not_found'}])      # 문장이 확인되지 않은 페이지는 링크로 쓰지 않는다
+    assert [x['title'] for x in desk_service.evidence('SL1')[1]] == ['신청 안내 사이트']
+

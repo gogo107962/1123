@@ -8,7 +8,7 @@
 import re
 from datetime import date
 from fastapi import HTTPException
-from policy_structure import DOC_KIND, DOCS, EXCLUDE, RANK, period_status, structure, timing
+from policy_structure import DOC_KIND, DOCS, EXCLUDE, RANK, doc_hit, doc_optional, period_status, structure, timing
 from screening import NOTICE, age_rule, confirmed, provided, screen
 
 SIMILAR = re.compile(r'유사|동일|중복|타\s*(지자체|기관|시군|시·군|자치구)')
@@ -83,8 +83,11 @@ def build(wid, external_ids, profile, on):
         if not text:
             unlisted.append(eid)
         for key, name, needles, how in DOCS:
-            if any(n in text for n in needles):
-                found.setdefault(key, {'key': key, 'name': name, 'how': how, 'kind': DOC_KIND[key], 'policies': []})['policies'].append(eid)
+            if doc_hit(text, needles):
+                doc = found.setdefault(key, {'key': key, 'name': name, 'how': how, 'kind': DOC_KIND[key], 'policies': [], 'optional': True})
+                doc['policies'].append(eid)
+                # 고른 정책 모두에서 '해당자·선택'으로 적힌 서류만 '해당하는 경우만'으로 표시한다(하나라도 필수면 필수).
+                doc['optional'] = doc['optional'] and doc_optional(text, needles)
         policies.append({
             'external_id': eid, 'name': fields['plcyNm'], 'agency': fields.get('sprvsnInstCdNm', ''),
             'period_status': status, 'period_label': label, 'deadline': deadline, 'documents_text': text,

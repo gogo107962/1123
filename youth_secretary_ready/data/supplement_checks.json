@@ -1,18 +1,18 @@
 {
- "checked_on": "2026-11-19",
+ "checked_on": "2026-11-20",
  "method": "출처 주소를 열어 글자만 남긴 뒤, 인용 문장이 띄어쓰기를 무시하고 그대로 있는지 확인(자동). 사람 검수 아님.",
  "pages": {
-  "opened": 85,
+  "opened": 88,
   "unreachable": 1
  },
  "entries": {
-  "found": 174,
+  "found": 178,
   "unreachable": 1,
   "not_found": 20,
   "partly": 4
  },
  "quotes": {
-  "found": 442,
+  "found": 451,
   "unreachable": 4,
   "not_found": 119
  },
@@ -3969,6 +3969,74 @@
    "quotes": [
     {
      "sha1": "b3ac49471c",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260422005400212862",
+   "field": "period",
+   "source_url": "https://seogwipo.go.kr/group/selfgoverning/planning/application/intro.htm",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "07d87feb6b",
+     "found": true
+    },
+    {
+     "sha1": "05b316fa45",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212557",
+   "field": "period",
+   "source_url": "https://www.gjcci.or.kr/user/sub305120/view?proj_no=20260727-110003&page=1",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "fa759215ac",
+     "found": true
+    },
+    {
+     "sha1": "1118c093ee",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261104005400214719",
+   "field": "period",
+   "source_url": "https://www.dgyouth.kr/board/notice.asp?pmode=VIEW&num=2625",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "6ea18cebfd",
+     "found": true
+    },
+    {
+     "sha1": "af72d6971e",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261101005400214690",
+   "field": "period",
+   "source_url": "https://www.dgyouth.kr/board/notice.asp?pmode=VIEW&num=2813",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "705d62cf0e",
+     "found": true
+    },
+    {
+     "sha1": "cab0bfeeec",
+     "found": true
+    },
+    {
+     "sha1": "094359c224",
      "found": true
     }
    ]

@@ -71,16 +71,16 @@ DOCS = [
     ('insurance_premium', '건강보험료 납부확인서', ('건강보험료',), '국민건강보험공단 누리집·앱'),
     ('income', '소득금액증명', ('소득금액증명',), '홈택스'),
     ('business', '사업자등록 관련 서류', ('사업자등록',), '홈택스 · 등록증인지 사실증명인지는 공고 확인'),
-    ('employment_insurance', '고용보험 관련 서류', ('고용보험',), '고용24 · 서류 종류는 공고 확인'),
+    ('employment_insurance', '고용보험 관련 서류', (r'고용보험[^,\n]{0,12}(?:이력|내역|확인서|증명|가입증명)', '피보험'), '고용24 · 서류 종류는 공고 확인'),
     ('lease', '임대차계약서', ('임대차계약서', '임대차 계약서'), '보관 중인 계약서 사본 · 확정일자 필요 여부는 공고 확인'),
     ('transfer', '이체 확인 자료', ('이체',), '은행 앱·창구'),
     ('bankbook', '통장 사본', ('통장',), '은행 앱에서 저장'),
     ('id_card', '신분증 사본', ('신분증',), '본인 보관'),
     ('enrollment', '재학증명서', ('재학증명',), '학교 증명 발급 시스템'),
     ('graduation', '졸업증명서', ('졸업증명',), '학교 증명 발급 시스템'),
-    ('exam', '응시 확인 자료', ('응시',), '시험 주관기관 누리집'),
+    ('exam', '응시 확인 자료', (r'응시 ?(?:확인|사실|증빙|증명)', '응시표', '수험표', '성적표'), '시험 주관기관 누리집'),
     ('receipt', '결제 영수증', ('영수증',), '결제처·시험 주관기관 누리집'),
-    ('application', '신청서', ('신청서', '지원서'), '공고의 서식을 내려받아 작성'),
+    ('application', '신청서', ('신청서(?!류)', '지원서(?!류)'), '공고의 서식을 내려받아 작성'),
     ('consent', '동의서', ('동의서',), '공고의 서식을 내려받아 작성'),
     ('marriage', '혼인관계증명서', ('혼인관계증명',), '대법원 전자가족관계등록시스템 또는 정부24'),
     ('employment_cert', '재직증명서', ('재직증명',), '재직 중인 회사에서 발급'),
@@ -486,10 +486,26 @@ def project(payload, app):
             'same_as_application': bool(start and end) and app['windows'] == [{'start': start, 'end': end}]}
 
 
+# 서류 안내 글을 서류 하나쯤 되는 조각으로 나누는 자리, 그리고 '해당하는 사람만 내는 서류'라는 표시
+_DOC_CUT = re.compile(r'[\r\n]+|(?:^|\s)(?:[-–•○□▪◦※☞❍ㅇ]|[①-⑳]|\d{1,2}[.)])\s+|\s/\s|;')
+_DOC_IF = re.compile(r'해당\s*자|해당\s*시|해당하는|경우|한함|한해|\(선택\)|선택\s*제출|필요\s*시|우대')
+
+
+def doc_hit(text, needles):
+    """서류 이름이 글에 나오는가. 낱말은 정규식이다('신청서류'의 '신청서', '응시료'의 '응시'처럼 서류가 아닌 말에 걸리지 않게 하려고)."""
+    return any(re.search(n, text) for n in needles)
+
+
+def doc_optional(text, needles):
+    """그 서류가 나오는 조각마다 '해당자·선택·필요 시'가 붙어 있는가. 해당하는 사람만 내는 서류로 본다."""
+    hits = [s for s in _DOC_CUT.split(text) if s and doc_hit(s, needles)]
+    return bool(hits) and all(_DOC_IF.search(s) for s in hits)
+
+
 def documents(payload):
     """제출서류 안내 글에서 이름이 그대로 나온 서류. 글이 비었으면 '서류 불필요'가 아니라 '안내 없음'이다."""
     text = _text(payload, 'sbmsnDcmntCn')
-    known = [key for key, _, needles, _ in DOCS if any(n in text for n in needles)]
+    known = [key for key, _, needles, _ in DOCS if doc_hit(text, needles)]
     return {'has_text': bool(text), 'stated_none': _stated_none(payload, 'sbmsnDcmntCn'), 'known': known,
             # 목록 없이 '붙임파일 확인'처럼 다른 곳만 가리키는 안내
             'pointer_only': bool(text) and not known and bool(_POINTER.search(text))}
