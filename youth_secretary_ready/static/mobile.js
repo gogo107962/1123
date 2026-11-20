@@ -49,7 +49,7 @@ const sure=x=>(x.auto_check??'found')==='found';
 const short=t=>String(t).replace(/\s*\(.*?\)/g,'');   // 'D-2' → 'D-2'
 // 내 신청에 저장해 둔 정책(최대 5개). 고른 정책이 없을 때 내 신청 탭은 이 정책들의 서류와 순서를 보여 준다.
 const savedIds=()=>[...new Set((S.space?.tasks||[]).filter(t=>!t.outdated).map(t=>t.external_id))].slice(0,5);
-const planIds=()=>selIds().length?selIds():S.planTab?savedIds():[];
+const planIds=()=>S.only&&S.selected[S.only]?[S.only]:selIds().length?selIds():S.planTab?savedIds():[];
 const money=x=>x.amounts?.length?'글에 적힌 금액: '+x.amounts.map(a=>a.text).join(', '):'';
 // 공식 사이트 링크: 공고(대조 출처 · 참고 안내), 신청 페이지, 온통청년의 정책 페이지. 온통청년 주소는 정책번호로 만들어 모든 정책에 있다.
 const PORTAL=id=>'https://www.youthcenter.go.kr/youthPolicy/ythPlcyTotalSearch/ythPlcyDetail/'+encodeURIComponent(id);
@@ -205,8 +205,8 @@ plan:()=>{const picked=selIds(),ids=planIds(),P=S.plan,saved=S.space?.tasks||[],
  let draft='';
  if(ids.length&&!P)draft='<p class="sub">신청 계획을 만들고 있어요…</p>';
  else if(ids.length){const num=id=>P.order.indexOf(id)+1,by=Object.fromEntries(P.policies.map(x=>[x.external_id,x])),have=P.must.filter(d=>S.docs[d.key]).length,many=P.policies.length>1;
-  const extra=S.only&&S.selected[S.only]&&many;
-  draft=`${extra?`<div class="card"><p class="s14" style="margin:0 0 10px"><strong>정책 ${P.policies.length}개를 함께 준비하고 있어요.</strong> 전에 고른 정책이 남아 있어요. ‘이 정책 준비하기’는 고른 정책에 더하는 버튼이에요.</p><button class="btn line w" data-a="only">방금 고른 ‘${esc(S.selected[S.only])}’만 준비하기</button></div>`:''}${P.conflicts.length?`<div class="warnbox" role="status"><strong>함께 받기 어려울 수 있어요.</strong> 안내 글에 아래 문구가 있어요. 사람 검수 전이니 기관에 확인하세요.${P.conflicts.map(c=>`<br>· ${num(c.from)}번 안내: “${esc(c.quote)}” → ${num(c.to)}번${c.kind==='named'?'의 이름이 보여요':'과 비슷한 사업 제한 문구예요'}`).join('')}</div>`:many?`<div class="warnbox" role="status"><strong>함께 받을 수 있는지 확인이 필요해요.</strong> 안내 글에서 서로 막는 문구는 없었지만, 중복 수혜 제한은 아직 검수하지 않았어요.</div>`:''}
+  const extra=S.only&&S.selected[S.only]&&selIds().length>1;
+  draft=`${extra?`<p class="tiny" style="margin:0 4px 10px">방금 고른 정책만 보여 드려요. <button class="link" data-a="all" style="background:none;border:0;padding:0;color:inherit;text-decoration:underline;font:inherit;cursor:pointer">고른 정책 ${selIds().length}개 함께 보기</button></p>`:''}${P.conflicts.length?`<div class="warnbox" role="status"><strong>함께 받기 어려울 수 있어요.</strong> 안내 글에 아래 문구가 있어요. 사람 검수 전이니 기관에 확인하세요.${P.conflicts.map(c=>`<br>· ${num(c.from)}번 안내: “${esc(c.quote)}” → ${num(c.to)}번${c.kind==='named'?'의 이름이 보여요':'과 비슷한 사업 제한 문구예요'}`).join('')}</div>`:many?`<div class="warnbox" role="status"><strong>함께 받을 수 있는지 확인이 필요해요.</strong> 안내 글에서 서로 막는 문구는 없었지만, 중복 수혜 제한은 아직 검수하지 않았어요.</div>`:''}
 <div class="card"><div class="row"><h3>${many?'통합 서류':'필요한 서류'}</h3><span class="tiny">${P.must.length}종 중 ${have}종 준비</span></div>
 ${P.documents.length?`<ul class="list">${P.documents.map(d=>{const tag=!many?'':d.policies.length===P.policies.length?'공통':d.policies.map(num).sort().join('·')+'번만';return `<li class="doc"><input type="checkbox" class="cb" data-a="doc" data-k="${esc(d.key)}" ${S.docs[d.key]?'checked':''} aria-label="${esc(d.name)} 보유"><div><div class="pills"><span class="b">${esc(d.name)}</span>${tag?pill(tag):''}${S.docs[d.key]?pill('보유','ok'):d.optional?pill('해당하는 경우만'):pill('부족','bad')}</div><p class="sub s13">${esc(d.kind)} · ${esc(d.how)}</p></div></li>`}).join('')}</ul>`:'<p class="sub">필요한 서류는 공고에서 확인해 주세요.</p>'}
 <details><summary>서류 안내 원문 · 주의할 점</summary>${P.documents_unlisted.length?`<p class="tiny" style="margin-top:8px">${P.documents_unlisted.map(num).sort().map(i=>i+'번').join(', ')} 정책은 서류 안내가 없어요. 서류가 필요 없다는 뜻이 아니에요.</p>`:''}<p class="tiny" style="margin-top:6px">서류 안내 글에서 이름을 찾은 서류예요. 발급일 · 포함 항목 · 대체서류는 공고에서 확인하세요.</p>${P.policies.map(x=>`<p class="b" style="margin:8px 0 0">${num(x.external_id)}. ${esc(x.name)}</p><p class="pre">${({api_other:'(신청 방법·기타 안내 글에서 읽음) ',web_check:'(공식 페이지에서 보완 · 사람 검수 전) ',attachment_pdf:'(공고 첨부파일에서 읽음 · 자동 대조 안 됨 · 사람 검수 전) ',attachment_hwpx:'(공고 첨부파일에서 읽음 · 자동 대조 안 됨 · 사람 검수 전) ',image:'(공고 이미지에서 읽음 · 자동 대조 안 됨 · 사람 검수 전) '})[x.documents_source]||''}${esc(x.documents_text||'정보 없음')}</p>`).join('')}</details></div>
@@ -287,7 +287,7 @@ async function loadPlan(){S.plan=null;const ids=planIds();if(!ids.length)return;
  const r=await api(space('/plan'),'POST',{external_ids:ids,profile:mine()});
  if(ids.join()!==planIds().join())return;r.must=r.documents.filter(d=>!d.optional);S.plan=r;if(S.screen==='plan'||S.screen==='check')render()}
 function select(id,name,on){if(on)S.selected[id]=name;else delete S.selected[id];store.set('youth-desk-selected',S.selected);S.plan=null;S.homePlan=null}
-function showPlan(tab){S.planTab=tab;if(tab){S.back=[];S.screen='plan';S.sheet=null;render(true)}else go('plan');return (tab?refreshSpace().then(()=>{if(S.screen==='plan')render()}):Promise.resolve()).then(loadPlan)}
+function showPlan(tab,only){S.only=only||null;S.planTab=tab;if(tab){S.back=[];S.screen='plan';S.sheet=null;render(true)}else go('plan');return (tab?refreshSpace().then(()=>{if(S.screen==='plan')render()}):Promise.resolve()).then(loadPlan)}
 function openChat(first){if(!S.chat.length)S.chat.push({who:'bot',t:`안녕하세요${S.profile?.name?', '+S.profile.name+' 님':''}. 무엇을 받고 싶으세요?`});if(S.screen!=='chat')go('chat');if(first)say(first)}
 async function say(text,quiet){if(S.busy||!text)return;
  // 나이를 물은 직후 숫자만 답하면 내 정보에 넣고 같은 질문으로 다시 찾는다.
@@ -324,9 +324,9 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!
  else if(a==='clearfind'){S.query.q='';run(()=>loadList())}else if(a==='clearfilters'){S.query={keywords:[],...NOFILTER};run(()=>loadList())}
  else if(a==='detail')run(()=>openDetail(d.id));else if(a==='sheet'){S.sheet=+d.i;render()}else if(a==='closesheet'){S.sheet=null;render()}
  else if(a==='askpolicy'){const d0=S.detail;d0.ai={loading:true};render();run(async()=>{try{const r=await api(space('/assistant'),'POST',{external_id:d0.id,message:'이 정책은 무엇부터 확인해야 해?'});d0.ai={answer:r.answer,tools:r.tools}}catch(e){d0.ai={error:e.message}}if(S.detail===d0&&S.screen==='detail')render()})}
- else if(a==='prep'){if(!S.selected[S.detail.id]&&selIds().length>=5){toast('한 번에 5개까지 함께 준비할 수 있어요.');return}select(S.detail.id,S.detail.bundle.public_fields.plcyNm,true);S.only=S.detail.id;run(()=>showPlan(false))}
+ else if(a==='prep'){if(!S.selected[S.detail.id]&&selIds().length>=5){toast('한 번에 5개까지 함께 준비할 수 있어요.');return}select(S.detail.id,S.detail.bundle.public_fields.plcyNm,true);run(()=>showPlan(false,S.detail.id))}
  // 전에 고른 정책이 남아 있을 때: 방금 '이 정책 준비하기'를 누른 정책만 남긴다
- else if(a==='only'){const id=S.only,name=S.selected[id];S.selected={[id]:name};store.set('youth-desk-selected',S.selected);S.plan=null;S.homePlan=null;S.only=null;render();run(loadPlan)}
+ else if(a==='all'){S.only=null;S.plan=null;render();run(loadPlan)}
  else if(a==='plan')run(()=>showPlan(false));else if(a==='check'){go('check');if(!S.plan)run(loadPlan)}
  else if(a==='unsel'){select(d.id,'',false);if(!selIds().length&&!S.planTab&&!(S.space?.tasks||[]).length)back();else{render();run(loadPlan)}}
  else if(a==='copy'){const text=$('#msg').textContent;navigator.clipboard?.writeText(text).then(()=>toast('문구를 복사했어요'),()=>toast('복사하지 못했어요. 길게 눌러 복사해 주세요'))??toast('복사하지 못했어요. 길게 눌러 복사해 주세요')}
