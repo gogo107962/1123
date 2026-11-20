@@ -178,7 +178,6 @@ class PlanRequest(BaseModel):
     external_ids: list[Annotated[str,Field(min_length=1,max_length=80)]]=Field(min_length=1,max_length=5)
     profile: ScreenProfile=ScreenProfile()
     on: str | None=None
-    have: list[Annotated[str,Field(min_length=1,max_length=40)]]=Field(default=[],max_length=60)   # 가진 서류의 키(서류 준비판). 저장하지 않는다
 
 # 고른 정책들의 통합 서류·신청 순서·확인 작업 미리보기. 저장하지 않는다(저장은 정책별 confirm 승인).
 @app.post('/api/desk/workspaces/{wid}/plan')
@@ -190,17 +189,7 @@ def desk_plan(wid:str,payload:PlanRequest):
         on=iso_date(payload.on) if payload.on else korean_now().date()
         validate_profile(payload.profile.model_dump())
     except ValueError as exc:raise HTTPException(422,str(exc)) from None
-    return build(wid,payload.external_ids,payload.profile.model_dump(),on,payload.have)
-
-# 충돌·순서 플래너만: 함께 받기 어려울 수 있는 조합, 신청 순서와 이유, 조합별 예상 금액. 다른 AI가 도구로 부르기 좋게 작다(planner.TOOL).
-@app.post('/api/desk/workspaces/{wid}/planner')
-def desk_planner(wid:str,payload:PlanRequest):
-    return desk_plan(wid,payload)['planner']
-
-# 서류 준비판만: 여러 정책의 서류를 합치고, 가진 것(have)과 없는 것을 나눠 준비 순서·발급처·정책별 조건 문장을 준다(docboard.TOOL).
-@app.post('/api/desk/workspaces/{wid}/docboard')
-def desk_docboard(wid:str,payload:PlanRequest):
-    return desk_plan(wid,payload)['docboard']
+    return build(wid,payload.external_ids,payload.profile.model_dump(),on)
 
 class AskRequest(BaseModel):
     message: str=Field(min_length=1,max_length=600)

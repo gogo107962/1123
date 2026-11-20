@@ -55,10 +55,9 @@ LIMIT_KINDS = {'다른 지원과 중복': r'중복|유사|동일|타 ?사업|다
                '건강 상태': r'질환|중독|질병', '공고에서 확인': r'공고'}
 # 서류 준비판의 칸: 공공기관이 발급 / 학교·회사·은행 등이 발행 / 내가 작성·보관. 동의로 대체되는지는 공고를 봐야 알 수 있어 나누지 않는다.
 DOC_KIND = {**dict.fromkeys(('resident_register', 'resident_abstract', 'family', 'marriage', 'insurance_status', 'insurance_premium', 'income',
-                             'business', 'employment_insurance', 'disability', 'recipient', 'military', 'tax', 'registry', 'local_tax', 'farm', 'sme'), '공공 발급'),
-            **dict.fromkeys(('enrollment', 'graduation', 'employment_cert', 'transfer', 'bankbook', 'exam', 'receipt', 'license', 'medical', 'transcript', 'leave',
-                             'career', 'completion', 'finance', 'recommendation', 'estimate', 'payslip', 'interview'), '기관·학교·은행 발행'),
-            **dict.fromkeys(('lease', 'labor_contract', 'id_card', 'application', 'consent', 'pledge', 'business_plan', 'self_intro', 'resume', 'proxy'), '직접 작성·보관')}
+                             'business', 'employment_insurance', 'disability', 'recipient', 'military', 'tax'), '공공 발급'),
+            **dict.fromkeys(('enrollment', 'graduation', 'employment_cert', 'transfer', 'bankbook', 'exam', 'receipt', 'license', 'medical'), '기관·학교·은행 발행'),
+            **dict.fromkeys(('lease', 'labor_contract', 'id_card', 'application', 'consent', 'pledge', 'business_plan', 'self_intro', 'resume'), '직접 작성·보관')}
 # 칸에 줄표나 '없음'만 적은 자리표시. 내용이 있는 것으로 세지 않는다(신청 방법 '해당없음' 45건, 서류 124건 등).
 _PLACEHOLDER = re.compile(r'(-+|\.+|해당\s*(사항)?\s*없음|없음|제한\s*없음|무관)\.?')
 # 서류 안내가 목록 없이 다른 곳을 가리키기만 하는 표현
@@ -76,9 +75,9 @@ DOCS = [
     ('lease', '임대차계약서', ('임대차계약서', '임대차 계약서'), '보관 중인 계약서 사본 · 확정일자 필요 여부는 공고 확인'),
     ('transfer', '이체 확인 자료', ('이체',), '은행 앱·창구'),
     ('bankbook', '통장 사본', ('통장',), '은행 앱에서 저장'),
-    ('id_card', '신분증 사본', ('신분증', '주민등록증', '운전면허증', '신분을 확인할 수 있는'), '본인 보관'),
+    ('id_card', '신분증 사본', ('신분증',), '본인 보관'),
     ('enrollment', '재학증명서', ('재학증명',), '학교 증명 발급 시스템'),
-    ('graduation', '졸업증명서', ('졸업증명', '학력증명'), '학교 증명 발급 시스템'),
+    ('graduation', '졸업증명서', ('졸업증명',), '학교 증명 발급 시스템'),
     ('exam', '응시 확인 자료', ('응시',), '시험 주관기관 누리집'),
     ('receipt', '결제 영수증', ('영수증',), '결제처·시험 주관기관 누리집'),
     ('application', '신청서', ('신청서', '지원서'), '공고의 서식을 내려받아 작성'),
@@ -90,27 +89,12 @@ DOCS = [
     ('medical', '진단서·소견서', ('진단서', '소견서'), '진료받은 의료기관에서 발급'),
     ('self_intro', '자기소개서', ('자기소개서',), '공고의 서식을 내려받아 작성'),
     ('resume', '이력서', ('이력서',), '공고의 서식이 있는지 확인해 작성'),
-    ('pledge', '서약서', ('서약서', '확약서'), '공고의 서식을 내려받아 작성'),
+    ('pledge', '서약서', ('서약서',), '공고의 서식을 내려받아 작성'),
     ('license', '자격증 사본', ('자격증 사본', '자격증사본', '합격증'), '자격 발급기관 누리집'),
     ('disability', '장애인 증명서', ('장애인증명', '장애인 증명', '복지카드'), '정부24 또는 주민센터'),
     ('recipient', '수급자·차상위 증명서', ('수급자증명', '수급자 증명', '차상위'), '정부24 또는 주민센터'),
     ('military', '병적증명서', ('병적증명', '전역증'), '정부24'),
     ('tax', '납세·체납 관련 증명', ('납세증명', '완납증명', '체납'), '홈택스·위택스 · 국세인지 지방세인지는 공고 확인'),
-    # 아래는 2026-11-19 수집본의 서류 안내 글에서 이름을 못 찾던 조각 가운데 자주 나온 서류다(성적증명서 24건, 과세증명서 21건, 수료·이수증 22건 등).
-    ('transcript', '성적증명서', ('성적증명',), '학교 증명 발급 시스템'),
-    ('leave', '휴학증명서', ('휴학증명',), '학교 증명 발급 시스템'),
-    ('career', '경력증명서', ('경력증명',), '근무했던 회사·기관에 요청'),
-    ('completion', '수료증·이수증', ('수료증', '이수증'), '교육을 받은 기관에서 발급'),
-    ('finance', '금융거래확인서', ('금융거래확인',), '거래 은행 창구·앱'),
-    ('registry', '등기사항증명서(등기부등본)', ('등기부등본', '등기사항'), '대법원 인터넷등기소'),
-    ('local_tax', '지방세 과세증명서', ('과세증명',), '정부24 또는 위택스'),
-    ('proxy', '위임장', ('위임장',), '대리로 신청할 때만 · 공고의 서식 확인'),
-    ('recommendation', '추천서', ('추천서',), '추천인에게 요청 · 공고의 서식 확인'),
-    ('estimate', '견적서', ('견적서',), '구입·계약할 업체에 요청'),
-    ('payslip', '급여명세서', ('급여명세',), '재직 중인 회사에서 발급'),
-    ('interview', '면접 확인 자료', ('면접확인', '면접 확인'), '면접을 본 회사에 요청 · 공고의 서식 확인'),
-    ('farm', '농업경영체 등록확인서', ('농업경영체',), '국립농산물품질관리원(농업e지)'),
-    ('sme', '중소기업 확인서', ('중소기업확인서', '중소기업 확인서'), '중소기업현황정보시스템'),
 ]
 _SPLIT = re.compile(r'[\r\n]+|\s/\s|(?<=[.。])\s+')
 _BULLET = re.compile(r'^(?:[\s\-–·•○□▪◦※*]+|[①-⑳]\s*|\d{1,2}[.)]\s+)+')
@@ -483,16 +467,10 @@ def project(payload, app):
             'same_as_application': bool(start and end) and app['windows'] == [{'start': start, 'end': end}]}
 
 
-def doc_hit(text, needles):
-    """서류 이름이 글에 그대로 나오는가. 4자 이상인 이름은 띄어쓰기가 달라도 찾는다('혼인관계 증명서'). 짧은 이름은 '최초 본인'의 '초본'처럼 잘못 걸려서 그대로만 찾는다."""
-    flat = text.replace(' ', '')
-    return any(n in text or (len(n) >= 4 and n.replace(' ', '') in flat) for n in needles)
-
-
 def documents(payload):
     """제출서류 안내 글에서 이름이 그대로 나온 서류. 글이 비었으면 '서류 불필요'가 아니라 '안내 없음'이다."""
     text = _text(payload, 'sbmsnDcmntCn')
-    known = [key for key, _, needles, _ in DOCS if doc_hit(text, needles)]
+    known = [key for key, _, needles, _ in DOCS if any(n in text for n in needles)]
     return {'has_text': bool(text), 'stated_none': _stated_none(payload, 'sbmsnDcmntCn'), 'known': known,
             # 목록 없이 '붙임파일 확인'처럼 다른 곳만 가리키는 안내
             'pointer_only': bool(text) and not known and bool(_POINTER.search(text))}
