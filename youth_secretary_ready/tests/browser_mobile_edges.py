@@ -64,6 +64,14 @@ with sync_playwright() as p:
     page.locator('[data-a=prep]').click()
     expect(page.locator('#toast')).to_contain_text('5개까지')
     page.locator('[data-a=back]').click()
+    # 전에 고른 정책이 남아 있으면 신청 계획 위에서 알려 주고, 방금 고른 정책만 남길 수 있다(누르지 않으면 그대로 5개)
+    page.locator('.browse-item').nth(4).click()
+    page.locator('[data-a=prep]').click()
+    expect(page.locator('[data-a=only]')).to_contain_text('만 준비하기')
+    expect(page.locator('main')).to_contain_text('정책 5개를 함께 준비하고 있어요')
+    page.locator('[data-a=back]').click()
+    page.locator('[data-a=back]').click()
+    expect(page.locator('.browse-item').first).to_be_visible()
     done.append('five_policy_limit')
 
     # 5) 상세 → 뒤로 가도 목록과 선택이 그대로다. 새로고침해도 선택이 남는다.
