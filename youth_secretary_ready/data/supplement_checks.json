@@ -2,20 +2,20 @@
  "checked_on": "2026-11-20",
  "method": "출처 주소를 열어 글자만 남긴 뒤, 인용 문장이 띄어쓰기를 무시하고 그대로 있는지 확인(자동). 사람 검수 아님.",
  "pages": {
-  "opened": 89,
+  "opened": 101,
   "unreachable": 1
  },
  "entries": {
-  "found": 178,
+  "found": 192,
   "unreachable": 1,
   "not_found": 20,
   "partly": 4,
-  "file": 4
+  "file": 5
  },
  "quotes": {
-  "found": 451,
+  "found": 504,
   "unreachable": 4,
-  "not_found": 160
+  "not_found": 164
  },
  "items": [
   {
@@ -4235,6 +4235,386 @@
     {
      "sha1": "bd07cd4942",
      "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260413005400212718",
+   "field": "documents",
+   "source_url": "https://seogwipo.go.kr/group/selfgoverning/planning/application/intro.htm",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "2f04fb6a90",
+     "found": true
+    },
+    {
+     "sha1": "e8186c2f0a",
+     "found": true
+    },
+    {
+     "sha1": "2344adf765",
+     "found": true
+    },
+    {
+     "sha1": "5edfed2926",
+     "found": true
+    },
+    {
+     "sha1": "6e198ff68e",
+     "found": true
+    },
+    {
+     "sha1": "fe2668108b",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261029005400214500",
+   "field": "documents",
+   "source_url": "https://www.jbwelfare.or.kr/bbs/view.do?key=2401020015&pstSn=2601210044",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "f0677183fd",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261020005400214138",
+   "field": "documents",
+   "source_url": "https://www.wonju.go.kr/wjyouth/viewTnWjyouthProgrmU.do?progrmNo=53&key=5942",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "599e350003",
+     "found": true
+    },
+    {
+     "sha1": "7c3bed9170",
+     "found": true
+    },
+    {
+     "sha1": "aca1cf07f8",
+     "found": true
+    },
+    {
+     "sha1": "5c648012b5",
+     "found": true
+    },
+    {
+     "sha1": "82ee9a439f",
+     "found": true
+    },
+    {
+     "sha1": "4296f2fdd2",
+     "found": true
+    },
+    {
+     "sha1": "8746910e83",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261020005400214132",
+   "field": "documents",
+   "source_url": "https://www.gb.go.kr/page/10102/10000.do?pageDtlOrdrNo=1&pageIndex=1&boardNo=1335564&boardMngNo=8&searchStrtDt=2025-10-22&searchEndDt=2026-10-21&searchCondition=1&searchKeyword=%EB%8F%99%EC%95%84%EB%A6%AC&recordCountPerPage=10&_csrf=bd1d735a-3d2b-428a-94ff-7c996b51c4c3&importUrl=%2Fboard%2Fview.do",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "639d01c607",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260930005400113743",
+   "field": "documents",
+   "source_url": "https://www.kmiti.or.kr/kr/board/kmi_notice/boardView.do?bbsIdx=45288",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "549ad1d552",
+     "found": true
+    },
+    {
+     "sha1": "0b66464b1c",
+     "found": true
+    },
+    {
+     "sha1": "afd6aa1024",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260422005400212847",
+   "field": "documents",
+   "source_url": "https://www.jeju.go.kr/city/welfare/leasedeposit.htm",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "14787f97b0",
+     "found": true
+    },
+    {
+     "sha1": "03f5304cb7",
+     "found": true
+    },
+    {
+     "sha1": "beb0e009d2",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260326005400212302",
+   "field": "documents",
+   "source_url": "https://www.iksan.go.kr/health/index.do?menuUid=ff808081975e28f701977666032b0acc",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "6dad04af4a",
+     "found": true
+    },
+    {
+     "sha1": "4a7cd457cd",
+     "found": true
+    },
+    {
+     "sha1": "2865ea2a2c",
+     "found": true
+    },
+    {
+     "sha1": "f88f0e8643",
+     "found": true
+    },
+    {
+     "sha1": "2c3ca6b15d",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260326005400212293",
+   "field": "documents",
+   "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/saeol/gosi/view.do?notAncmtMgtNo=115172&mid=0401020100",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "a54dd35cc9",
+     "found": true
+    },
+    {
+     "sha1": "ca1a722a8a",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260326005400212292",
+   "field": "documents",
+   "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/saeol/gosi/view.do?notAncmtMgtNo=115172&mid=0401020100",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "a54dd35cc9",
+     "found": true
+    },
+    {
+     "sha1": "ca1a722a8a",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260128005400212083",
+   "field": "documents",
+   "source_url": "https://www.daejeonyouthportal.kr/content/CT_000000000497/cntPage.do?commonMenuNo=",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "15a79b71b2",
+     "found": true
+    },
+    {
+     "sha1": "68377c9432",
+     "found": true
+    },
+    {
+     "sha1": "cb4cf84200",
+     "found": true
+    },
+    {
+     "sha1": "03d5c0d29c",
+     "found": true
+    },
+    {
+     "sha1": "5d8d28837c",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261021005400214208",
+   "field": "documents",
+   "source_url": "https://housing.seoul.go.kr/site/main/content/sh01_060513",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "b02c375647",
+     "found": true
+    },
+    {
+     "sha1": "40dd1de6c6",
+     "found": true
+    },
+    {
+     "sha1": "ebf77eaab1",
+     "found": true
+    },
+    {
+     "sha1": "ce48f66f21",
+     "found": true
+    },
+    {
+     "sha1": "bde74da1ab",
+     "found": true
+    },
+    {
+     "sha1": "7d61e4b9bd",
+     "found": true
+    },
+    {
+     "sha1": "d6def11d5e",
+     "found": true
+    },
+    {
+     "sha1": "922c5203c7",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261021005400214210",
+   "field": "documents",
+   "source_url": "https://wis.seoul.go.kr/was/fmc/FamilyCareInfo.do",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "fae08d5c8d",
+     "found": true
+    },
+    {
+     "sha1": "db6fe53b71",
+     "found": true
+    },
+    {
+     "sha1": "4c83b1d743",
+     "found": true
+    },
+    {
+     "sha1": "1f8a7456ec",
+     "found": true
+    },
+    {
+     "sha1": "ff51eb7e8a",
+     "found": true
+    },
+    {
+     "sha1": "ddb63fe20e",
+     "found": true
+    },
+    {
+     "sha1": "e71a5e336f",
+     "found": true
+    },
+    {
+     "sha1": "42cd50b711",
+     "found": true
+    },
+    {
+     "sha1": "2269641c85",
+     "found": true
+    },
+    {
+     "sha1": "21423f4657",
+     "found": true
+    },
+    {
+     "sha1": "2eabc480a1",
+     "found": true
+    },
+    {
+     "sha1": "60c1d448c2",
+     "found": true
+    },
+    {
+     "sha1": "2dd084e870",
+     "found": true
+    },
+    {
+     "sha1": "7bdd82be68",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261018005400213984",
+   "field": "documents",
+   "source_url": "https://youth.seoul.go.kr/bbs/view.do?key=2303300002&pstSn=2602120007&sc_bbsCtgrySn=2304110001",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "d52f2a6b4d",
+     "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20261023005400214281",
+   "field": "documents",
+   "source_url": "https://www.ncrc.or.kr/file/jarip/2.%EC%86%8C%EB%93%9D.pdf",
+   "state": "file",
+   "quotes": [
+    {
+     "sha1": "90d93e34c4",
+     "found": false
+    },
+    {
+     "sha1": "2b709ce461",
+     "found": false
+    },
+    {
+     "sha1": "0c0a99af99",
+     "found": false
+    },
+    {
+     "sha1": "b535a109d2",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20261023005400214276",
+   "field": "documents",
+   "source_url": "https://wedding.seoulwomen.or.kr/intro",
+   "state": "found",
+   "quotes": [
+    {
+     "sha1": "a22fbf5f2a",
+     "found": true
+    },
+    {
+     "sha1": "2d091e0799",
+     "found": true
+    },
+    {
+     "sha1": "ec08d6e2e1",
+     "found": true
     }
    ]
   }

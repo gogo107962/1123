@@ -62,6 +62,8 @@ def estimate(policies):
             'used': used, 'loans': loans, 'unsure': unsure}
 
 
+_SENTENCE = re.compile(r'[\r\n]+|(?<=[.。])\s+')
+_SUBMIT = re.compile(r'제출|첨부|지참|구비')
 FILE_READ = ('attachment_pdf', 'attachment_hwpx', 'image')   # 보완 기록의 read_from: 공고의 첨부파일·이미지에서 읽음
 
 
@@ -89,6 +91,12 @@ def build(wid, external_ids, profile, on):
             found_docs = sorted(usable, key=lambda x: -sum(doc_hit('\n'.join(x['quotes']), needles) for _, _, needles, _ in DOCS))[:1]
             if found_docs:
                 text, source = '\n'.join(found_docs[0]['quotes']), ('web_check' if confirmed(found_docs[0]) else found_docs[0]['read_from'])
+        if not any(doc_hit(text, needles) for _, _, needles, _ in DOCS):
+            # 서류 칸에도 보완 기록에도 서류 이름이 없으면, 신청 방법·기타 안내 글에서 '…를 제출·첨부·지참'이라고 적힌 문장을 쓴다.
+            other = [s.strip() for f in ('plcyAplyMthdCn', 'etcMttrCn') for s in _SENTENCE.split(fields.get(f) or '')
+                     if _SUBMIT.search(s) and any(doc_hit(s, needles) for _, _, needles, _ in DOCS)]
+            if other:
+                text, source = '\n'.join(other), 'api_other'
         if not text:
             unlisted.append(eid)
         for key, name, needles, how in DOCS:

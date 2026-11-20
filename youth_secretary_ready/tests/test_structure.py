@@ -1749,3 +1749,12 @@ def test_pointer_only_document_text_falls_back_to_supplement(ctx, monkeypatch):
     monkeypatch.setattr(ontong, 'supplements', lambda eid: [note])
     assert [d['key'] for d in plan()['documents']] == ['bankbook'] and plan()['policies'][0]['documents_source'] == 'web_check'
 
+
+def test_documents_named_in_how_to_apply_text_are_used_when_the_document_field_has_none(ctx):
+    seed([good('OT1', sbmsnDcmntCn='', plcyAplyMthdCn='군청 방문 접수\n신청서 및 사업계획서 등 구비서류 제출'),
+          good('OT2', sbmsnDcmntCn='', plcyAplyMthdCn='누리집에서 신청', plcySprtCn='자기소개서 첨삭, 통장 유지 시 지급')])
+    wid = ctx.post('/api/desk/workspaces').json()['id']
+    out = ctx.post(f'/api/desk/workspaces/{wid}/plan', json={'external_ids': ['OT1', 'OT2']}).json()
+    assert out['policies'][0]['documents_source'] == 'api_other' and {d['key'] for d in out['documents']} == {'application', 'business_plan'}
+    assert out['documents_unlisted'] == ['OT2']                       # 지원 내용 글의 낱말은 서류로 읽지 않는다
+
