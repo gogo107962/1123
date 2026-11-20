@@ -5,7 +5,7 @@ const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const n=v=>Number(v||0).toLocaleString();
 const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
-const DEMO={name:'민지',birth:'2000-03',moved:'2024-02',age:26,sido:'11',region_code:'11440',job_code:'0013003',school_code:'',household:1,housing:'월세',exams:[{name:'정보처리기사',month:(d=>{d.setDate(1);d.setMonth(d.getMonth()-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')})(new Date())}]};
+const DEMO={name:'민지',birth:'2000-03',moved:'2024-02',age:26,sido:'28',region_code:'28177',job_code:'0013003',school_code:'',household:1,housing:'월세',exams:[{name:'정보처리기사',month:(d=>{d.setDate(1);d.setMonth(d.getMonth()-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')})(new Date())}]};
 // 오늘 날짜(한국 시간). D-day와 접수 상태는 서버가 요청 때마다 오늘 기준으로 계산하고, 화면은 날짜가 바뀌면 다시 불러온다.
 const today=()=>new Date(Date.now()+9*3600e3).toISOString().slice(0,10);
 // 지원 찾기의 종류 버튼. 앞의 다섯은 정책 대분류, 'k:'로 시작하는 둘은 글에서 찾는 낱말이다.
