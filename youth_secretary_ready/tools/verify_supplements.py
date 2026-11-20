@@ -64,6 +64,8 @@ def main():
         page = results[x['source_url']]
         marks = [page['quotes'][q] for q in x['quotes']]
         state = 'unreachable' if page['status'] == 'unreachable' else 'found' if all(marks) else 'partly' if any(marks) else 'not_found'
+        if state != 'found' and x.get('read_from') in ('attachment_pdf', 'attachment_hwpx', 'image'):
+            state = 'file'   # 공고의 첨부파일·이미지에서 읽은 문장이라 페이지 글로는 대조할 수 없다
         tally[state] += 1
         entries.append({'external_id': x['external_id'], 'field': x['field'], 'source_url': x['source_url'], 'state': state,
                         'quotes': [{'sha1': hashlib.sha1(q.encode()).hexdigest()[:10], 'found': m} for q, m in zip(x['quotes'], marks)]})

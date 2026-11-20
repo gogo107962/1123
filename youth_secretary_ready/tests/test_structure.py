@@ -531,7 +531,9 @@ def test_supplement_file_keeps_source_quote_and_unverified_mark():
     rows = json.loads((Path(ontong.BASE) / 'data' / 'supplements.json').read_text(encoding='utf-8'))
     assert rows
     for x in rows:
-        assert set(x) - {'rules'} == {'external_id', 'field', 'value', 'quotes', 'source_url', 'source_title', 'checked_on', 'checked_by', 'verified'}
+        # read_from·file_url: 공고의 첨부파일·이미지에서 읽은 기록에만 붙는다
+        assert set(x) - {'rules', 'read_from', 'file_url'} == {'external_id', 'field', 'value', 'quotes', 'source_url', 'source_title', 'checked_on', 'checked_by', 'verified'}
+        assert x.get('read_from') in (None, 'attachment_pdf', 'attachment_hwpx', 'image') and (not x.get('read_from') or x['field'] == 'documents')
         # 공식 페이지에서 찾은 규칙은 엔진이 읽는 형식이어야 하고, 근거 문장이 함께 있어야 한다.
         for rule in x.get('rules', []):
             assert set(rule) == {'id', 'type', 'predicate', 'message'} and rule['type'] in ('required', 'exclude')
@@ -1723,4 +1725,27 @@ def test_confirmed_supplement_page_becomes_an_official_link(ctx, monkeypatch):
     assert [(x['title'], x['url']) for x in desk_service.evidence('SL1')[1]] == [('공식 안내(따로 확인)', 'https://example.go.kr/notice'), ('신청 안내 사이트', 'https://example.go.kr/apply')]
     monkeypatch.setattr(ontong, 'supplements', lambda eid: [{**note, 'auto_check': 'not_found'}])      # 문장이 확인되지 않은 페이지는 링크로 쓰지 않는다
     assert [x['title'] for x in desk_service.evidence('SL1')[1]] == ['신청 안내 사이트']
+
+
+def test_documents_read_from_attachment_or_image_are_used_with_their_origin(ctx, monkeypatch):
+    seed([good('AT1', sbmsnDcmntCn='')])
+    wid = ctx.post('/api/desk/workspaces').json()['id']
+    note = {'external_id': 'AT1', 'field': 'documents', 'value': '신청서 등', 'quotes': ['참가신청서 1부', '주민등록초본 1부(해당자)'], 'source_url': 'https://example.go.kr/n',
+            'source_title': '공고', 'checked_on': '2026-11-20'}
+    plan = lambda: ctx.post(f'/api/desk/workspaces/{wid}/plan', json={'external_ids': ['AT1']}).json()
+    monkeypatch.setattr(ontong, 'supplements', lambda eid: [{**note, 'auto_check': 'file', 'read_from': 'image'}])
+    out = plan()
+    assert out['policies'][0]['documents_source'] == 'image' and {d['key']: d['optional'] for d in out['documents']} == {'application': False, 'resident_abstract': True}
+    monkeypatch.setattr(ontong, 'supplements', lambda eid: [{**note, 'auto_check': 'not_found'}])       # 어디서 읽었는지 표시가 없고 대조도 안 된 기록은 쓰지 않는다
+    assert plan()['documents'] == [] and plan()['documents_unlisted'] == ['AT1']
+
+
+def test_pointer_only_document_text_falls_back_to_supplement(ctx, monkeypatch):
+    seed([good('PT1', sbmsnDcmntCn='☞ 자세한 내용은 붙임파일을 확인해주시기 바랍니다.')])
+    wid = ctx.post('/api/desk/workspaces').json()['id']
+    note = {'external_id': 'PT1', 'field': 'documents', 'value': '통장사본', 'quotes': ['통장사본'], 'source_url': 'https://example.go.kr/n', 'source_title': '공고', 'checked_on': '2026-11-20', 'auto_check': 'found'}
+    plan = lambda: ctx.post(f'/api/desk/workspaces/{wid}/plan', json={'external_ids': ['PT1']}).json()
+    assert plan()['documents'] == []
+    monkeypatch.setattr(ontong, 'supplements', lambda eid: [note])
+    assert [d['key'] for d in plan()['documents']] == ['bankbook'] and plan()['policies'][0]['documents_source'] == 'web_check'
 

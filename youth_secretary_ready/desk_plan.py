@@ -62,6 +62,9 @@ def estimate(policies):
             'used': used, 'loans': loans, 'unsure': unsure}
 
 
+FILE_READ = ('attachment_pdf', 'attachment_hwpx', 'image')   # 보완 기록의 read_from: 공고의 첨부파일·이미지에서 읽음
+
+
 def build(wid, external_ids, profile, on):
     from desk_service import evidence, preview
     ids = list(dict.fromkeys(external_ids))
@@ -76,10 +79,16 @@ def build(wid, external_ids, profile, on):
         result = screen(item, profile, status, age_rule(bundle['supplements']), bundle['supplements'], on) if compared else None
         docs = item['documents']
         text, source = (fields.get('sbmsnDcmntCn', '').strip() if docs['has_text'] else ''), 'api'
-        if not text:  # API가 비어 있으면 공식 페이지에서 확인해 둔 서류 안내를 쓴다(사람 검수 전).
-            found_docs = [x for x in bundle['supplements'] if x['field'] == 'documents' and confirmed(x)]   # 출처에서 문장이 확인된 것만
+        # 서류 칸이 비었거나 '붙임파일을 확인'처럼 서류 이름이 하나도 없으면, 공식 페이지에서 확인해 둔 서류 안내를 쓴다(사람 검수 전).
+        if not text or not docs['known']:
+            # 출처 페이지에서 문장이 자동 확인된 것을 먼저 쓰고, 없으면 공고의 첨부파일·이미지에서 읽은 것을 쓴다.
+            # 첨부파일·이미지에서 읽은 문장은 자동 대조를 할 수 없어 어디서 읽었는지를 화면에 함께 적는다(판정에는 쓰지 않는다).
+            listed = [x for x in bundle['supplements'] if x['field'] == 'documents']
+            usable = [x for x in listed if confirmed(x)] + [x for x in listed if not confirmed(x) and x.get('read_from') in FILE_READ]
+            # 서류 이름이 가장 많이 읽히는 기록을 쓴다(페이지 글에는 한두 줄뿐이고 첨부 공고문에 전체 목록이 있는 정책이 있다). 같으면 자동 확인된 것 먼저.
+            found_docs = sorted(usable, key=lambda x: -sum(doc_hit('\n'.join(x['quotes']), needles) for _, _, needles, _ in DOCS))[:1]
             if found_docs:
-                text, source = ' '.join(found_docs[0]['quotes']), 'web_check'
+                text, source = '\n'.join(found_docs[0]['quotes']), ('web_check' if confirmed(found_docs[0]) else found_docs[0]['read_from'])
         if not text:
             unlisted.append(eid)
         for key, name, needles, how in DOCS:

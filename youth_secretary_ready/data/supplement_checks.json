@@ -2,19 +2,20 @@
  "checked_on": "2026-11-20",
  "method": "출처 주소를 열어 글자만 남긴 뒤, 인용 문장이 띄어쓰기를 무시하고 그대로 있는지 확인(자동). 사람 검수 아님.",
  "pages": {
-  "opened": 88,
+  "opened": 89,
   "unreachable": 1
  },
  "entries": {
   "found": 178,
   "unreachable": 1,
   "not_found": 20,
-  "partly": 4
+  "partly": 4,
+  "file": 4
  },
  "quotes": {
   "found": 451,
   "unreachable": 4,
-  "not_found": 119
+  "not_found": 160
  },
  "items": [
   {
@@ -4038,6 +4039,202 @@
     {
      "sha1": "094359c224",
      "found": true
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212542",
+   "field": "documents",
+   "source_url": "https://www.uipa.or.kr/webuser/business/view.html?bd_id=23722&page=1",
+   "state": "file",
+   "quotes": [
+    {
+     "sha1": "2c930c2e51",
+     "found": false
+    },
+    {
+     "sha1": "94eb3fb6f0",
+     "found": false
+    },
+    {
+     "sha1": "a904b88c69",
+     "found": false
+    },
+    {
+     "sha1": "6fef9625cb",
+     "found": false
+    },
+    {
+     "sha1": "8279587152",
+     "found": false
+    },
+    {
+     "sha1": "fa535b5660",
+     "found": false
+    },
+    {
+     "sha1": "9c4e1ec222",
+     "found": false
+    },
+    {
+     "sha1": "e9171be478",
+     "found": false
+    },
+    {
+     "sha1": "7ba70a1658",
+     "found": false
+    },
+    {
+     "sha1": "7616b42589",
+     "found": false
+    },
+    {
+     "sha1": "99ce235949",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20261104005400214719",
+   "field": "documents",
+   "source_url": "https://www.dgyouth.kr/board/notice.asp?pmode=VIEW&num=2625",
+   "state": "file",
+   "quotes": [
+    {
+     "sha1": "3a3e4043e2",
+     "found": false
+    },
+    {
+     "sha1": "aeddd37a4a",
+     "found": false
+    },
+    {
+     "sha1": "96a77fe1c8",
+     "found": false
+    },
+    {
+     "sha1": "53d65440d9",
+     "found": false
+    },
+    {
+     "sha1": "d4e9099c44",
+     "found": false
+    },
+    {
+     "sha1": "5428a6926c",
+     "found": false
+    },
+    {
+     "sha1": "b87e7aa395",
+     "found": false
+    },
+    {
+     "sha1": "e1b00df589",
+     "found": false
+    },
+    {
+     "sha1": "f49a2af308",
+     "found": false
+    },
+    {
+     "sha1": "85954121bd",
+     "found": false
+    },
+    {
+     "sha1": "7dc790e9b8",
+     "found": false
+    },
+    {
+     "sha1": "f0c60298f9",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212557",
+   "field": "documents",
+   "source_url": "https://www.gjcci.or.kr/user/sub305120/view?proj_no=20260727-110003&page=1",
+   "state": "file",
+   "quotes": [
+    {
+     "sha1": "1952440842",
+     "found": false
+    },
+    {
+     "sha1": "f19f46b58e",
+     "found": false
+    },
+    {
+     "sha1": "27f2dff49e",
+     "found": false
+    },
+    {
+     "sha1": "c9b9eb3581",
+     "found": false
+    },
+    {
+     "sha1": "574c6e1d9a",
+     "found": false
+    },
+    {
+     "sha1": "f49a2af308",
+     "found": false
+    },
+    {
+     "sha1": "bd07cd4942",
+     "found": false
+    },
+    {
+     "sha1": "8c4f6ecfa2",
+     "found": false
+    }
+   ]
+  },
+  {
+   "external_id": "20260407005400212558",
+   "field": "documents",
+   "source_url": "https://www.gjcci.or.kr/user/sub305120/view?proj_no=20260727-110002&page=1",
+   "state": "file",
+   "quotes": [
+    {
+     "sha1": "1a37b03f96",
+     "found": false
+    },
+    {
+     "sha1": "f19f46b58e",
+     "found": false
+    },
+    {
+     "sha1": "981e1743af",
+     "found": false
+    },
+    {
+     "sha1": "e61a6707f5",
+     "found": false
+    },
+    {
+     "sha1": "c9b9eb3581",
+     "found": false
+    },
+    {
+     "sha1": "574c6e1d9a",
+     "found": false
+    },
+    {
+     "sha1": "842c8b6e56",
+     "found": false
+    },
+    {
+     "sha1": "2f2241e727",
+     "found": false
+    },
+    {
+     "sha1": "f49a2af308",
+     "found": false
+    },
+    {
+     "sha1": "bd07cd4942",
+     "found": false
     }
    ]
   }
