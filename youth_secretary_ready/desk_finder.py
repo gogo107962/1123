@@ -8,7 +8,7 @@ import re
 import threading
 import httpx
 from fastapi import HTTPException
-from local_agent import config, model_status
+from local_agent import model_status, provider, structured
 from policy_codes import CODEBOOK
 from policy_structure import SIDO, SIGUNGU, SIGUNGU_COMPLETE
 from screening import BENEFITS, provided, screen_catalog, validate_profile
@@ -99,17 +99,7 @@ def fallback(message):
 
 
 def generate(message):
-    base, model = config()
-    with httpx.Client(timeout=120, trust_env=False) as client:
-        response = client.post(base + '/api/chat', json={
-            'model': model, 'stream': False, 'think': False, 'format': SCHEMA,
-            'messages': [{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': message}],
-            'options': {'temperature': 0, 'num_ctx': 4096, 'num_predict': 200}})
-        response.raise_for_status()
-        body = response.json()
-    if body.get('done_reason') == 'length':
-        raise ValueError('truncated')
-    return check(json.loads(body['message']['content']))
+    return check(structured([{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': message}], SCHEMA, 4096, 200))
 
 
 def check(result):
@@ -195,7 +185,10 @@ def find(message, profile, on, skip=()):
                   f"나머지 {t['link_only']:,}건은 마감됐거나 정보가 부족해 원문 링크만 드려요.")
     else:
         answer = f"{topic} 정책 {result['total']:,}건을 찾았어요. 내 정보가 없어 조건은 비교하지 않았어요. 내 정보를 입력하면 맞는 정책부터 보여드려요."
-    return {'answer': FALLBACK_NOTE.get(ai, '') + answer, 'ai': ai, 'answer_origin': 'validated_template', 'keywords': words, 'compared': compared,
+    note = FALLBACK_NOTE.get(ai, '')
+    if provider() != 'ollama':   # 로컬 모델이 아닌 서버에서 '로컬 AI'라고 말하지 않는다
+        note = note.replace('로컬 AI', 'AI')
+    return {'answer': note + answer, 'ai': ai, 'answer_origin': 'validated_template', 'keywords': words, 'compared': compared,
             'profile_suggestion': suggestion, 'question': question, 'total': result['total'], 'outcomes': o, 'tiers': t,
             'items': result['items'] if compared else [{**x, 'tier': None, 'screen': None} for x in result['items']],
             'tools': [{'tool': 'search_policies' if ai == 'used' else 'keyword_match', 'status': 'ok'}, {'tool': 'screen_profile', 'status': 'ok' if compared else 'skipped'}],

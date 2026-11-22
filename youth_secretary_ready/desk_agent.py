@@ -5,7 +5,7 @@ import uuid
 import httpx
 from fastapi import HTTPException
 from db import connect
-from local_agent import config,model_status
+from local_agent import model_status,provider,structured
 
 GUIDANCE={
     'application':'최신 모집 회차의 시작일·마감 시각과 조기 종료 여부를 공식 공고에서 확인하세요. API의 기간만으로 신청 가능 여부를 정하지 않습니다.',
@@ -17,17 +17,11 @@ GUIDANCE={
 
 
 def generate(messages):
-    base,model=config()
     schema={'type':'object','properties':{
         'calls':{'type':'array','maxItems':2,'items':{'type':'string','enum':['read_policy','preview_tasks']}},
         'focus':{'type':'array','minItems':0,'maxItems':5,'uniqueItems':True,
                  'items':{'type':'string','enum':list(GUIDANCE)}}},'required':['calls','focus'],'additionalProperties':False}
-    with httpx.Client(timeout=120,trust_env=False) as client:
-        response=client.post(base+'/api/chat',json={'model':model,'messages':messages,'stream':False,'think':False,
-            'format':schema,'options':{'temperature':0,'num_ctx':8192,'num_predict':400}})
-        response.raise_for_status();body=response.json()
-    if body.get('done_reason')=='length':raise ValueError('truncated')
-    result=json.loads(body['message']['content'])
+    result=structured(messages,schema,8192,400)
     if not isinstance(result,dict) or set(result)!={'calls','focus'}:raise ValueError('schema')
     if not isinstance(result['calls'],list) or len(result['calls'])>2 or any(x not in ('read_policy','preview_tasks') for x in result['calls']):raise ValueError('tools')
     if not isinstance(result['focus'],list) or len(result['focus'])>5 or any(not isinstance(x,str) or x not in GUIDANCE for x in result['focus']):raise ValueError('focus')
@@ -59,7 +53,7 @@ def run(wid,external_id,message):
         '화면의 안내 문장은 선택한 항목에 따라 서비스가 검증된 문구로 구성한다.'},
         {'role':'user','content':json.dumps({'policy_id':external_id,'question':message},ensure_ascii=False)}]
     try:
-        if not model_status()['ready']:raise HTTPException(503,'로컬 AI가 꺼져 있습니다. 정책 검색과 준비 작업 저장은 계속 사용할 수 있습니다.')
+        if not model_status()['ready']:raise HTTPException(503,('로컬 AI' if provider()=='ollama' else 'AI')+'가 꺼져 있습니다. 정책 검색과 준비 작업 저장은 계속 사용할 수 있습니다.')
         for _ in range(4):
             result=generate(messages)
             messages.append({'role':'assistant','content':json.dumps(result,ensure_ascii=False)})

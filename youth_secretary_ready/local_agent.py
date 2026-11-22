@@ -1,7 +1,12 @@
-"""Free local Ollama tool loop. No paid provider fallback; no model-generated SQL."""
+"""Free local Ollama tool loop. No paid provider fallback; no model-generated SQL.
+
+기본은 로컬 Ollama다. 환경 변수 AI_PROVIDER=gemini 를 직접 켠 서버에서만 Gemini(무료 구간이 있는 모델)를 쓴다.
+Ollama가 꺼졌다고 Gemini로 자동으로 넘어가지 않는다. 로컬 모델을 둘 수 없는 공개 배포 서버를 위한 선택지다.
+"""
 import copy
 import json
 import os
+import re
 import time
 import uuid
 from urllib.parse import urlparse
@@ -23,7 +28,50 @@ def config():
     return url,model
 
 
+GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/'
+
+
+def provider():
+    return 'gemini' if os.getenv('AI_PROVIDER','').strip().lower()=='gemini' else 'ollama'
+
+
+def gemini_config():
+    key,model=os.getenv('GEMINI_API_KEY','').strip(),os.getenv('GEMINI_MODEL','gemini-3.5-flash-lite').strip()
+    if not key or not re.fullmatch(r'[\w.\-]{1,60}',model):raise ValueError('Gemini key or model is not set')
+    return key,model
+
+
+def structured(messages,schema,num_ctx,num_predict):
+    """모델에게 schema 모양의 JSON 하나를 받는다. 모델 출력은 믿지 않으므로 형식 검증은 부르는 쪽이 한다."""
+    if provider()=='gemini':
+        key,model=gemini_config()
+        system='\n'.join(m['content'] for m in messages if m['role']=='system')
+        body={'contents':[{'role':'model' if m['role']=='assistant' else 'user','parts':[{'text':m['content']}]} for m in messages if m['role']!='system'],
+              'generationConfig':{'temperature':0,'maxOutputTokens':num_predict*2,'responseMimeType':'application/json','responseJsonSchema':schema}}
+        if system:body['systemInstruction']={'parts':[{'text':system}]}
+        # 키는 주소가 아니라 헤더로 보낸다(오류 글이나 기록에 남지 않게).
+        with httpx.Client(timeout=30,trust_env=False) as client:
+            for attempt in (0,1):   # 무료 구간은 가끔 503(혼잡)을 준다. 한 번만 다시 묻는다(2026-11-22 평가에서 45번 중 4번)
+                response=client.post(GEMINI_URL+model+':generateContent',headers={'x-goog-api-key':key},json=body)
+                if response.status_code<500 or attempt:break
+                time.sleep(1.5)
+            response.raise_for_status();data=response.json()
+        candidate=data['candidates'][0]
+        if candidate.get('finishReason')=='MAX_TOKENS':raise ValueError('truncated')
+        return json.loads(candidate['content']['parts'][0]['text'])
+    base,model=config()
+    with httpx.Client(timeout=120,trust_env=False) as client:
+        response=client.post(base+'/api/chat',json={'model':model,'messages':messages,'stream':False,'think':False,
+            'format':schema,'options':{'temperature':0,'num_ctx':num_ctx,'num_predict':num_predict}})
+        response.raise_for_status();body=response.json()
+    if body.get('done_reason')=='length':raise ValueError('truncated')
+    return json.loads(body['message']['content'])
+
+
 def model_status():
+    if provider()=='gemini':
+        try:return {'provider':'gemini','model':gemini_config()[1],'ready':True,'reason':'ready'}
+        except ValueError:return {'provider':'gemini','ready':False,'reason':'missing_key'}
     try:
         base,model=config()
         with httpx.Client(timeout=1.5,trust_env=False) as client:
