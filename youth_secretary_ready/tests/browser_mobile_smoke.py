@@ -66,7 +66,8 @@ with sync_playwright() as p:
     page.locator('input[data-a=sel]').nth(1).check()
     expect(page.locator('.act')).to_contain_text('2개 선택')
     page.locator('[data-a=plan]').click()
-    expect(page.locator('main')).to_contain_text('신청 순서')
+    expect(page.locator('main')).to_contain_text('고른 정책')
+    assert '신청 순서' not in page.locator('main').inner_text()
     # 안내 글에 서로 막는 문구가 있으면 그 문장을, 없으면 확인 필요 안내를 보여 준다.
     expect(page.locator('.warnbox')).to_contain_text('함께 받')
     assert page.evaluate(FITS)
@@ -89,15 +90,16 @@ with sync_playwright() as p:
     assert page.evaluate("fetch('/api/desk/workspaces/'+localStorage.getItem('youth-desk-workspace')).then(r=>r.json()).then(d=>d.tasks.length)") == 0
     page.locator('[data-a=approve]').click()
     expect(page.locator('header h1')).to_have_text('내 신청')
-    tasks = page.locator('input[data-a=task]')
-    expect(tasks.first).to_be_visible()
-    saved = tasks.count()
+    # 저장한 준비 작업 체크리스트는 이 화면에 보여 주지 않는다(저장은 DB에 된다)
+    expect(page.locator('main')).to_contain_text('고른 정책')
+    assert page.locator('input[data-a=task]').count() == 0 and '저장한 준비 작업' not in page.locator('main').inner_text()
+    saved = page.evaluate("fetch('/api/desk/workspaces/'+localStorage.getItem('youth-desk-workspace')).then(r=>r.json()).then(d=>d.tasks.length)")
     assert saved >= 6, saved
-    tasks.first.check()
-    expect(page.locator('main')).to_contain_text(f'{saved}개 중 1개 완료')
 
-    # 새로고침 뒤 복원
+    # 새로고침 뒤: 첫 화면에서 '기존 정보로 계속 이용'을 누르면 복원
     page.reload(wait_until='networkidle')
+    expect(page.locator('[data-a=start]')).to_have_text('새 정보 입력')
+    page.locator('[data-a=continue]').click()
     expect(page.locator('.greeting')).to_contain_text('민지 님')
     # 홈 '이어서 준비하기': 저장한 정책에 서류가 있으면 '서류 준비 n / m', 없으면 '확인한 일 n / m'
     expect(page.locator('.prep-count')).to_be_visible()
@@ -106,9 +108,8 @@ with sync_playwright() as p:
     expect(page.locator('.policy-line .pill')).to_be_visible()
     assert len(page.locator('.policy-line .pill').inner_text().strip()) >= 2
     page.locator('nav [data-s=plan]').click()
-    expect(page.locator('main')).to_contain_text(f'{saved}개 중 1개 완료')
-    # 내 신청 탭: 고른 정책이 없어도 저장한 정책의 필요한 서류·신청 순서를 보여 준다(고르는 중이 아니므로 '빼기'와 점검 버튼은 없다)
-    expect(page.locator('main')).to_contain_text('신청 순서')
+    # 내 신청 탭: 고른 정책이 없어도 저장한 정책의 필요한 서류와 정책 이름을 보여 준다(고르는 중이 아니므로 '빼기'와 점검 버튼은 없다)
+    expect(page.locator('main')).to_contain_text('고른 정책')
     expect(page.locator('.ord li')).to_have_count(2)
     assert page.locator('[data-a=unsel]').count() == 0 and page.locator('[data-a=check]').count() == 0
     assert page.evaluate(FITS)
@@ -131,11 +132,13 @@ with sync_playwright() as p:
     page.locator('[data-a=save]').click()
     expect(page.locator('#toast')).to_contain_text('저장했어요')
     page.reload(wait_until='networkidle')
+    page.locator('[data-a=continue]').click()
     page.locator('nav [data-s=profile]').click()
     expect(page.locator('select[data-k=income_band]')).to_have_value('100')
     assert page.evaluate("JSON.parse(localStorage.getItem('youth-desk-profile')).income_band") == 100
     page.locator('[data-a=logout]').click()
     expect(page.locator('h1.hero')).to_be_visible()
+    assert page.locator('[data-a=continue]').count() == 0                      # 정보를 지우면 '계속 이용'이 없다
 
     # 넓은 화면에서도 앱 폭을 유지한다.
     page.set_viewport_size({'width': 1280, 'height': 900})

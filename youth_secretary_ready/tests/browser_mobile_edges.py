@@ -55,7 +55,7 @@ with sync_playwright() as p:
     for i in range(5):
         page.locator('.browse-item').nth(i).click()
         page.locator('[data-a=prep]').click()
-        expect(page.locator('main')).to_contain_text('신청 순서')
+        expect(page.locator('main')).to_contain_text('고른 정책')
         page.locator('[data-a=back]').click()                      # 신청 계획 → 상세
         page.locator('[data-a=back]').click()                      # 상세 → 지원 찾기
         expect(page.locator('.browse-item').first).to_be_visible()
@@ -85,8 +85,9 @@ with sync_playwright() as p:
     expect(page.locator('.browse-item strong').first).to_have_text(first)
     expect(page.locator('.act')).to_contain_text('5개 선택')
     page.reload(wait_until='networkidle')
+    page.locator('[data-a=continue]').click()
     page.locator('nav [data-s=plan]').click()
-    expect(page.locator('main')).to_contain_text('신청 순서')
+    expect(page.locator('main')).to_contain_text('고른 정책')
     assert page.locator('.ord li').count() == 5 and page.evaluate(FITS)
     page.screenshot(path=str(BASE / '.local/mobile-edge-plan.png'))
     done.append('back_and_reload_keep_selection')
