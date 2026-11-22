@@ -4,8 +4,38 @@
     {
       "name": "youth-secretary",
       "runtimeExecutable": "youth_secretary_ready/.venv/Scripts/python.exe",
-      "runtimeArgs": ["-X", "utf8", "-m", "uvicorn", "app:app", "--app-dir", "youth_secretary_ready", "--host", "127.0.0.1", "--port", "8765"],
+      "runtimeArgs": [
+        "-X",
+        "utf8",
+        "-m",
+        "uvicorn",
+        "app:app",
+        "--app-dir",
+        "youth_secretary_ready",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8765"
+      ],
       "port": 8765
+    },
+    {
+      "name": "team-preview",
+      "runtimeExecutable": "youth_secretary_ready/.venv/Scripts/python.exe",
+      "runtimeArgs": [
+        "-X",
+        "utf8",
+        "-m",
+        "uvicorn",
+        "app:app",
+        "--app-dir",
+        ".preview/team/youth_secretary_ready",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8766"
+      ],
+      "port": 8766
     }
   ]
 }
