@@ -54,7 +54,7 @@ const planIds=()=>S.only&&S.selected[S.only]?[S.only]:selIds().length?selIds():S
 const money=x=>x.amounts?.length?'글에 적힌 금액: '+x.amounts.map(a=>a.text).join(', '):'';
 // 공식 사이트 링크: 공고(대조 출처 · 참고 안내), 신청 페이지, 온통청년의 정책 페이지. 온통청년 주소는 정책번호로 만들어 모든 정책에 있다.
 const PORTAL=id=>'https://www.youthcenter.go.kr/youthPolicy/ythPlcyTotalSearch/ythPlcyDetail/'+encodeURIComponent(id);
-const official=(links,id)=>{const apply=links.find(x=>x.title==='신청 안내 사이트'),notice=links.find(x=>x!==apply);return {apply,notice,all:[notice&&['공식 공고',notice.url],apply&&['신청 페이지',apply.url],['온통청년 정책 페이지',PORTAL(id)]].filter(Boolean)}};
+const official=(links,id)=>{const apply=links.find(x=>x.title==='신청 안내 사이트'),notice=links.find(x=>x!==apply&&x.named!==false),site=links.find(x=>x!==apply&&x.named===false);return {apply,notice,all:[notice&&['공식 공고',notice.url],apply&&['신청 페이지',apply.url],['온통청년 정책 페이지',PORTAL(id)],!notice&&site&&['기관 누리집',site.url]].filter(Boolean)}};
 const sites=(links,id)=>`<div class="pills">${official(links,id).all.map(([t,u])=>`<a class="btn line sm" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${t}</a>`).join('')}</div>`;
 // 예상 지원 금액: 제공 방법이 보조금 · 바우처인 정책의 글에 적힌 금액만 더한 값(서버 계산). 대출 · 보증은 한도라 따로 적는다.
 const area=p=>[S.names.sido[p?.sido||p?.region_code?.slice(0,2)],S.names.sigungu[p?.region_code]].filter(Boolean).join(' ');
@@ -209,7 +209,7 @@ ${(s=>s.no_limit||s.count?field('지원 규모 ',s.no_limit?'제한없음':`${s.
 ${d.bundle.structured.selection.text?field('심사 · 발표 ',d.bundle.structured.selection.text,''):''}
 </details>
 <p class="tiny mt">최종 선정은 심사와 예산에 따라 달라질 수 있어요. 온통청년에서 가져온 정보이며 공고와 다를 수 있어요.</p></main>
-<div class="act"><a class="btn line" href="${esc(site.notice?.url||PORTAL(d.id))}" target="_blank" rel="noopener noreferrer">공식 공고</a><button class="btn f1" data-a="prep">이 정책 준비하기</button></div>`;},
+<div class="act"><a class="btn line" href="${esc(site.notice?.url||PORTAL(d.id))}" target="_blank" rel="noopener noreferrer">${site.notice?'공식 공고':'온통청년 공고'}</a><button class="btn f1" data-a="prep">이 정책 준비하기</button></div>`;},
 
 plan:()=>{const picked=selIds(),ids=planIds(),P=S.plan,saved=S.space?.tasks||[],tab=S.planTab;
  const head=bar(tab?'내 신청':'신청 계획',tab?null:'b'),foot=tab?dock('plan'):'';
@@ -248,7 +248,7 @@ check:()=>{const P=S.plan;if(!P)return wait('신청 전 점검');
 ${left.length?`<button class="btn line w" style="margin:10px 0 6px" data-a="back">서류 체크하러 돌아가기</button>`:''}</div>
 <details class="more" data-d="moreCheck" ${S.moreCheck?'open':''}><summary>승인하면 저장되는 확인 목록 보기</summary><div class="card"><h3>공고에서 확인할 일</h3><p class="tiny">승인하면 아래 일이 내 신청에 저장돼요.</p>${ps.map(x=>`<p class="b s14" style="margin:10px 0 2px">${esc(x.name)}</p><ul class="pre" style="padding-left:18px;margin:0">${x.tasks.map(t=>`<li>${esc(t.title)}</li>`).join('')}</ul>`).join('')}</div></details>
 <p class="tiny mt">등록 정보를 정리한 안내예요. 제출 전에 공식 공고를 한 번 더 확인하세요.</p></main>
-<div class="act">${(s=>`<a class="btn line" href="${esc((s.apply||s.notice)?.url||PORTAL(ps[0].external_id))}" target="_blank" rel="noopener noreferrer">${s.apply?'공식 신청 페이지로 이동':'공식 공고로 이동'}</a>`)(official(ps[0].links,ps[0].external_id))}<button class="btn f1" data-a="approve">승인하고 저장</button></div>`;},
+<div class="act">${(s=>`<a class="btn line" href="${esc((s.apply||s.notice)?.url||PORTAL(ps[0].external_id))}" target="_blank" rel="noopener noreferrer">${s.apply?'공식 신청 페이지로 이동':s.notice?'공식 공고로 이동':'온통청년 공고로 이동'}</a>`)(official(ps[0].links,ps[0].external_id))}<button class="btn f1" data-a="approve">승인하고 저장</button></div>`;},
 
 profile:()=>{const d=S.draft||(S.draft={name:'',sido:'',job_code:'',school_code:'',...(S.profile||{})});
  if(d.job_pick===undefined)d.job_pick=d.job_code||((d.groups||[]).includes('대학(원)생')?'student':'');

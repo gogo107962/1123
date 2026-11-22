@@ -1,0 +1,3173 @@
+{
+ "checked_on": "2026-11-22",
+ "method": "공고 주소를 한 번씩 열어 본문에 그 정책의 이름이 나오는지 확인(자동). 누리집 첫 화면은 공고로 보지 않는다. 사람 검수 아님.",
+ "summary": {
+  "policies": 3995,
+  "policies_with_notice_url": 2956,
+  "policies_with_named_notice": 1040,
+  "policies_sent_to_portal": 2955,
+  "urls": {
+   "first_screen": 610,
+   "not_named": 836,
+   "unreadable": 108,
+   "dead": 82,
+   "named": 986,
+   "moved_to_first_screen": 6,
+   "other": 3
+  }
+ },
+ "named": {
+  "20240109005400100003": [
+   "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020201.jsp"
+  ],
+  "20240109005400100004": [
+   "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020401.jsp"
+  ],
+  "20240109005400100005": [
+   "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020701.jsp"
+  ],
+  "20240507005400200010": [
+   "https://www.daejeonyouthportal.kr/board/BBSMSTR_000000000239/articleView.do?searchSeq=7761&commonMenuNo=8_30_31",
+   "https://www.daejeonyouthportal.kr/content/CT_000000000059/cntPage.do?commonMenuNo=304_305_323_329&dpmSectionScd=9&dpmSectionFst=2"
+  ],
+  "20240722005400200027": [
+   "https://blog.naver.com/ulsanyouth_dong9",
+   "https://www.instagram.com/ulsanyouth_dong9/"
+  ],
+  "20250109005400110122": [
+   "https://www.keiti.re.kr/site/keiti/ex/board/View.do?cbIdx=277&bcIdx=39658"
+  ],
+  "20250110005400110147": [
+   "https://www.kf.or.kr/kf/cm/cntnts/cntntsView.do?mi=1672&cntntsId=1387"
+  ],
+  "20250114005400110236": [
+   "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_12_01_01&ttab1=0"
+  ],
+  "20250117005400210326": [
+   "https://www.tongyeong.go.kr/00973/05468/05469.web"
+  ],
+  "20250121005400110344": [
+   "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&act=view&list_no=1484194"
+  ],
+  "20250122005400110346": [
+   "https://www.work.go.kr/youngChallenge/retrieveCdjOperOrgPopup.do"
+  ],
+  "20250122005400110348": [
+   "https://www.work24.go.kr/wk/v/a/1000/youngGrowIntro.do",
+   "https://youth-up.kr/growth"
+  ],
+  "20250122005400110355": [
+   "https://www.worldjob.or.kr/info/bbs/notice/view.do?menuId=1000006397&bbscttNo=192459&pageIndex=1&showItemListCount=10&orderByKey=&orderByType=&srchType=&srchTxt=%EC%A0%95%EC%B0%A9%EC%A7%80%EC%9B%90%EA%B8%88&srchType2=&srchType3=&srchType4=&srchType5="
+  ],
+  "20250123005400110377": [
+   "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/149200000037?administOrgCd=ALL",
+   "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?currentPageNo=1&recordCountPerPage=10&upprSystClId=SC00000057&systClId=SC00000058&systId=SI00000366"
+  ],
+  "20250123005400110388": [
+   "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/999000000007?administOrgCd=ALL"
+  ],
+  "20250123005400110389": [
+   "https://www.kead.or.kr/sprcmtsvdsblt/cntntsPage.do?menuId=MENU0643"
+  ],
+  "20250123005400110393": [
+   "https://www.moel.go.kr/policyitrd/policyItrdView.do?policy_itrd_sn=81",
+   "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?currentPageNo=1&recordCountPerPage=10&upprSystClId=SC00000015&systClId=SC00000004&systId=SI00000351"
+  ],
+  "20250207005400110410": [
+   "https://www.moel.go.kr/policyitrd/policyItrdView.do?policy_itrd_sn=11"
+  ],
+  "20250211005400110413": [
+   "https://www.moel.go.kr/policyitrd/policyItrdView.do?policy_itrd_sn=86",
+   "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?currentPageNo=1&recordCountPerPage=10&upprSystClId=SC00000031&systClId=SC00000047&systId=SI00000356"
+  ],
+  "20250211005400110414": [
+   "https://work24.go.kr/wk/b/a/1110/retriveIntro.do"
+  ],
+  "20250211005400110418": [
+   "https://www.worldjob.or.kr/new_index.do"
+  ],
+  "20250212005400110420": [
+   "https://www.moel.go.kr/policyitrd/policyItrdView.do?policy_itrd_sn=84",
+   "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?currentPageNo=1&recordCountPerPage=10&upprSystClId=SC00000031&systClId=SC00000050&systId=SI00000361"
+  ],
+  "20250212005400110421": [
+   "https://work24.go.kr/wk/b/a/1110/retriveIntro.do"
+  ],
+  "20250212005400110422": [
+   "https://work24.go.kr/wk/b/a/1110/retriveIntro.do"
+  ],
+  "20250212005400110425": [
+   "https://www.moel.go.kr/policyitrd/policyItrdView.do?policy_itrd_sn=85"
+  ],
+  "20250212005400110426": [
+   "https://www.moel.go.kr/policyitrd/policyItrdView.do?policy_itrd_sn=82",
+   "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?currentPageNo=1&recordCountPerPage=10&systClId=SC00000048&systId=SI00000360"
+  ],
+  "20250212005400110427": [
+   "https://work24.go.kr/wk/b/a/1110/retriveIntro.do"
+  ],
+  "20250212005400110433": [
+   "https://www.worldjob.or.kr/new_index.do"
+  ],
+  "20250212005400110434": [
+   "https://www.moel.go.kr/news/notice/noticeView.do?bbs_seq=20241201913"
+  ],
+  "20250212005400110436": [
+   "https://work24.go.kr/wk/b/a/1110/retriveIntro.do"
+  ],
+  "20250212005400110437": [
+   "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?currentPageNo=1&recordCountPerPage=10&systId=SI00000337&systClId=SC00000194"
+  ],
+  "20250218005400210444": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5055"
+  ],
+  "20250220005400210476": [
+   "https://www.chungbuk.go.kr/young/selectBbsNttView.do?key=1283&bbsNo=174&nttNo=307582&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=1"
+  ],
+  "20250226005400110565": [
+   "https://nhuf.molit.go.kr/FP/FP07/FP0701/FP07010301.jsp",
+   "https://www.korea.kr/news/policyNewsView.do?newsId=148926066"
+  ],
+  "20250228005400110573": [
+   "https://youthculturepass.or.kr/kr/bbs/view.do?bbsId=B0000011&menuSn=204977&pstSn=148"
+  ],
+  "20250305005400110593": [
+   "https://youth.seoul.go.kr/youthConts.do?key=2310100061&sc_pbancSeCd=012&sc_bbsStngSn=2212200001&sc_bbsCtgrySn=2310200011&sc_qnaCtgryCd=004&sc_faqCtgryCd=005"
+  ],
+  "20250307005400210600": [
+   "https://www.bucheon.go.kr/site/program/board/basicboard/view?menuid=148006003020005001&pagesize=10&boardtypeid=27510&encid=E+JLK0i/h+0k55oocZTi5A=="
+  ],
+  "20250313005400210610": [
+   "https://www.bsnamgu.go.kr/index.namgu?menuCd=DOM_000000125006020000"
+  ],
+  "20250315005400210616": [
+   "https://news.seoul.go.kr/economy/newdeal"
+  ],
+  "20250317005400210642": [
+   "https://www.sfac.or.kr/site/SFAC_KOR/12/11202070300002024093004.jsp"
+  ],
+  "20250321005400110645": [
+   "https://www.kcg.go.kr/kcg/na/ntt/selectNttInfo.do?nttSn=59846&mi=2797"
+  ],
+  "20250404005400210690": [
+   "https://news.seoul.go.kr/gov/archives/566450"
+  ],
+  "20250404005400210691": [
+   "https://www.uiwang.go.kr/heal/UWHEAL0405"
+  ],
+  "20250416005400210710": [
+   "https://www.dalseo.daegu.kr/index.do?menu_id=00004358"
+  ],
+  "20250501005400210746": [
+   "https://www.instagram.com/p/DTUSpxiEWwP/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
+  ],
+  "20250501005400210757": [
+   "https://www.wonju.go.kr/www/selectBbsNttView.do?key=216&bbsNo=140&nttNo=459043&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=1&integrDeptCode="
+  ],
+  "20250507005400210785": [
+   "https://www.ubpi.or.kr/sub/?mcode=0403010000&no=3195&kd=title&kw=%EA%B5%AC%EC%A7%81%EC%A7%80%EC%9B%90"
+  ],
+  "20250507005400210787": [
+   "https://www.ubpi.or.kr/sub/?mcode=0401070000"
+  ],
+  "20250509005400210803": [
+   "https://www.ubpi.or.kr/sub/?mcode=0401080000&no=258",
+   "https://www.ubpi.or.kr/sub/?mcode=0403010000&no=3243"
+  ],
+  "20250514005400110811": [
+   "https://nhuf.molit.go.kr/FP/FP05/FP0503/FP05030901.jsp"
+  ],
+  "20250514005400110813": [
+   "https://www.mpva.go.kr/mpva/selectBbsNttView.do?key=76&bbsNo=15&nttNo=264662"
+  ],
+  "20250515005400210819": [
+   "https://tour.gyeongnam.go.kr/index.gyeong?menuCd=DOM_000009413001001000"
+  ],
+  "20250515005400210822": [
+   "https://news.seoul.go.kr/gov/archives/567007?listPage=1"
+  ],
+  "20250515005400210823": [
+   "https://young.busan.go.kr/index.nm?menuCd=33"
+  ],
+  "20250515005400210826": [
+   "https://youth.gg.go.kr/gg/info/housing-welfare.do?mode=viewTest&arcNo=7805&pager.offset=0&pagerLimit=8"
+  ],
+  "20250516005400210831": [
+   "https://www.jeonnam.go.kr/J0203/boardView.do?seq=22560&infoReturn=&menuId=jeonnam0203000000&displayHeader=&searchType=0&searchText=%EB%B3%B5%EC%A7%80%EC%B9%B4%EB%93%9C&searchStDate=&searchEnDate=&pageIndex=1&boardId=J0203&displayHeader="
+  ],
+  "20250517005400210836": [
+   "https://young.busan.go.kr/index.nm?menuCd=263"
+  ],
+  "20250517005400210837": [
+   "https://young.busan.go.kr/index.nm?menuCd=264"
+  ],
+  "20250517005400210844": [
+   "https://young.busan.go.kr/index.nm?menuCd=236"
+  ],
+  "20250517005400210848": [
+   "https://young.busan.go.kr/index.nm?menuCd=35"
+  ],
+  "20250521005400110863": [
+   "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_12_01_01&ttab1=3"
+  ],
+  "20250524005400210878": [
+   "https://www.youtube.com/@us_stageon"
+  ],
+  "20250612005400110910": [
+   "https://www.kcce.or.kr/web/majorBusiness/webInternationExchange.do"
+  ],
+  "20250612005400110914": [
+   "https://www.kosaf.go.kr/ko/main.do?currentMain=1"
+  ],
+  "20250612005400110918": [
+   "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_19_01"
+  ],
+  "20250618005400111051": [
+   "https://www.nrf.re.kr/biz/info/notice/view?menu_no=378&page=&nts_no=234580&biz_no=645&target=&biz_not_gubn=notice&search_type=NTS_TITLE&search_keyword1="
+  ],
+  "20250619005400111065": [
+   "https://www.kcce.or.kr/web/majorBusiness/webInternationExchange.do"
+  ],
+  "20250619005400111067": [
+   "https://www.niied.go.kr/web/niied/contents/niied_iee_west"
+  ],
+  "20250619005400111069": [
+   "https://www.kosaf.go.kr/ko/mkinfo.do?pg=blueladder"
+  ],
+  "20250619005400111071": [
+   "https://www.kosaf.go.kr/ko/mkinfo.do?pg=kojauniv"
+  ],
+  "20250619005400111077": [
+   "https://www.asemduo.org/02_programs/programs_01.php"
+  ],
+  "20250623005400111118": [
+   "https://www.mohw.go.kr/menu.es?mid=a10706040400"
+  ],
+  "20250624005400111124": [
+   "https://krit.re.kr/krit/contents.do?gotoMenuNo=02021100"
+  ],
+  "20250625005400111136": [
+   "https://ofiis.kofpi.or.kr/overseasForest_intern.do"
+  ],
+  "20250704005400111154": [
+   "https://www.mois.go.kr/frt/sub/a06/b06/village/screen.do"
+  ],
+  "20250707005400211155": [
+   "https://www.ubpi.or.kr/sub/?mcode=0401070000&no=258"
+  ],
+  "20250711005400211187": [
+   "https://docs.google.com/forms/d/e/1FAIpQLSfl-zhY8gvKxKjvmQv9SULUQOXYH1DhrTe2rtV3c1BcOD__Og/viewform"
+  ],
+  "20250711005400211190": [
+   "https://www.gwangju.go.kr/traffic/contentsView.do?pageId=traffic61"
+  ],
+  "20250711005400211193": [
+   "https://youth.gwangju.go.kr/www/50?siteId=www&policyId=1031&url=%2Fwww%2Fpolicy%2FgjYgPolicyView"
+  ],
+  "20250714005400211204": [
+   "https://ubpi.or.kr/sub/?mcode=0403010000&no=3369"
+  ],
+  "20250715005400211253": [
+   "https://youthdream.daegu.go.kr/support/introduce/02"
+  ],
+  "20250715005400211267": [
+   "https://blog.naver.com/cn_youth"
+  ],
+  "20250715005400211282": [
+   "https://www.chungnam.go.kr/fisherylMain.do"
+  ],
+  "20250716005400211324": [
+   "https://youthforest.iksan.go.kr/board/view.iksan?boardId=BBS_0000015&menuCd=DOM_000000105002001000&paging=ok&startPage=1&searchType=DATA_TITLE&searchOperation=AND&keyword=%EB%A9%B4%EC%A0%91%EC%A0%95%EC%9E%A5&dataSid=35885"
+  ],
+  "20250717005400211362": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=307"
+  ],
+  "20250717005400211371": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=287"
+  ],
+  "20250718005400211384": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=291"
+  ],
+  "20250718005400211418": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=319"
+  ],
+  "20250718005400211422": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=361"
+  ],
+  "20250718005400211430": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=329"
+  ],
+  "20250718005400211433": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=333"
+  ],
+  "20250718005400211435": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=334"
+  ],
+  "20250718005400211444": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=365"
+  ],
+  "20250718005400211445": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=366"
+  ],
+  "20250718005400211446": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=368"
+  ],
+  "20250718005400211447": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=170"
+  ],
+  "20250718005400211448": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=339"
+  ],
+  "20250718005400211450": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=369"
+  ],
+  "20250718005400211451": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=342"
+  ],
+  "20250718005400211452": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=347"
+  ],
+  "20250718005400211453": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=349"
+  ],
+  "20250718005400211454": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=370"
+  ],
+  "20250718005400211455": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=371"
+  ],
+  "20250718005400211456": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=375"
+  ],
+  "20250718005400211457": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=351"
+  ],
+  "20250718005400211458": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=352"
+  ],
+  "20250718005400211459": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=353"
+  ],
+  "20250718005400211460": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=354"
+  ],
+  "20250718005400211461": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=355"
+  ],
+  "20250718005400211462": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=356"
+  ],
+  "20250718005400211464": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=357"
+  ],
+  "20250718005400211465": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=359"
+  ],
+  "20250729005400211506": [
+   "https://www.gg.go.kr/contents/contents.do?ciIdx=987328&menuId=1534176"
+  ],
+  "20250902005400211573": [
+   "https://www.gumi.go.kr/portal/board/post/view.do?bcIdx=1&mid=0401020000&idx=821984"
+  ],
+  "20250902005400211588": [
+   "https://www.usc.go.kr/youth/page.do?cmd=258&bod_uid=131109&srchEnable=1&srchSDate=&initDay=&srchKwd=&srchColumn=&listType=&initYear=&srchVote=-1&initMonth=&pageNo=&srchBgpUid=-1&srchEDate=&mnu_uid=2013&"
+  ],
+  "20250902005400211589": [
+   "https://www.usc.go.kr/ko/page.do?not_ancmt_mgt_no=36139&mnu_uid=157&board_code=04&cmd=2"
+  ],
+  "20250903005400211618": [
+   "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/161300000103"
+  ],
+  "20250904005400211626": [
+   "https://usc.go.kr/ko/page.do?mnu_uid=594&"
+  ],
+  "20250904005400211627": [
+   "https://usc.go.kr/ko/page.do?mnu_uid=593&"
+  ],
+  "20250904005400211640": [
+   "https://www.usc.go.kr/ko/page.do?not_ancmt_mgt_no=36927&mnu_uid=157&board_code=04&cmd=2"
+  ],
+  "20250904005400211656": [
+   "https://4242.or.kr/sub0506/view/id/2304#u"
+  ],
+  "20250908005400211661": [
+   "https://www.sejong.go.kr/job/sub03_03.do"
+  ],
+  "20250909005400111685": [
+   "https://www.gumi.go.kr/portal/board/post/view.do?bcIdx=1&mid=0401020000&idx=817504"
+  ],
+  "20250909005400111686": [
+   "https://www.gumi.go.kr/portal/board/post/view.do?bcIdx=1&mid=0401020000&idx=818735",
+   "https://www.gumi.go.kr/portal/board/post/view.do?bcIdx=1&mid=0401020000&idx=818901"
+  ],
+  "20250909005400211684": [
+   "https://www.gumi.go.kr/portal/saeol/gosi/view.do?notAncmtMgtNo=65854&mid=0401040000"
+  ],
+  "20250909005400211690": [
+   "https://hey.hscity.go.kr/base/board/read?boardManagementNo=8&boardNo=1106&searchCategory=&page=1&searchType=&searchWord=&menuLevel=2&menuNo=31"
+  ],
+  "20250910005400211691": [
+   "https://sjss.or.kr/menu.es?mid=a11109000000"
+  ],
+  "20250918005400211754": [
+   "https://youth.gyeongnam.go.kr/youth/menu.es?mid=a11003000000"
+  ],
+  "20250918005400211756": [
+   "https://youth.gyeongnam.go.kr/youth/board.es?mid=a11001000000&bid=0042&list_no=3671&act=view&cg_code=C01&categoryHidden=Y"
+  ],
+  "20250918005400211757": [
+   "https://youth.gyeongnam.go.kr/youth/board.es?mid=a11001000000&bid=0042&list_no=3644&act=view&cg_code=C01&categoryHidden=Y"
+  ],
+  "20250918005400211758": [
+   "https://youth.gyeongnam.go.kr/youth/board.es?mid=a11001000000&bid=0042&list_no=3645&act=view&cg_code=C01&categoryHidden=Y"
+  ],
+  "20250918005400211761": [
+   "https://youth.gyeongnam.go.kr/youth/board.es?mid=a11001000000&bid=0042&list_no=3648&act=view&cg_code=C01&categoryHidden=Y"
+  ],
+  "20250918005400211762": [
+   "https://youth.gyeongnam.go.kr/youth/board.es?mid=a11001000000&bid=0042&list_no=3649&act=view&cg_code=C01&categoryHidden=Y"
+  ],
+  "20250918005400211763": [
+   "https://youth.gyeongnam.go.kr/youth/board.es?mid=a11001000000&bid=0042&list_no=3650&act=view&cg_code=C01&categoryHidden=Y"
+  ],
+  "20250918005400211764": [
+   "https://youth.gyeongnam.go.kr/youth/youthPolicySearchViewNew.es?page_no=1&mid=a10101020000&policy_no=1816&count_list=9&policy_title=%EA%B2%BD%EB%82%A8+%EC%9E%90%EC%9B%90%EC%97%B0%EA%B3%84%ED%98%95+%EB%A1%9C%EC%BB%AC%EC%B0%BD%EC%97%85+%ED%99%9C%EC%84%B1%ED%99%94+%EC%A7%80%EC%9B%90&orderby=LATEST"
+  ],
+  "20250918005400211766": [
+   "https://youth.gyeongnam.go.kr/youth/board.es?mid=a10502000000&bid=0006&act=view&list_no=3211"
+  ],
+  "20250922005400211781": [
+   "https://www.changwon.go.kr/youth/05085/05105.web?amode=view&idx=36"
+  ],
+  "20250922005400211782": [
+   "https://www.changwon.go.kr/youth/05085/05105.web?cpage=1&applyTargetCode=&applyAgeCode=&area=&income=&sstring=%EB%A9%B4%EC%A0%91%EC%A0%95%EC%9E%A5&compareTitle=&compareTitle="
+  ],
+  "20250922005400211783": [
+   "https://www.changwon.go.kr/youth/05085/05105.web?sstring=%EC%9D%91%EC%8B%9C%EB%A3%8C"
+  ],
+  "20250924005400211793": [
+   "https://www.geoje.go.kr/index.geoje?menuCd=DOM_000008902001002001&m=D&idx=66850&startPage=1&searchType=NOT_ANCMT_SJ&keyword=%EC%8A%A4%ED%8E%99&DEP_NM=&NOT_ANCMT_SJ=%EC%8A%A4%ED%8E%99&NOT_ANCMT_CN="
+  ],
+  "20251001005400211795": [
+   "https://www.cng.go.kr/00596/00776/00779.web"
+  ],
+  "20251001005400211798": [
+   "https://young.jinju.go.kr/young/",
+   "https://young.jinju.go.kr/young/business/read/105"
+  ],
+  "20251023005400211803": [
+   "https://hamanstar.org/archive"
+  ],
+  "20251107005400211811": [
+   "https://www.haman.go.kr/01601/01603/01632.web"
+  ],
+  "20251110005400211821": [
+   "https://www.jeis.or.kr/suppbis/suppbisdtl.ac?currentPageNo=&annoId=44087ae2da45494cbf4cd6a87e560ac2&annoName=&state=&bus"
+  ],
+  "20251110005400211823": [
+   "https://www.jba.or.kr/bbs/board.php?bo_table=2_1_1_1&wr_id=595"
+  ],
+  "20251111005400211824": [
+   "https://www.jeju.go.kr/jejusupport/news/notice.htm?act=view&seq=1492772"
+  ],
+  "20251111005400211825": [
+   "https://www.jeju.go.kr/jejusupport/project/grant/info.htm"
+  ],
+  "20251111005400211826": [
+   "https://www.jeju.go.kr/jejusupport/info/info.htm"
+  ],
+  "20251111005400211829": [
+   "https://www.jeju.go.kr/news/news/data.htm?act=view&seq=1493399"
+  ],
+  "20251111005400211833": [
+   "https://www.jeju.go.kr/jejusupport/info/info.htm"
+  ],
+  "20251111005400211834": [
+   "https://www.jeju.go.kr/jejusupport/info/info.htm"
+  ],
+  "20251111005400211835": [
+   "https://www.cepa.or.kr/business/business.do?pm=4&ms=130"
+  ],
+  "20251111005400211837": [
+   "https://www.jeju.go.kr/jejusupport/info/info.htm"
+  ],
+  "20251111005400211839": [
+   "https://www.jeju.go.kr/jejusupport/info/info.htm"
+  ],
+  "20251111005400211844": [
+   "https://www.chungnam.go.kr/cnportal/main/contents.do?menuNo=500612"
+  ],
+  "20251111005400211850": [
+   "https://www.jeju.go.kr/jejusupport/info/info.htm?page=3"
+  ],
+  "20251111005400211851": [
+   "https://www.jeju.go.kr/jejusupport/info/info.htm?page=3"
+  ],
+  "20251111005400211852": [
+   "https://www.jeju.go.kr/jejusupport/info/info.htm?page=3"
+  ],
+  "20251112005400211860": [
+   "https://www.chungnam.go.kr/cnportal/main/contents.do?menuNo=500163",
+   "https://www.chungnam.go.kr/cnportal/search/cnportalSearch/list.do?pSiteId=cnportal&menuNo=5100165"
+  ],
+  "20251112005400211869": [
+   "https://www.cacf.or.kr/site/board/index.php?fn=view&table_nm=tbl_notice&no=2025071710171114443"
+  ],
+  "20251113005400211871": [
+   "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/135200005013"
+  ],
+  "20251113005400211873": [
+   "https://ccon.kr/bbs/content.php?co_id=str"
+  ],
+  "20251113005400211874": [
+   "https://www.instagram.com/2025.cn_youth_music_festa"
+  ],
+  "20251113005400211876": [
+   "https://ccon.kr/bbs/content.php?co_id=ctc"
+  ],
+  "20251114005400211892": [
+   "http://sehubcenter.com/bbs/board.php?bo_table=notice&wr_id=158",
+   "https://gcyouth.or.kr/bbs/board.php?bo_table=sm4_notice&wr_id=71&sca=%EC%B2%AD%EB%85%84%EC%84%B1%EC%9E%A5"
+  ],
+  "20251114005400211895": [
+   "https://www.uiryeong.go.kr/youthcenter/board/view.uiryeong?boardId=BBS_0000533&menuCd=DOM_000002001001004000&startPage=1&dataSid=1092694"
+  ],
+  "20251117005400211896": [
+   "https://www.hygn.go.kr/00429/00543/00547.web?gcode=1001&idx=934083&amode=view&cpage=1&sstring=ceo&stype=title&pageunit=10&mainviewYn=Y"
+  ],
+  "20251117005400211904": [
+   "https://www.yangsan.go.kr/youth/board/post/view.do?bcIdx=784&mid=0402000000&idx=1008756"
+  ],
+  "20251120005400211906": [
+   "https://www.yangsan.go.kr/youth/board/post/view.do?bcIdx=784&mid=0402000000&idx=1008531"
+  ],
+  "20251120005400211909": [
+   "https://www.cba.ne.kr/home/sub.php?menukey=172&mod=view&no=28343"
+  ],
+  "20251121005400211913": [
+   "https://www.yangsan.go.kr/portal/saeol/gosi/view.do?notAncmtMgtNo=72952&mid=0102010000&seCode=01"
+  ],
+  "20251121005400211921": [
+   "https://www.yangsan.go.kr/youth/board/post/view.do?bcIdx=784&mid=0402000000&idx=1015371"
+  ],
+  "20251121005400211928": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5051"
+  ],
+  "20251124005400211939": [
+   "https://www.jnicare.kr/bbs/board.php?bo_table=3_4"
+  ],
+  "20251124005400211940": [
+   "https://www.jnyouthcenter.kr/bbs/board.php?bo_table=bbs05_02&wr_id=1"
+  ],
+  "20251211005400211954": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20250415CT000000000002201"
+  ],
+  "20251211005400211956": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-02/view?bizId=A20250415CT000000000002202"
+  ],
+  "20251211005400211957": [
+   "https://youth.chungnam.go.kr/web/main/contents/M010-06?dep=1#none"
+  ],
+  "20251211005400211958": [
+   "https://www.chungnam.go.kr/cnportal/province/province/view.do?nttId=2158354&menuNo=500487"
+  ],
+  "20251211005400211962": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-03/view?bizId=A20250415CT000000000002212"
+  ],
+  "20251211005400211963": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20250415CT000000000002213"
+  ],
+  "20251211005400211964": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20250415CT000000000002214"
+  ],
+  "20251211005400211965": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-03/view?bizId=A20250415CT000000000002215"
+  ],
+  "20251211005400211966": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-03/view?bizId=A20250415CT000000000002216"
+  ],
+  "20251211005400211971": [
+   "https://www.chungnam.go.kr/cnportal/bbs/B0000238/view.do?nttId=2158699&menuNo=500604&pageUnit=10&pageIndex=1",
+   "https://www.chungnam.go.kr/cnportal/media/article/view.do?articleNo=MD0003244004&menuNo=500187&articleSectNo2=500187&pageIndex=1"
+  ],
+  "20251211005400211973": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-05/view?bizId=A20250422CT000000000002289"
+  ],
+  "20251211005400211974": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20250415CT000000000002220"
+  ],
+  "20251214005400211975": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-02/view?bizId=A20250415CT000000000002221"
+  ],
+  "20251214005400211976": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20250415CT000000000002222"
+  ],
+  "20251214005400211977": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20250415CT000000000002224"
+  ],
+  "20251214005400211980": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20250415CT000000000002226"
+  ],
+  "20251214005400211981": [
+   "https://youth.chungnam.go.kr/web/main/contents/M010-06?dep=1#none"
+  ],
+  "20251214005400211982": [
+   "https://youth.chungnam.go.kr/web/main/contents/M010-06?dep=1#none"
+  ],
+  "20251214005400211983": [
+   "https://youth.chungnam.go.kr/web/main/contents/M010-06?dep=1#none"
+  ],
+  "20251214005400211985": [
+   "https://youth.chungnam.go.kr/web/main/contents/M010-06?dep=1#none"
+  ],
+  "20251214005400211989": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20250416CT000000000002237"
+  ],
+  "20251214005400211991": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20250416CT000000000002240"
+  ],
+  "20251214005400211992": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20250416CT000000000002241"
+  ],
+  "20251214005400211993": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20250416CT000000000002242"
+  ],
+  "20251214005400211997": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-11/view?bizId=A20250416CT000000000002249"
+  ],
+  "20251214005400211998": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20250416CT000000000002250"
+  ],
+  "20251214005400211999": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-11/view?bizId=A20250416CT000000000002251"
+  ],
+  "20251214005400212000": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20250416CT000000000002252"
+  ],
+  "20251214005400212004": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20250416CT000000000002253"
+  ],
+  "20251214005400212008": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20250416CT000000000002254"
+  ],
+  "20251214005400212009": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20250416CT000000000002255"
+  ],
+  "20251217005400212015": [
+   "https://www.hc.go.kr/04923/04924/04948.web?amode=view&not_ancmt_mgt_no=40614&sstring=%EC%8B%A0%ED%98%BC%EB%B6%80%EB%B6%80&stype=title"
+  ],
+  "20251217005400212016": [
+   "https://www.hc.go.kr/04923/04924/04948.web?amode=view&not_ancmt_mgt_no=40618&sstring=%EC%B2%AD%EB%85%84&stype=title"
+  ],
+  "20251218005400212024": [
+   "https://young.jinju.go.kr/young/"
+  ],
+  "20251218005400212025": [
+   "https://baro.gyeongnam.go.kr/baro/"
+  ],
+  "20251218005400212026": [
+   "https://www.sancheong.go.kr/www/selectBbsNttView.do?key=158&bbsNo=118&nttNo=149777&searchCtgry=&searchCnd=SJ&searchKrwd=%EC%9B%94%EC%84%B8&pageIndex=1&integrDeptCode="
+  ],
+  "20251219005400212034": [
+   "https://www.jeonnam.go.kr/J0203/boardView.do?seq=23176&infoReturn=&menuId=jeonnam0203000000&displayHeader=&searchType=0&searchText=%EC%8B%A0%ED%98%BC%EB%B6%80%EB%B6%80&searchStDate=&searchEnDate=&pageIndex=1&boardId=J0203&displayHeader="
+  ],
+  "20251219005400212036": [
+   "https://www.kocca.kr/kocca/bbs/view/B0158919/1963246.do?categorys=1&menuNo=204805#"
+  ],
+  "20251222005400212040": [
+   "https://www.chungbuk.go.kr/www/selectGosiPblancView.do?key=422&no=67105&pageUnit=10&pageIndex=1&searchCnd=all"
+  ],
+  "20251222005400212041": [
+   "https://www.cbhope1539.net/bbs/view.do?key=2004215717214&bbsSn=572"
+  ],
+  "20251222005400212042": [
+   "https://www.cbhope1539.net/bbs/view.do?key=2004215717214&bbsSn=573"
+  ],
+  "20251230005400212056": [
+   "https://ares.chungbuk.go.kr/m/sub.php?menukey=1551&mod=view&no=11efd47a5636cb9ea6f1901b0e43d477"
+  ],
+  "20251231005400212071": [
+   "https://www.jinju.go.kr/00134/00616/06670.web"
+  ],
+  "20260107005400212072": [
+   "https://www.wonju.go.kr/www/selectBbsNttView.do?key=313&bbsNo=161&nttNo=474656&searchCtgry=&searchCnd=SJ&searchKrwd=%EC%B2%AD%EB%85%84%EB%8F%84%EC%A0%84&pageIndex=1&integrDeptCode="
+  ],
+  "20260107005400212076": [
+   "https://www.mohw.go.kr/menu.es?mid=a10706040800"
+  ],
+  "20260107005400212077": [
+   "https://www.daejeonyouthportal.kr/content/CT_000000000070/cntPage.do?commonMenuNo=79_92&dpmSectionScd=10&dpmSectionFst=2"
+  ],
+  "20260123005400112079": [
+   "https://www.kosaf.go.kr/ko/notice.do?mode=view&searchStr=&searchType=&page=1&ctgrId1=0000000009&ctgrId2=&seqNo=20404"
+  ],
+  "20260126005400212081": [
+   "https://www.ep.go.kr/www/selectEminwonView.do?pageUnit=10&pageIndex=1&searchCnd=notAncmtSj&searchKrwd=%EC%B2%AD%EB%85%84%20%EC%9D%BC%EC%9E%90%EB%A6%AC&key=748&notAncmtMgtNo=48183&notAncmtSeCode=02"
+  ],
+  "20260128005400212083": [
+   "https://www.daejeonyouthportal.kr/content/CT_000000000497/cntPage.do?commonMenuNo="
+  ],
+  "20260128005400212084": [
+   "https://www.daejeon.go.kr/drh/DrhContentsHtmlView.do?menuSeq=7652"
+  ],
+  "20260129005400212085": [
+   "https://www.wonju.go.kr/wjyouth/selectBbsNttView.do?key=5882&bbsNo=1190&nttNo=476168&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=1&integrDeptCode="
+  ],
+  "20260129005400212088": [
+   "https://www.wonju.go.kr/wjyouth/selectBbsNttView.do?key=5882&bbsNo=1190&nttNo=476869&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=1&integrDeptCode="
+  ],
+  "20260129005400212089": [
+   "https://www.wonju.go.kr/wjyouth/selectBbsNttView.do?key=5882&bbsNo=1190&nttNo=476868&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=1&integrDeptCode="
+  ],
+  "20260220005400212095": [
+   "https://www.ep.go.kr/www/selectEminwonView.do?pageUnit=10&pageIndex=1&searchCnd=all&key=748&notAncmtMgtNo=48708&notAncmtSeCode=02"
+  ],
+  "20260303005400212097": [
+   "https://www.wonju.go.kr/wjyouth/selectBbsNttView.do?key=5882&bbsNo=1190&nttNo=478472&searchCtgry=&searchCnd=SJ&searchKrwd=%EB%8F%99%EC%95%84%EB%A6%AC&pageIndex=1&integrDeptCode="
+  ],
+  "20260304005400212098": [
+   "https://www.wonju.go.kr/wjyouth/selectBbsNttView.do?key=5882&bbsNo=1190&nttNo=478867&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=1&integrDeptCode="
+  ],
+  "20260310005400112102": [
+   "https://www.mofa.go.kr/www/brd/m_4075/view.do?seq=369457&page=1&pitem=10"
+  ],
+  "20260313005400212118": [
+   "https://gbtp.or.kr/user/boardDetail.do?bbsId=BBSMSTR_000000000021&nttNo=10924"
+  ],
+  "20260313005400212130": [
+   "https://gbtp.or.kr/user/boardDetail.do?bbsId=BBSMSTR_000000000021&nttNo=10832"
+  ],
+  "20260313005400212147": [
+   "https://youth.yongin.go.kr/web/main/youthPolicy/view?bizId=A2026021000000000000055001"
+  ],
+  "20260313005400212156": [
+   "https://www.pyeongtaek.go.kr/depart/contents.do?mid=0105010000"
+  ],
+  "20260313005400212160": [
+   "https://www.pyeongtaek.go.kr/ptjhk/board/post/view.do?idx=345966&bcIdx=563&mid=0401000000"
+  ],
+  "20260317005400212174": [
+   "https://gwangyang.go.kr/youth/kr/board/list.do?bbsId=BBS_000000000000043&menuNo=104004000000"
+  ],
+  "20260317005400212179": [
+   "https://gwangyang.go.kr/saeol/gosi.es?mid=a11005020000&bid=0022&seq=59346&act=view"
+  ],
+  "20260317005400212181": [
+   "https://www.newsro.kr/article243/1142302/"
+  ],
+  "20260318005400212187": [
+   "https://gwangyang.go.kr/board.es?mid=a11001000000&bid=0001&list_no=197061&act=view"
+  ],
+  "20260318005400212188": [
+   "https://gwangyang.go.kr/menu.es?mid=a11204120302"
+  ],
+  "20260318005400212197": [
+   "https://withbook.gunpo.go.kr/www/selectEminwonView.do?pageUnit=1&pageIndex=4&searchCnd=all&key=3909&jndinm=&context=&method=&methodnm=&wkly_event_mgt_no=&subCheck=&ofr_pageSize=1&homepage_pbs_yn=&initValue=&wkly_se_code=&countYn=&event_sj=&Not_ancmt_se_code=&title=&cha_dep_code_nm=&countYnAC=&list_gubun=N&not_ancmt_sj=&not_ancmt_cn=&not_ancmt_mgt_no=43982"
+  ],
+  "20260318005400212199": [
+   "https://gwangyang.go.kr/fund/"
+  ],
+  "20260318005400212210": [
+   "https://gwangyang.familynet.or.kr/center/lay1/bbs/S295T311C312/A/6/view.do?article_seq=236396&cpage=1&rows=10&condition=&keyword="
+  ],
+  "20260319005400212212": [
+   "https://gwangyang.go.kr/menu.es?mid=a11209060401"
+  ],
+  "20260319005400212214": [
+   "https://gwangyang.go.kr/menu.es?mid=a11209060409"
+  ],
+  "20260319005400212215": [
+   "https://gwangyang.go.kr/menu.es?mid=a11209060427"
+  ],
+  "20260319005400212216": [
+   "https://gwangyang.go.kr/menu.es?mid=a11209060423"
+  ],
+  "20260319005400212220": [
+   "https://gwangyang.go.kr/menu.es?mid=a11209060426"
+  ],
+  "20260319005400212223": [
+   "https://gwangyang.go.kr/board.es?mid=a11007000000&bid=0057&act=view&list_no=197336"
+  ],
+  "20260319005400212225": [
+   "https://gwangyang.go.kr/board.es?mid=a11007000000&bid=0057&list_no=183646&act=view"
+  ],
+  "20260319005400212228": [
+   "https://gwangyang.go.kr/youth/kr/board/view.do?bbsId=BBS_000000000000041&nttId=4695&menuNo=104002000000"
+  ],
+  "20260319005400212233": [
+   "https://www.anseong.go.kr/findjob/bbs/list.do?ptIdx=285&mId=0301000000&token=1773897572685"
+  ],
+  "20260323005400112246": [
+   "https://www.mss.go.kr/site/smba/ex/bbs/View.do?cbIdx=310&bcIdx=1065207&parentSeq=1065207"
+  ],
+  "20260323005400212247": [
+   "https://youthforest.iksan.go.kr/board/view.iksan?boardId=BBS_0000015&menuCd=DOM_000000105002001000&paging=ok&startPage=1&searchType=DATA_TITLE&searchOperation=AND&keyword=%EC%9E%84%EB%8C%80%EB%A3%8C&dataSid=44396"
+  ],
+  "20260324005400212249": [
+   "https://www.iksan.go.kr/farm"
+  ],
+  "20260324005400212252": [
+   "https://youthforest.iksan.go.kr/index.iksan?menuCd=DOM_000000102001001000"
+  ],
+  "20260324005400212253": [
+   "https://youthforest.iksan.go.kr/board/view.iksan?boardId=BBS_0000015&menuCd=DOM_000000105002001000&paging=ok&startPage=1&dataSid=46120"
+  ],
+  "20260324005400212254": [
+   "https://youthforest.iksan.go.kr/index.iksan?menuCd=DOM_000000102004001000"
+  ],
+  "20260324005400212255": [
+   "https://youthforest.iksan.go.kr/board/view.iksan?boardId=BBS_0000015&menuCd=DOM_000000105002001000&paging=ok&startPage=1&searchType=DATA_TITLE&searchOperation=AND&keyword=%EB%89%B4%EB%94%9C&dataSid=44294"
+  ],
+  "20260324005400212257": [
+   "https://youthforest.iksan.go.kr/index.iksan?menuCd=DOM_000000102008001000"
+  ],
+  "20260325005400212259": [
+   "https://www.usc.go.kr/youth/page.do?cmd=258&bod_uid=141946&srchEnable=1&srchSDate=&srchKwd=&initDay=&srchColumn=&listType=&initYear=&srchVote=-1&initMonth=&pageNo=1&srchBgpUid=-1&srchEDate=&mnu_uid=2016&"
+  ],
+  "20260325005400212260": [
+   "https://youthforest.iksan.go.kr/index.iksan?menuCd=DOM_000000102007001000"
+  ],
+  "20260325005400212261": [
+   "https://www.usc.go.kr/youth/page.do?cmd=258&bod_uid=141948&srchEnable=1&srchSDate=&srchKwd=&initDay=&srchColumn=&listType=&initYear=&srchVote=-1&initMonth=&pageNo=1&srchBgpUid=-1&srchEDate=&mnu_uid=2016&"
+  ],
+  "20260325005400212262": [
+   "https://www.usc.go.kr/youth/page.do?cmd=258&bod_uid=141964&srchEnable=1&srchSDate=&srchKwd=&initDay=&srchColumn=&listType=&initYear=&srchVote=-1&initMonth=&pageNo=1&srchBgpUid=-1&srchEDate=&mnu_uid=2016&"
+  ],
+  "20260325005400212263": [
+   "https://www.usc.go.kr/youth/page.do?cmd=258&bod_uid=141971&srchEnable=1&srchSDate=&srchKwd=&initDay=&srchColumn=&listType=&initYear=&srchVote=-1&initMonth=&pageNo=1&srchBgpUid=-1&srchEDate=&mnu_uid=2016&"
+  ],
+  "20260325005400212264": [
+   "https://youthforest.iksan.go.kr/board/view.iksan?boardId=BBS_0000015&menuCd=DOM_000000105002001000&paging=ok&startPage=1&dataSid=45005"
+  ],
+  "20260325005400212268": [
+   "https://www.cs.go.kr/news/00002679/00006203.web?amode=view&not_ancmt_mgt_no=28263"
+  ],
+  "20260325005400212269": [
+   "https://www.cs.go.kr/news/00002679/00006203.web?amode=view&not_ancmt_mgt_no=28408&cpage=1&sstring=%EC%A0%84%EC%84%B8%EB%B3%B4%EC%A6%9D&stype=title&upunit=10"
+  ],
+  "20260325005400212272": [
+   "https://gbwork.kr/business/view/98"
+  ],
+  "20260325005400212273": [
+   "https://www.usc.go.kr/ko/page.do?mnu_uid=615&",
+   "https://www.usc.go.kr/youth/page.do?cmd=258&bod_uid=141932&srchEnable=1&srchSDate=&srchKwd=&initDay=&srchColumn=&listType=&initYear=&srchVote=-1&initMonth=&pageNo=1&srchBgpUid=-1&srchEDate=&mnu_uid=2011&"
+  ],
+  "20260325005400212275": [
+   "https://www.usc.go.kr/youth/page.do?mnu_uid=2024&"
+  ],
+  "20260325005400212276": [
+   "https://www.usc.go.kr/youth/page.do?mnu_uid=2731&"
+  ],
+  "20260325005400212277": [
+   "https://www.iksan.go.kr/reserve/board/post/list.do?boardUid=ff80808199e7462c0199eadd15600784&menuUid=ff8080819973cd47019974821f7403b8&programPostUid=ff80808199f0d11c0199f103608f01df"
+  ],
+  "20260325005400212279": [
+   "https://www.pyeongtaek.go.kr/pyeongtaek/board/post/view.do?mid=0401010000&bcIdx=41&idx=349793"
+  ],
+  "20260326005400212284": [
+   "https://www.pyeongtaek.go.kr/pyeongtaek/board/post/view.do?mid=0401010000&bcIdx=41&idx=348905"
+  ],
+  "20260326005400212289": [
+   "https://pipabiz.or.kr/web/contents/business1-6.do"
+  ],
+  "20260326005400212297": [
+   "https://youthforest.iksan.go.kr/index.iksan?menuCd=DOM_000000102003001000"
+  ],
+  "20260326005400212298": [
+   "https://www.welfarehello.com/community/hometownNews/2025-%EC%B2%AD%EB%8F%84%EA%B5%B0-%EC%B2%AD%EB%85%84%EC%A0%95%EC%B1%85%EC%B0%B8%EC%97%AC%EB%8B%A8-%EB%AA%A8%EC%A7%91-%ED%98%9C%ED%83%9D%EC%A7%80%EC%9B%90%EC%8B%A0%EC%B2%AD%EB%B0%A9%EB%B2%95-%EC%B4%9D%EC%A0%95%EB%A6%AC--61dcfa94-5fdf-446a-a081-f6d3843fadcd"
+  ],
+  "20260327005400212303": [
+   "https://youthforest.iksan.go.kr/board/view.iksan?boardId=BBS_0000015&menuCd=DOM_000000105002001000&paging=ok&startPage=1&dataSid=48531"
+  ],
+  "20260327005400212306": [
+   "https://www.iksan.go.kr/health/index.do?menuUid=ff808081975e28f7019776644e780aa8"
+  ],
+  "20260330005400212308": [
+   "https://www.wanju.go.kr/planweb/board/view.9is?contentUid=ff8080818b024d8e018b274f3fdd2ae2&dataUid=4028a6029bdaa74e019cc077b3611544&boardUid=ff8080818a49961a018ab011af3543bc"
+  ],
+  "20260330005400212312": [
+   "https://www.wanju.go.kr/planweb/board/view.9is?contentUid=ff8080818b024d8e018b274f3fdd2ae2&dataUid=4028a602975891f70199123b50af6a04&boardUid=ff8080818a49961a018ab011af3543bc"
+  ],
+  "20260330005400212317": [
+   "https://www.usc.go.kr/ko/page.do?mnu_uid=594&"
+  ],
+  "20260330005400212318": [
+   "https://www.usc.go.kr/ko/page.do?not_ancmt_mgt_no=38993&mnu_uid=157&board_code=04&cmd=2"
+  ],
+  "20260330005400212319": [
+   "https://www.usc.go.kr/youth/page.do?cmd=258&bod_uid=142190&srchEnable=1&srchSDate=&srchKwd=&initDay=&srchColumn=&listType=&initYear=&srchVote=-1&initMonth=&pageNo=1&srchBgpUid=-1&srchEDate=&mnu_uid=2013&"
+  ],
+  "20260330005400212321": [
+   "https://www.usc.go.kr/youth/page.do?mnu_uid=2019&"
+  ],
+  "20260330005400212322": [
+   "https://www.usc.go.kr/youth/page.do?mnu_uid=2020&"
+  ],
+  "20260330005400212323": [
+   "https://www.usc.go.kr/youth/page.do?mnu_uid=2018&"
+  ],
+  "20260330005400212326": [
+   "https://www.usc.go.kr/ko/page.do?mnu_uid=593&"
+  ],
+  "20260330005400212327": [
+   "https://www.usc.go.kr/ko/page.do?mnu_uid=539&"
+  ],
+  "20260330005400212330": [
+   "https://youthforest.iksan.go.kr/index.iksan?menuCd=DOM_000000102003001000"
+  ],
+  "20260330005400212332": [
+   "https://www.iksan.go.kr/board/post/view.do?boardUid=ff8080819a57232e019a582b3f2e0482&postUid=4028a6119e8278ed019eba4662dd703b"
+  ],
+  "20260330005400212333": [
+   "https://www.wanju.go.kr/planweb/board/view.9is?contentUid=ff8080818b024d8e018b274f3fdd2ae2&dataUid=4028a602975891f7019983c91c1f3ae4&boardUid=ff8080818a49961a018ab011af3543bc"
+  ],
+  "20260330005400212335": [
+   "https://www.giaci.or.kr/news/notice.php?gsp_pg=view&gsp_md=gb&gsp_gb_id=1&gsp_uid=450&gsp_chgval=undefined"
+  ],
+  "20260330005400212344": [
+   "https://www.wanju.go.kr/planweb/board/view.9is?contentUid=ff8080818b024d8e018b274f3fdd2ae2&dataUid=4028a6029bdaa74e019cbe4644ff37f4&boardUid=ff8080818a49961a018ab011af3543bc"
+  ],
+  "20260330005400212345": [
+   "https://www.wanju.go.kr/planweb/board/view.9is?contentUid=ff8080818b024d8e018b274f3fdd2ae2&dataUid=4028a6029bdaa74e019d337601926beb&boardUid=ff8080818a49961a018ab011af3543bc"
+  ],
+  "20260331005400212352": [
+   "https://www.jbba.kr/bbs/board.php?bo_table=sub01_09&wr_id=1651&sfl=wr_subject%7C%7Cwr_content&stx=%EC%A0%84%EB%B6%81%ED%98%95+%EC%B2%AD%EB%85%84&sop=and"
+  ],
+  "20260331005400212354": [
+   "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/645000000148"
+  ],
+  "20260331005400212355": [
+   "https://www.goryeong.go.kr/kor/boardView.do?IDX=154&BRD_ID=1023&BOARD_IDX=41401&searchType=ALL&searchValue=%EC%9E%90%EA%B2%A9%EC%A6%9D&page=1"
+  ],
+  "20260331005400212356": [
+   "https://www.gbtp.or.kr/user/boardDetail.do?bbsId=BBSMSTR_000000000021&nttNo=11027"
+  ],
+  "20260331005400212357": [
+   "https://www.goryeong.go.kr/kor/boardView.do?IDX=154&BRD_ID=1023&BOARD_IDX=41376&searchType=ALL&searchValue=%EC%9E%84%EC%B0%A8%EB%A3%8C&page=1"
+  ],
+  "20260331005400212358": [
+   "https://www.goryeong.go.kr/kor/boardView.do?IDX=154&BRD_ID=1023&BOARD_IDX=41107&searchType=ALL&searchValue=%EB%A6%AC%EB%AA%A8%EB%8D%B8%EB%A7%81&page=1"
+  ],
+  "20260331005400212359": [
+   "https://www.k-startup.go.kr/web/contents/webRND.do?schM=view&id=171153"
+  ],
+  "20260331005400212362": [
+   "https://www.goryeong.go.kr/kor/boardView.do?IDX=154&BRD_ID=1023&BOARD_IDX=41402&searchType=ALL&searchValue=%EC%A3%BC%EA%B1%B0%EB%B9%84&page=1"
+  ],
+  "20260331005400212363": [
+   "https://www.iksan.go.kr/reserve/board/post/list.do?boardUid=ff80808199e7462c0199eadc74b7077c&menuUid=ff8080819973cd4701997482034e03b4&programPostUid=ff80808199f0d11c0199f0f9f28001ad"
+  ],
+  "20260331005400212364": [
+   "https://www.goryeong.go.kr/kor/boardView.do?IDX=154&BRD_ID=1023&BOARD_IDX=41126&searchType=ALL&searchValue=%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0&page=1"
+  ],
+  "20260331005400212370": [
+   "https://www.jangsu.go.kr/farming/board/view.jangsu?menuCd=DOM_000000706001000000&boardId=BBS_0000028&dataSid=570316"
+  ],
+  "20260331005400212372": [
+   "https://www.jangsu.go.kr/board/view.jangsu?menuCd=DOM_000000102001012000&boardId=BBS_0000041&dataSid=566051"
+  ],
+  "20260402005400212380": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/contents.ulsan?mId=008001008000000000"
+  ],
+  "20260402005400212381": [
+   "https://www.ubpi.or.kr/sub/?mcode=0403010000&no=3419"
+  ],
+  "20260402005400212382": [
+   "https://www.ubpi.or.kr/sub/?mcode=0401080000&no=258"
+  ],
+  "20260402005400212383": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56056"
+  ],
+  "20260402005400212384": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56057"
+  ],
+  "20260402005400212386": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56058"
+  ],
+  "20260402005400212389": [
+   "https://uctf.or.kr/business/tour-mice/infra01"
+  ],
+  "20260402005400212390": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56064"
+  ],
+  "20260402005400212391": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?mId=008001001000000000&bbsId=BBS_0000000000000316&dataId=56065"
+  ],
+  "20260402005400212392": [
+   "https://uni.agrix.go.kr/webportal/main/portalIndex.do"
+  ],
+  "20260406005400112497": [
+   "https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=72761&boardSeq=105782&lev=0&searchType=null&statusYN=W&page=1&s=moe&m=020502&opType=N",
+   "https://www.nrf.re.kr/biz/notice/view?ac=view&searchType=&searchText=&pageNum=1&postNo=268571&menuNo=364&bizNo=777&searchBizNo=0&bizNotGubn=notice&bizCompleteNm=&orderType=REG_DTTM&orderTypeBiz=&orderTypeAt=DESC&orderTypeBizAt=DESC&myBizCheckYn=&bizChgMbrNo=&myDeptBizCheckYn=&bizChgMbrPostNm=&bizSelectSearchRegDttm=&regStartDttm=&regEndDttm=&searchRegChoiceDttm=M&bizSearchRegDttmAllYn=N&searchRegYearDttm=2026&searchRegStartMonthDttm=04&searchRegEndMonthDttm=04&searchSplitBizNo=&keyword=%EC%A7%81%EC%97%85%EA%B3%84%EA%B3%A0&resultKeyword="
+  ],
+  "20260406005400212396": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=440"
+  ],
+  "20260406005400212401": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=453"
+  ],
+  "20260406005400212403": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=448"
+  ],
+  "20260406005400212405": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=444"
+  ],
+  "20260406005400212406": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=443"
+  ],
+  "20260406005400212410": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=439"
+  ],
+  "20260406005400212414": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=438"
+  ],
+  "20260406005400212415": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=432"
+  ],
+  "20260406005400212416": [
+   "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&bcd=notice"
+  ],
+  "20260406005400212427": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=60"
+  ],
+  "20260406005400212428": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=92"
+  ],
+  "20260406005400212429": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=91"
+  ],
+  "20260406005400212430": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=103"
+  ],
+  "20260406005400212431": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=84"
+  ],
+  "20260406005400212432": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=75"
+  ],
+  "20260406005400212433": [
+   "https://youth.incheon.go.kr/space/seogu/"
+  ],
+  "20260406005400212434": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=62"
+  ],
+  "20260406005400212435": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=65"
+  ],
+  "20260406005400212436": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=67"
+  ],
+  "20260406005400212438": [
+   "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&bcd=notice"
+  ],
+  "20260406005400212439": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=425"
+  ],
+  "20260406005400212440": [
+   "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&bcd=notice"
+  ],
+  "20260406005400212441": [
+   "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&bcd=notice"
+  ],
+  "20260406005400212442": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=418"
+  ],
+  "20260406005400212443": [
+   "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&bcd=notice"
+  ],
+  "20260406005400212444": [
+   "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&bcd=notice"
+  ],
+  "20260406005400212445": [
+   "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&keyfield=title&keyword=%EC%9E%90%EA%B2%A9%EC%A6%9D&bcd=notice"
+  ],
+  "20260406005400212446": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=411"
+  ],
+  "20260406005400212448": [
+   "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&bcd=notice"
+  ],
+  "20260406005400212449": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=409"
+  ],
+  "20260406005400212451": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=413"
+  ],
+  "20260406005400212452": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=417"
+  ],
+  "20260406005400212454": [
+   "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&bcd=notice"
+  ],
+  "20260406005400212455": [
+   "https://youth.incheon.go.kr/space/donggu/challenge/info.jsp"
+  ],
+  "20260406005400212458": [
+   "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&bcd=notice"
+  ],
+  "20260406005400212459": [
+   "https://youth.incheon.go.kr/job/challenge.jsp"
+  ],
+  "20260406005400212460": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=398"
+  ],
+  "20260406005400212465": [
+   "https://www.fss.or.kr/edu/fem/eduProgram/view.do?programSlno=1&menuNo=300020"
+  ],
+  "20260406005400212466": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=383"
+  ],
+  "20260406005400212467": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=382"
+  ],
+  "20260406005400212469": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=377"
+  ],
+  "20260406005400212472": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=371"
+  ],
+  "20260406005400212473": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=370"
+  ],
+  "20260406005400212474": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=368"
+  ],
+  "20260406005400212475": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=366"
+  ],
+  "20260406005400212476": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=364"
+  ],
+  "20260406005400212477": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=363"
+  ],
+  "20260406005400212478": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=360"
+  ],
+  "20260406005400212479": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=357"
+  ],
+  "20260406005400212480": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=362"
+  ],
+  "20260406005400212481": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=361"
+  ],
+  "20260406005400212482": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=359"
+  ],
+  "20260406005400212483": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=356"
+  ],
+  "20260406005400212484": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=354&pgno=3"
+  ],
+  "20260406005400212485": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=353"
+  ],
+  "20260406005400212486": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=351"
+  ],
+  "20260406005400212487": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=349"
+  ],
+  "20260406005400212489": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=346"
+  ],
+  "20260406005400212490": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=344"
+  ],
+  "20260406005400212493": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=342"
+  ],
+  "20260406005400212494": [
+   "https://www.incheon.go.kr/IC010101/view?nttNo=2043592&curPage=1"
+  ],
+  "20260406005400212495": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=340"
+  ],
+  "20260406005400212496": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=339"
+  ],
+  "20260406005400212498": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=338"
+  ],
+  "20260406005400212499": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=337"
+  ],
+  "20260406005400212500": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=336"
+  ],
+  "20260406005400212501": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=334"
+  ],
+  "20260406005400212502": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=333"
+  ],
+  "20260406005400212503": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=331"
+  ],
+  "20260406005400212504": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=329"
+  ],
+  "20260406005400212505": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=328"
+  ],
+  "20260406005400212508": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=326"
+  ],
+  "20260406005400212511": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=317"
+  ],
+  "20260406005400212512": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=314"
+  ],
+  "20260406005400212513": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=312"
+  ],
+  "20260406005400212516": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=424"
+  ],
+  "20260406005400212517": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=422"
+  ],
+  "20260406005400212518": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56067"
+  ],
+  "20260406005400212526": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56120"
+  ],
+  "20260407005400112540": [
+   "https://www.saemangeum.go.kr/sda/brd/view.do?nttSn=10974&key=2009075579016&pageIndex=1&sc=&sw="
+  ],
+  "20260407005400112546": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56073"
+  ],
+  "20260407005400212532": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56147"
+  ],
+  "20260407005400212533": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?mId=008001001000000000&bbsId=BBS_0000000000000316&dataId=56148"
+  ],
+  "20260407005400212534": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000309&mId=008001002000000000&dataId=56772"
+  ],
+  "20260407005400212535": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56152"
+  ],
+  "20260407005400212537": [
+   "https://www.utp.or.kr/board/board.php?bo_table=sub0503&wr_id=38951&menu_group=4&sno=0403&mnuno=M0000048"
+  ],
+  "20260407005400212542": [
+   "https://m.blog.naver.com/ucwebtoon/222884350035",
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56878"
+  ],
+  "20260407005400212543": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56068"
+  ],
+  "20260407005400212544": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56071"
+  ],
+  "20260407005400212545": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56072"
+  ],
+  "20260407005400212547": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56074"
+  ],
+  "20260407005400212548": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56092"
+  ],
+  "20260407005400212549": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56093"
+  ],
+  "20260407005400212550": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56094"
+  ],
+  "20260407005400212551": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56095"
+  ],
+  "20260407005400212571": [
+   "https://www.donggu.kr/board.es?mid=a10101010000&bid=0001&act=view&list_no=47458&nPage=1"
+  ],
+  "20260408005400212577": [
+   "https://baro.gyeongnam.go.kr/baro/policyView.es?mid=a10703000000&policy_no=1486"
+  ],
+  "20260408005400212587": [
+   "https://www.mohw.go.kr/board.es?mid=a10503010100&bid=0027&act=view&list_no=1485171"
+  ],
+  "20260408005400212602": [
+   "https://www.work24.go.kr/wk/k/h/1200/retrieveYngJumpIndivSptfndIntro.do"
+  ],
+  "20260408005400212605": [
+   "https://www.woosanbokji.com/board/news/2603040000000007"
+  ],
+  "20260408005400212609": [
+   "https://www.seogu.gwangju.kr/board.es?mid=a10801000000&bid=0034&list_no=140838&act=view"
+  ],
+  "20260408005400212636": [
+   "https://youth.gwangju.go.kr/www/50?siteId=www&policyId=1258&url=%2Fwww%2Fpolicy%2FgjYgPolicyView"
+  ],
+  "20260408005400212640": [
+   "https://youth.gwangju.go.kr/www/50?siteId=www&policyId=819&url=%2Fwww%2Fpolicy%2FgjYgPolicyView"
+  ],
+  "20260408005400212643": [
+   "https://uni.agrix.go.kr/webportal/main/portalIndex.do?web=in"
+  ],
+  "20260409005400212651": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56096"
+  ],
+  "20260409005400212652": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56097"
+  ],
+  "20260409005400212653": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56098"
+  ],
+  "20260409005400212654": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56099"
+  ],
+  "20260409005400212656": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56101"
+  ],
+  "20260409005400212657": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56102"
+  ],
+  "20260409005400212659": [
+   "https://www.goryeong.go.kr/kor/boardList.do?IDX=414&BRD_ID=1145"
+  ],
+  "20260409005400212660": [
+   "https://www.ulleung.go.kr/ko/page.do?board_code=&srchSDate=&srchKwd=&srchColumn=&srchDept=&srchEDate=&mnu_uid=571&not_ancmt_mgt_no=23106&pageNo=2&cmd=2"
+  ],
+  "20260409005400212661": [
+   "https://www.ulleung.go.kr/ko/page.do?pageNo=2&board_code=&srchSDate=&srchKwd=&srchColumn=&srchDept=&srchEDate=&mnu_uid=571&not_ancmt_mgt_no=23107&cmd=2"
+  ],
+  "20260410005400212663": [
+   "https://news.seoul.go.kr/gov/archives/577123",
+   "https://youth.seoul.go.kr/youthConts.do?key=2503190001&sc_detailAt=&pageIndex=1&orderBy=regYmd+desc&tabKind=201&sc_pbancSe=&sc_pbancSeCd=027&sc_bbsStngSn=2212200001&sc_bbsCtgrySn=2503180018&sc_pstSn=2604070004&sc_userId=&sc_ntcPstYn=&sc_delYn=&sc_ctgry=&useYn=&sc_faqCtgryCd=099&sc_qnaCtgryCd=&sc_plcyQnaSn=0&pstSn=&recordCountPerPage=10&sc_wDateS=&sc_wDateE=&sc=&sw="
+  ],
+  "20260410005400212667": [
+   "https://www.ubpi.or.kr/sub/?mcode=0401020000&no=358"
+  ],
+  "20260410005400212668": [
+   "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/631000000709"
+  ],
+  "20260410005400212670": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56158"
+  ],
+  "20260410005400212671": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56181"
+  ],
+  "20260410005400212672": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56182"
+  ],
+  "20260410005400212673": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56183"
+  ],
+  "20260410005400212678": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56189"
+  ],
+  "20260410005400212680": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56193"
+  ],
+  "20260410005400212681": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56194"
+  ],
+  "20260410005400212682": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56195"
+  ],
+  "20260410005400212683": [
+   "https://thearts.arko.or.kr/thearts/youthculturepass"
+  ],
+  "20260413005400212693": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56103"
+  ],
+  "20260413005400212694": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56109"
+  ],
+  "20260413005400212696": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56181"
+  ],
+  "20260413005400212697": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56182"
+  ],
+  "20260413005400212698": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56183"
+  ],
+  "20260413005400212699": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56184"
+  ],
+  "20260413005400212701": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56185"
+  ],
+  "20260413005400212702": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56236"
+  ],
+  "20260413005400212703": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56235"
+  ],
+  "20260413005400212704": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56234"
+  ],
+  "20260413005400212705": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56233"
+  ],
+  "20260413005400212706": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56232"
+  ],
+  "20260413005400212707": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56205"
+  ],
+  "20260413005400212708": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56206"
+  ],
+  "20260413005400212709": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56207"
+  ],
+  "20260413005400212710": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56208"
+  ],
+  "20260413005400212711": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56209"
+  ],
+  "20260413005400212712": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56210"
+  ],
+  "20260413005400212714": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56214"
+  ],
+  "20260413005400212715": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56215"
+  ],
+  "20260413005400212717": [
+   "https://jejuyouthdream.com/policy/detail/8"
+  ],
+  "20260413005400212726": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56217"
+  ],
+  "20260413005400212727": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56219"
+  ],
+  "20260414005400212728": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56221"
+  ],
+  "20260414005400212730": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56222"
+  ],
+  "20260414005400212731": [
+   "https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=337&boardSeq=102770&lev=0&m=0303"
+  ],
+  "20260414005400212734": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56223"
+  ],
+  "20260414005400212735": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56224"
+  ],
+  "20260414005400212738": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56226"
+  ],
+  "20260414005400212739": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56227"
+  ],
+  "20260414005400212740": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56228"
+  ],
+  "20260414005400212741": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56229"
+  ],
+  "20260414005400212742": [
+   "https://www.ulsan.go.kr/s/ulsanyouth/bbs/view.do?bbsId=BBS_0000000000000316&mId=008001001000000000&dataId=56231"
+  ],
+  "20260415005400212746": [
+   "https://jejuyouthdream.com/policy/detail/41"
+  ],
+  "20260415005400212749": [
+   "https://www.instagram.com/p/DXEOOvzkwyH/?img_index=1"
+  ],
+  "20260416005400112760": [
+   "https://www.kised.or.kr/menu.es?mid=a10208020000"
+  ],
+  "20260416005400112762": [
+   "https://www.k-startup.go.kr/web/contents/bizpbanc-deadline.do?schM=view&pbancSn=176458"
+  ],
+  "20260416005400112763": [
+   "https://www.k-startup.go.kr/web/contents/webCMRCZN.do?schM=view&id=170007"
+  ],
+  "20260416005400112765": [
+   "https://www.kised.or.kr/menu.es?mid=a10202010000"
+  ],
+  "20260416005400212753": [
+   "https://ofjeju.kr/bussiness/businessinfo/plan2019/007.htm"
+  ],
+  "20260417005400112768": [
+   "https://www.venture.or.kr/home/kor/M748473882/business/contents/index.do?idx=cb00d1a0008a85e71a41b8741facbffe71a547009cdc82b6a17d02db013fb623&idx2=cb00d1a0008a85e71a41b8741facbffe6345b0b94089980f84385e748ce0fc81"
+  ],
+  "20260421005400112773": [
+   "https://www.kinfa.or.kr/financialProduct/youngFutureLinkLoan.do"
+  ],
+  "20260421005400212776": [
+   "https://jejuyouthdream.com/policy/detail/98"
+  ],
+  "20260421005400212777": [
+   "https://jejuyouthdream.com/policy/detail/96"
+  ],
+  "20260421005400212778": [
+   "https://jejuyouthdream.com/policy/detail/95"
+  ],
+  "20260421005400212779": [
+   "https://jejuyouthdream.com/policy/detail/94"
+  ],
+  "20260421005400212783": [
+   "https://jejuyouthdream.com/policy/detail/90"
+  ],
+  "20260421005400212785": [
+   "https://jejuyouthdream.com/policy/detail/83"
+  ],
+  "20260421005400212788": [
+   "https://jejuyouthdream.com/policy/detail/80"
+  ],
+  "20260421005400212790": [
+   "https://jejuyouthdream.com/policy/detail/75"
+  ],
+  "20260421005400212791": [
+   "https://jejuyouthdream.com/policy/detail/74"
+  ],
+  "20260421005400212792": [
+   "https://jejuyouthdream.com/policy/detail/71"
+  ],
+  "20260421005400212793": [
+   "https://jejuyouthdream.com/policy/detail/70"
+  ],
+  "20260421005400212794": [
+   "https://jejuyouthdream.com/policy/detail/69"
+  ],
+  "20260421005400212795": [
+   "https://jejuyouthdream.com/policy/detail/67"
+  ],
+  "20260421005400212796": [
+   "https://jejuyouthdream.com/policy/detail/66"
+  ],
+  "20260421005400212797": [
+   "https://jejuyouthdream.com/policy/detail/60"
+  ],
+  "20260421005400212802": [
+   "https://jejuyouthdream.com/policy/detail/51"
+  ],
+  "20260421005400212804": [
+   "https://jejuyouthdream.com/policy/detail/49"
+  ],
+  "20260421005400212806": [
+   "https://jejuyouthdream.com/youth-information/news/172"
+  ],
+  "20260421005400212807": [
+   "https://jejuyouthdream.com/policy/detail/45"
+  ],
+  "20260421005400212808": [
+   "https://jejuyouthdream.com/policy/detail/44"
+  ],
+  "20260421005400212810": [
+   "https://jejuyouthdream.com/policy/detail/42"
+  ],
+  "20260421005400212811": [
+   "https://jejuyouthdream.com/policy/detail/40"
+  ],
+  "20260421005400212816": [
+   "https://jejuyouthdream.com/policy/detail/34"
+  ],
+  "20260421005400212817": [
+   "https://jejuyouthdream.com/policy/detail/33"
+  ],
+  "20260421005400212818": [
+   "https://jejuyouthdream.com/policy/detail/32"
+  ],
+  "20260421005400212819": [
+   "https://jejuyouthdream.com/policy/detail/31"
+  ],
+  "20260421005400212821": [
+   "https://jejuyouthdream.com/policy/detail/27"
+  ],
+  "20260421005400212822": [
+   "https://jejuyouthdream.com/policy/detail/26"
+  ],
+  "20260421005400212823": [
+   "https://jejuyouthdream.com/policy/detail/22"
+  ],
+  "20260421005400212824": [
+   "https://jejuyouthdream.com/policy/detail/21",
+   "https://www.seogwipo.go.kr/info/news/notice.htm?qType=title&q=%EC%84%9C%EA%B7%80%ED%8F%AC%EC%8B%9C+%EC%B2%AD%EB%85%84+%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0&act=view&seq=154300591"
+  ],
+  "20260421005400212826": [
+   "https://jejuyouthdream.com/policy/detail/19"
+  ],
+  "20260421005400212827": [
+   "https://jejuyouthdream.com/policy/detail/18"
+  ],
+  "20260422005400212833": [
+   "https://jejuyouthdream.com/policy/detail/101"
+  ],
+  "20260422005400212837": [
+   "https://jejuyouthdream.com/policy/detail/87"
+  ],
+  "20260422005400212840": [
+   "https://jejuyouthdream.com/policy/detail/79"
+  ],
+  "20260422005400212843": [
+   "https://jejuyouthdream.com/policy/detail/73"
+  ],
+  "20260422005400212847": [
+   "https://jejuyouthdream.com/policy/detail/57"
+  ],
+  "20260422005400212849": [
+   "https://jejuyouthdream.com/policy/detail/53"
+  ],
+  "20260422005400212850": [
+   "https://jejuyouthdream.com/policy/detail/47"
+  ],
+  "20260422005400212853": [
+   "https://jejuyouthdream.com/policy/detail/30"
+  ],
+  "20260422005400212854": [
+   "https://jejuyouthdream.com/policy/detail/29"
+  ],
+  "20260422005400212855": [
+   "https://jejuyouthdream.com/policy/detail/25"
+  ],
+  "20260422005400212856": [
+   "https://jejuyouthdream.com/policy/detail/24"
+  ],
+  "20260422005400212868": [
+   "https://jejuyouthdream.com/policy/detail/1"
+  ],
+  "20260424005400212872": [
+   "https://youth.seoul.go.kr/infoData/sprtInfo/view.do?key=2309130006&sprtInfoId=69451"
+  ],
+  "20260424005400212873": [
+   "https://young.jinju.go.kr/young/business/read/114"
+  ],
+  "20260424005400212874": [
+   "https://young.jinju.go.kr/young/business/read/107"
+  ],
+  "20260427005400212875": [
+   "https://jejuyouthdream.com/policy/detail/107"
+  ],
+  "20260427005400212876": [
+   "https://jejuyouthdream.com/policy/detail/106"
+  ],
+  "20260427005400212877": [
+   "https://jejuyouthdream.com/policy/detail/105"
+  ],
+  "20260427005400212879": [
+   "https://jejuyouthdream.com/policy/detail/103"
+  ],
+  "20260428005400212890": [
+   "https://www.jeonju.go.kr/planweb/board/view.9is?contentUid=ff8080818990c349018b041a87373953&dataUid=9be517a89b212afa019c736853a775fc&boardUid=ff8080818990c349018b1dbaa78e4b41"
+  ],
+  "20260428005400212891": [
+   "https://m.site.naver.com/24BMS"
+  ],
+  "20260428005400212892": [
+   "https://www.jeonju.go.kr/planweb/board/view.9is?contentUid=ff8080818990c349018b041a879f395a&dataUid=c0908158a7554347b1b0db5cdd6f414c&boardUid=9be517a7914528ce01930aa3ddc26cf0"
+  ],
+  "20260428005400212893": [
+   "https://www.jeonju.go.kr/planweb/board/view.9is?contentUid=ff8080818990c349018b041a879f395a&dataUid=fca0ee6466ab49bcac7e273944b2153b&boardUid=9be517a7914528ce01930aa3ddc26cf0"
+  ],
+  "20260428005400212894": [
+   "https://www.jeonju.go.kr/index.9is?contentUid=9be517a7914528ce019536db25af1ad5"
+  ],
+  "20260428005400212896": [
+   "https://www.jeonju.go.kr/index.9is?contentUid=9be517a7914528ce019536da9bad1abe"
+  ],
+  "20260429005400212915": [
+   "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000121452"
+  ],
+  "20260429005400212944": [
+   "https://www.gjf.or.kr/main/main_biz/search/view.do?main_biz_sn=55"
+  ],
+  "20260429005400212945": [
+   "https://www.gjf.or.kr/main/main_biz/view.do?lclsf_sn=115&sclsf_sn=305&main_biz_sn=57&search=VVppMi8vck9NWndkRnhPSGUySXZBZz09"
+  ],
+  "20260429005400212946": [
+   "https://youth.gg.go.kr/gg/intro/youth-policy-job-test.do?mode=view&articleNo=7656&title=%25EA%25B8%25B0%25ED%259B%2584%25EB%25AF%25B8%25EB%259E%2598%25EC%25A7%2581%25EC%2597%2585+%25EC%25B2%25AD%25EB%2585%2584%25EC%259D%25BC%25EC%259E%2590%25EB%25A6%25AC+%25EC%25A0%2584%25EB%25AC%25B8%25EA%25B5%2590%25EC%259C%25A1+%25EC%25A7%2580%25EC%259B%2590"
+  ],
+  "20260430005400212960": [
+   "https://jejuyouthdream.com/policy/detail/108"
+  ],
+  "20260430005400212965": [
+   "https://www.cheonan.go.kr/kor/sub06_04_03_02.do"
+  ],
+  "20260430005400212966": [
+   "https://www.chungnam.go.kr/cnportal/media/article/view.do?articleNo=MD0003423575&menuNo=500170"
+  ],
+  "20260430005400212969": [
+   "http://www.ai.ch2030youth.kr/bbs/board.php?bo_table=notice&wr_id=683&sst=wr_hit&sod=desc&sop=and&page=1"
+  ],
+  "20260430005400212972": [
+   "https://www.ch2030youth.kr/bbs/board.php?bo_table=notice&wr_id=624"
+  ],
+  "20260430005400212979": [
+   "https://www.ch2030youth.kr/bbs/board.php?bo_table=notice&wr_id=579"
+  ],
+  "20260430005400212981": [
+   "https://www.facebook.com/gongju.go.kr/posts/%EA%B3%B5%EC%A3%BC%EC%8B%9C-%EC%B2%AD%EB%85%84%EA%B5%AC%EC%A7%81%EC%9E%90-%EB%A9%B4%EC%A0%91%EB%B9%84-%EC%A7%80%EC%9B%90%EC%82%AC%EC%97%85-%EC%95%88%EB%82%B4-%EA%B3%B5%EC%A3%BC%EC%8B%9C%EB%8A%94-%EC%B2%AD%EB%85%84-%EA%B5%AC%EC%A7%81%EC%9E%90%EC%9D%98-%EB%A9%B4%EC%A0%91-%EB%B9%84%EC%9A%A9-%EB%B6%80%EB%8B%B4-%EC%99%84%ED%99%94%EC%99%80-%EC%A0%81%EA%B7%B9%EC%A0%81%EC%9D%B8-%EA%B5%AC%EC%A7%81-%ED%99%9C%EB%8F%99-%EC%A7%80%EC%9B%90%EC%9D%84-%EC%9C%84%ED%95%9C-%EC%B2%AD%EB%85%84%EA%B5%AC%EC%A7%81%EC%9E%90-%EB%A9%B4%EC%A0%91%EB%B9%84-%EC%A7%80%EC%9B%90%EC%82%AC/1342795267881945/"
+  ],
+  "20260430005400212983": [
+   "https://www.gongju.go.kr/kr/sub06_01_09_04_03.do"
+  ],
+  "20260430005400212984": [
+   "https://www.gongju.go.kr/prog/saeolGosi/GOSI_03/sub04_03_03/view.do?notAncmtMgtNo=57060"
+  ],
+  "20260430005400212985": [
+   "https://www.gongju.go.kr/kr/sub06_01_06_09.do"
+  ],
+  "20260430005400212986": [
+   "https://www.gongju.go.kr/kr/sub06_01_09_04_06.do"
+  ],
+  "20260430005400212994": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20260406LC000000000003191"
+  ],
+  "20260430005400212999": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-02/view?bizId=A20260406LC000000000003186"
+  ],
+  "20260430005400213001": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-05/view?bizId=A20260406LC000000000003187"
+  ],
+  "20260430005400213008": [
+   "https://www.asan.go.kr/naeil/page/?page=talent"
+  ],
+  "20260504005400113074": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-02/view?bizId=A20260324CT000000000003067"
+  ],
+  "20260504005400113076": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20250416CT000000000002240"
+  ],
+  "20260504005400113077": [
+   "https://www.chungnam.go.kr/cnportal/media/article/view.do?articleNo=MD0003427388&menuNo=500167&edate=2026-06-05&sdate=2025-06-05&articleSectNo2=500167&pageIndex=1"
+  ],
+  "20260504005400113079": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M050-08/view?bizId=A20260309CT000000000003005"
+  ],
+  "20260504005400113080": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M050-07/view?bizId=A20260309CT000000000003009"
+  ],
+  "20260504005400113082": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-02/view?bizId=A20260309CT000000000003011"
+  ],
+  "20260504005400113084": [
+   "https://www.chungnam.go.kr/cnportal/media/article/view.do?articleNo=MD0003216523&layerType=all&menuNo=500190&edate=2025-07-14&sdate=2024-07-14&pageIndex=1"
+  ],
+  "20260504005400113094": [
+   "http://www.cnjarip.co.kr/page/page35"
+  ],
+  "20260504005400113095": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-02/view?bizId=A20260309CT000000000003021"
+  ],
+  "20260504005400113103": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20260309CT000000000003033"
+  ],
+  "20260504005400113108": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-02/view?bizId=A20260309CT000000000003039"
+  ],
+  "20260504005400113114": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20260309CT000000000003043"
+  ],
+  "20260504005400113116": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20260309CT000000000003048"
+  ],
+  "20260504005400113118": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20260309CT000000000003054"
+  ],
+  "20260504005400113119": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20260309CT000000000003014"
+  ],
+  "20260504005400113120": [
+   "https://www.chungnam.go.kr/cnportal/media/article/view.do?articleNo=MD0003244004&menuNo=500187&articleSectNo2=500187&pageIndex=1"
+  ],
+  "20260504005400113121": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20260309CT000000000003056"
+  ],
+  "20260504005400113122": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20260309CT000000000003057"
+  ],
+  "20260504005400113123": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20260309CT000000000003059"
+  ],
+  "20260504005400113124": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20260309CT000000000003058"
+  ],
+  "20260504005400113125": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20260309CT000000000003062"
+  ],
+  "20260504005400113126": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-11/view?bizId=A20260309CT000000000003063"
+  ],
+  "20260504005400113134": [
+   "https://www.kiat.or.kr/front/board/boardContentsView.do?contents_id=94e55015f72d4d3796a59324f82fa1ff",
+   "https://www.motir.go.kr/kor/article/ATCLc01b2801b/67262/view?mno=&pageIndex=1&rowPageC=0&schClear=on&startDtD=&endDtD=&searchCondition=1&searchKeyword=%EC%B0%BD%EC%9D%98%EC%9C%B5%ED%95%A9%ED%98%95"
+  ],
+  "20260504005400113137": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-02/view?bizId=A20250415CT000000000002223"
+  ],
+  "20260504005400213014": [
+   "http://www.asancef.or.kr/main/tmpl/sub_main.php?main_cd=9&sub_cd1=11&pg_id=11&page=1&cmd=3&wr_id=14817"
+  ],
+  "20260504005400213017": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M050-08/view?bizId=A20260402LC000000000003153"
+  ],
+  "20260504005400213018": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20260402LC000000000003169"
+  ],
+  "20260504005400213020": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-05/view?bizId=A20260402LC000000000003154"
+  ],
+  "20260504005400213021": [
+   "https://www.asan.go.kr/naeil/page/?page=sparta"
+  ],
+  "20260504005400213023": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20260402LC000000000003168"
+  ],
+  "20260504005400213025": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20260402LC000000000003164"
+  ],
+  "20260504005400213026": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20260402LC000000000003157"
+  ],
+  "20260504005400213027": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20260402LC000000000003155"
+  ],
+  "20260504005400213029": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20260402LC000000000003158"
+  ],
+  "20260504005400213030": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20260402LC000000000003165"
+  ],
+  "20260504005400213031": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20260402LC000000000003161"
+  ],
+  "20260504005400213032": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20260402LC000000000003159"
+  ],
+  "20260504005400213034": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20260401LC000000000003107"
+  ],
+  "20260504005400213035": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M050-07/view?bizId=A20260401LC000000000003103"
+  ],
+  "20260504005400213037": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20260401LC000000000003101"
+  ],
+  "20260504005400213039": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-05/view?bizId=A20260401LC000000000003098"
+  ],
+  "20260504005400213040": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20260401LC000000000003097"
+  ],
+  "20260504005400213042": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20260401LC000000000003092"
+  ],
+  "20260504005400213043": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20260401LC000000000003091"
+  ],
+  "20260504005400213044": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20260401LC000000000003088"
+  ],
+  "20260504005400213045": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-11/view?bizId=A20260401LC000000000003086"
+  ],
+  "20260504005400213047": [
+   "https://www.cheonan.go.kr/kor/sub05_04_01.do"
+  ],
+  "20260504005400213048": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20260401LC000000000003081"
+  ],
+  "20260504005400213051": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M050-07/view?bizId=A20260401LC000000000003076"
+  ],
+  "20260504005400213052": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-04/view?bizId=A20260401LC000000000003074"
+  ],
+  "20260504005400213056": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20260401LC000000000003144"
+  ],
+  "20260504005400213057": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20260401LC000000000003132"
+  ],
+  "20260504005400213058": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-02/view?bizId=A20260401LC000000000003133"
+  ],
+  "20260504005400213059": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20260401LC000000000003071"
+  ],
+  "20260504005400213063": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20260401LC000000000003150"
+  ],
+  "20260504005400213064": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-05/view?bizId=A20260401LC000000000003135"
+  ],
+  "20260504005400213066": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-04/view?bizId=A20260401LC000000000003139"
+  ],
+  "20260504005400213067": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20260401LC000000000003143"
+  ],
+  "20260504005400213068": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20260401LC000000000003140"
+  ],
+  "20260504005400213069": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20260401LC000000000003142"
+  ],
+  "20260504005400213070": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-03/view?bizId=A20260401LC000000000003141"
+  ],
+  "20260504005400213072": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M050-07/view?bizId=A20260401LC000000000003126"
+  ],
+  "20260504005400213073": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20260401LC000000000003120"
+  ],
+  "20260504005400213089": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-05/view?bizId=A20260401LC000000000003123"
+  ],
+  "20260506005400213139": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=311"
+  ],
+  "20260506005400213143": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=299"
+  ],
+  "20260506005400213144": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=298"
+  ],
+  "20260506005400213146": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=296"
+  ],
+  "20260506005400213147": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=295"
+  ],
+  "20260506005400213148": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=294"
+  ],
+  "20260506005400213149": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=291"
+  ],
+  "20260506005400213150": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=290"
+  ],
+  "20260506005400213151": [
+   "https://bizok.incheon.go.kr/open_content/support.do?act=detail&policyno=6835&pgno=4"
+  ],
+  "20260506005400213153": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=285"
+  ],
+  "20260506005400213154": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=283"
+  ],
+  "20260506005400213155": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=267"
+  ],
+  "20260506005400213156": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=282"
+  ],
+  "20260506005400213158": [
+   "https://youth.incheon.go.kr/space/gyeyang/",
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=199"
+  ],
+  "20260506005400213159": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=196"
+  ],
+  "20260506005400213160": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=194"
+  ],
+  "20260506005400213161": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=188"
+  ],
+  "20260506005400213163": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=178"
+  ],
+  "20260506005400213164": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=170"
+  ],
+  "20260506005400213165": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=124"
+  ],
+  "20260506005400213166": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=122"
+  ],
+  "20260506005400213167": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=120"
+  ],
+  "20260506005400213168": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=119"
+  ],
+  "20260506005400213169": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=115"
+  ],
+  "20260506005400213170": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=111"
+  ],
+  "20260506005400213171": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=110"
+  ],
+  "20260506005400213172": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=109"
+  ],
+  "20260506005400213173": [
+   "https://youth.incheon.go.kr/space/bupyeong/"
+  ],
+  "20260506005400213174": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=106"
+  ],
+  "20260506005400213176": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=104"
+  ],
+  "20260513005400213181": [
+   "https://www.wonju.go.kr/www/selectBbsNttView.do?key=216&bbsNo=140&nttNo=483082&searchCtgry=&searchCnd=SJ&searchKrwd=%EC%A0%84%EC%9E%85%EC%B2%AD%EB%85%84&pageIndex=1&integrDeptCode="
+  ],
+  "20260520005400213208": [
+   "https://youth.seoul.go.kr/bbs/view.do?pstSn=2605150002&key=2303300002&sc_detailAt=&pageIndex=1&orderBy=regYmd+desc&sc_wDateS=&sc_wDateE=&sc_bbsCtgrySn=2304110001&sc=&sw=&recordCountPerPage=10"
+  ],
+  "20260522005400213215": [
+   "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000117641"
+  ],
+  "20260522005400213219": [
+   "https://www.samcheok.go.kr/citizen/01430/02605.web"
+  ],
+  "20260522005400213220": [
+   "https://gwwell.kr/samcheok"
+  ],
+  "20260527005400113223": [
+   "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/161300000103"
+  ],
+  "20260527005400213221": [
+   "https://www.goryeong.go.kr/kor/boardView.do?IDX=154&BRD_ID=1023&BOARD_IDX=41634&searchType=ALL&searchValue=%EC%9E%84%EC%B0%A8%EB%A3%8C&page=1"
+  ],
+  "20260527005400213222": [
+   "https://www.goryeong.go.kr/kor/boardView.do?IDX=154&BRD_ID=1023&BOARD_IDX=41670&searchType=ALL&searchValue=&page=1"
+  ],
+  "20260528005400113226": [
+   "https://www.artloan.kr/notice/savingsAccount.do"
+  ],
+  "20260528005400113227": [
+   "https://www.foodvoucher.go.kr/view/fm/vucintro/agriFood"
+  ],
+  "20260614005400213232": [
+   "https://youth.seoul.go.kr/infoData/plcyInfo/view.do?key=2309150002&plcyBizId=V202600006"
+  ],
+  "20260616005400113238": [
+   "https://nhuf.molit.go.kr/FP/FP07/FP0701/FP07010301.jsp"
+  ],
+  "20260625005400113245": [
+   "https://mois.go.kr/frt/bbs/type002/commonSelectBoardArticle.do?bbsId=BBSMSTR_000000000215&nttId=126775"
+  ],
+  "20260710005400113256": [
+   "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/149200005007"
+  ],
+  "20260716005400113260": [
+   "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?currentPageNo=1&recordCountPerPage=9&upprSystClId=&systClId=SC00000117&systId=SI00000318",
+   "https://www.work24.go.kr/wk/k/a/1430/operOrgList.do"
+  ],
+  "20260718005400113262": [
+   "https://www.moel.go.kr/policyitrd/policyItrdView.do?policy_itrd_sn=413"
+  ],
+  "20260722005400213264": [
+   "https://youth.seoul.go.kr/infoData/youthPlcyInfo/view.do?key=2309160001&plcyBizId=20260722005400213264"
+  ],
+  "20260722005400213266": [
+   "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&bcd=notice"
+  ],
+  "20260722005400213267": [
+   "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&bcd=notice"
+  ],
+  "20260722005400213269": [
+   "https://bukgu.gwangju.kr/board.es?mid=c20201000000&bid=0330&act=view&list_no=407"
+  ],
+  "20260722005400213285": [
+   "https://www.gie.kr/kr/79?url=%2Fkr%2Fredsgn%2Fview%2Fintro"
+  ],
+  "20260724005400213300": [
+   "https://youth.incheon.go.kr/bbs/bbsMsgDetail.do?msg_seq=40&bcd=notice"
+  ],
+  "20260724005400213302": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=464"
+  ],
+  "20260724005400213303": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=463"
+  ],
+  "20260724005400213304": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=461"
+  ],
+  "20260724005400213305": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=460"
+  ],
+  "20260724005400213306": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=394"
+  ],
+  "20260729005400113312": [
+   "https://www.chungnam.go.kr/cnportal/media/article/view.do?articleNo=MD0003441460&menuNo=500170&edate=2026-06-09&sdate=2025-06-09&articleSectNo2=500170&pageIndex=1"
+  ],
+  "20260804005400213319": [
+   "https://www.ep.go.kr/www/selectEminwonView.do?pageUnit=10&pageIndex=1&searchCnd=notAncmtSj&searchKrwd=%EB%B2%84%EC%8A%A4%ED%82%B9&key=754&notAncmtMgtNo=50109&notAncmtSeCode=01"
+  ],
+  "20260813005400213334": [
+   "https://youth.jeonnam-gwangju.go.kr/www/50?siteId=www&policyId=824&url=%2Fwww%2Fpolicy%2FgjYgPolicyView"
+  ],
+  "20260831005400213361": [
+   "https://www.samcheok.go.kr/media/00084/00095.web?amode=view&mgtNo=37890&cd=01&cpage=1&sstring=%EC%B2%AD%EB%85%84%EB%AA%B0&stype=title"
+  ],
+  "20260907005400213379": [
+   "https://www.gg.go.kr/bbs/board.do?bsIdx=873&menuId=1534177#page=1"
+  ],
+  "20260909005400213397": [
+   "https://www.gill.or.kr/gill/pgm/i-81/evnt/front/detail.do?evnt_sn=942"
+  ],
+  "20260910005400213401": [
+   "https://www.yp21.go.kr/www/contents.do?key=3951"
+  ],
+  "20260910005400213402": [
+   "https://www.bucheon.go.kr/site/homepage/menu/viewMenu?menuid=148006003020004",
+   "https://www.instagram.com/ojeong1939_official"
+  ],
+  "20260914005400213407": [
+   "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=468"
+  ],
+  "20260914005400213409": [
+   "https://www.suyeong.go.kr/youth/index.suyeong?menuCd=DOM_000003002002000000"
+  ],
+  "20260914005400213410": [
+   "https://www.suyeong.go.kr/youth/index.suyeong?menuCd=DOM_000003003001000000"
+  ],
+  "20260914005400213411": [
+   "https://www.suyeong.go.kr/youth/index.suyeong?menuCd=DOM_000003002006000000"
+  ],
+  "20260914005400213413": [
+   "https://www.yp21.go.kr/www/selectBbsNttView.do?key=1119&bbsNo=5&nttNo=305711&searchCtgry=&searchCnd=SJ&searchKrwd=%EC%83%81%EC%83%9D%ED%96%89%EB%B3%B5&pageIndex=1&integrDeptCode="
+  ],
+  "20260917005400113422": [
+   "https://www.opm.go.kr/opm/news/notice.do?mode=view&articleNo=162785"
+  ],
+  "20260918005400113438": [
+   "https://www.mogef.go.kr/nw/ntc/nw_ntc_s001d.do?mid=news400&bbtSn=710873"
+  ],
+  "20260918005400113441": [
+   "https://www.imnd.or.kr/user/ltogs/check.go",
+   "https://www.imnd.or.kr/user/main/userMain.go"
+  ],
+  "20260918005400113451": [
+   "https://www.mof.go.kr/doc/ko/selectDoc.do?docSeq=60868&listUpdtDt=2025-02-26++10%3A00&menuSeq=375&bbsSeq=9"
+  ],
+  "20260918005400113454": [
+   "https://www.kinfa.or.kr/financialLife/youthFinancialCounseling.do"
+  ],
+  "20260921005400113469": [
+   "https://www.nysc.or.kr/nysc/pages/news_view.php?id=3217"
+  ],
+  "20260921005400113487": [
+   "https://www.kisa.or.kr/1041404"
+  ],
+  "20260921005400113489": [
+   "https://www.kisa.or.kr/1041403"
+  ],
+  "20260921005400113490": [
+   "https://www.kcue.or.kr/notice/sub01.php?pagenumber=1&at=view&idx=2764964"
+  ],
+  "20260921005400113495": [
+   "https://www.archi-training.kr/apply/select"
+  ],
+  "20260922005400113545": [
+   "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020701.jsp"
+  ],
+  "20260922005400113546": [
+   "https://nhuf.molit.go.kr/FP/FP05/FP0503/FP05030901.jsp"
+  ],
+  "20260923005400113566": [
+   "https://www.kinfa.or.kr/financialProduct/youngFutureLinkLoan.do"
+  ],
+  "20260923005400113586": [
+   "https://www.kocca.kr/shortUrl/8zCq"
+  ],
+  "20260923005400113587": [
+   "https://hi.korchamhrd.net/cms/contents.do?rootMenuId=5225&menuId=5225&cms_id=about"
+  ],
+  "20260923005400213577": [
+   "https://www.debatekorea.org/2026ifwy"
+  ],
+  "20260928005400113616": [
+   "https://www.kocca.kr/kocca/bbs/view/B0000137/2010918.do?searchCnd=1&searchWrd=%EC%A0%9C%EC%9E%91%EC%9D%B8%EB%A0%A5&cateTp1=&cateTp2=&useYn=&menuNo=204802&categorys=0&subcate=0&cateCode=&type=&instNo=0&questionTp=&ufSetting=&recovery=&option1=&option2=&year=&morePage=&qtp=&domainId=&sortCode=&pageIndex=1"
+  ],
+  "20260928005400213597": [
+   "https://young.busan.go.kr/index.nm?menuCd=75"
+  ],
+  "20260928005400213598": [
+   "https://young.busan.go.kr/index.nm?menuCd=66"
+  ],
+  "20260928005400213602": [
+   "https://www.busan.go.kr/news/snsbusan01/view?dataNo=69161&curPage=1"
+  ],
+  "20260928005400213605": [
+   "https://young.busan.go.kr/article/list.nm?menuCd=162"
+  ],
+  "20260929005400113657": [
+   "https://www.mof.go.kr/doc/ko/selectDoc.do?menuSeq=375&bbsSeq=9&docSeq=68483"
+  ],
+  "20260929005400113678": [
+   "https://www.work24.go.kr/wk/v/a/1000/youngGrowIntro.do"
+  ],
+  "20260929005400113679": [
+   "https://www.work24.go.kr/wk/g/b/1100/busiIntro.do"
+  ],
+  "20260929005400113687": [
+   "https://www.k-startup.go.kr/web/s/4er9UK9hmL"
+  ],
+  "20260929005400213640": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5408"
+  ],
+  "20260929005400213649": [
+   "https://www.4242.or.kr/total_board/view/id/36840"
+  ],
+  "20260929005400213659": [
+   "https://www.gsp.or.kr/supportProject/UVSD0001.do?sportSeq=6098"
+  ],
+  "20260929005400213681": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=4971"
+  ],
+  "20260929005400213682": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=4973"
+  ],
+  "20260929005400213683": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5423"
+  ],
+  "20260929005400213684": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=4967"
+  ],
+  "20260929005400213685": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5424"
+  ],
+  "20260929005400213688": [
+   "https://www.cba.ne.kr/home/sub.php?menukey=172&mod=view&no=29814"
+  ],
+  "20260930005400113704": [
+   "https://www.korea.kr/special/policyCurationView.do?newsId=148868026"
+  ],
+  "20260930005400113705": [
+   "https://www.hrd4u.or.kr/champ"
+  ],
+  "20260930005400113715": [
+   "https://www.kocca.kr/shortUrl/a8Bq"
+  ],
+  "20260930005400113719": [
+   "https://www.mohw.go.kr/board.es?mid=a10503010100&bid=0027&act=view&list_no=1490300&tag=&nPage=1"
+  ],
+  "20260930005400113727": [
+   "https://cjrhrdc.org/business/job"
+  ],
+  "20260930005400113732": [
+   "https://www.mohw.go.kr/menu.es?mid=a10709020400"
+  ],
+  "20260930005400113748": [
+   "https://www.sealife.go.kr/policy/policy2.do"
+  ],
+  "20260930005400213689": [
+   "https://www.cba.ne.kr/home/sub.php?menukey=172&mod=view&no=29619"
+  ],
+  "20260930005400213690": [
+   "https://www.cba.ne.kr/home/sub.php?menukey=172&mod=&scode=00000004&search=9&code1=&code2=&cate=&kwd=%EC%9D%BC%ED%95%98%EB%8A%94+%EA%B8%B0%EC%81%A8"
+  ],
+  "20260930005400213702": [
+   "https://www.chungbuk.go.kr/www/contents.do?key=5213"
+  ],
+  "20260930005400213706": [
+   "https://www.yeoju.go.kr/www/selectBbsNttView.do?key=409&bbsNo=44&nttNo=92166&searchCtgry=&searchCnd=SJ&searchKrwd=%eb%b3%b4%ec%a6%9d%ea%b8%88&integrDeptCode=&pageIndex=1"
+  ],
+  "20260930005400213737": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=4966"
+  ],
+  "20260930005400213742": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=4965"
+  ],
+  "20261001005400113783": [
+   "https://www.kocca.kr/kocca/pims/view.do?intcNo=326D00034001&menuNo=204104&recptSt=&category=&pageIndex=1&search=&searchWrd=",
+   "https://www.kocca.kr/kocca/subPage.do?menuNo=204949"
+  ],
+  "20261001005400113794": [
+   "https://www.kocca.kr/shortUrl/40Cq"
+  ],
+  "20261001005400213784": [
+   "https://www.sejong.go.kr/job/sub03_03.do"
+  ],
+  "20261001005400213791": [
+   "https://www.sejong.go.kr/job/sub03_07.do"
+  ],
+  "20261001005400213792": [
+   "https://www.sejong.go.kr/job/sub03_01.do"
+  ],
+  "20261002005400213798": [
+   "https://www.cbitle.or.kr/www/selectBbsNttList.do?key=132&bbsNo=45&searchCtgry=&integrDeptCode=&searchCnd=SJ&searchKrwd=%EC%9D%B4%EC%9E%90"
+  ],
+  "20261002005400213807": [
+   "https://www.sjepa.or.kr/news-announcement/view/id/1073#u"
+  ],
+  "20261002005400213810": [
+   "https://www.sjepa.or.kr/programs-jobs-growth-project"
+  ],
+  "20261002005400213811": [
+   "https://www.sejong.go.kr/bbs/R0126/view.do?nttId=B000000154969Cr1iV0d"
+  ],
+  "20261002005400213825": [
+   "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/569000000375"
+  ],
+  "20261002005400213828": [
+   "https://www.sejong.go.kr/health/sub03_04_02.do"
+  ],
+  "20261002005400213835": [
+   "https://sj.pass.or.kr/menu.es?mid=a10203030000"
+  ],
+  "20261004005400113857": [
+   "https://www.cbist.or.kr/home/sub.do?mncd=1296"
+  ],
+  "20261004005400113860": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5053"
+  ],
+  "20261004005400113870": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5050"
+  ],
+  "20261004005400113872": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5427"
+  ],
+  "20261004005400113874": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5042"
+  ],
+  "20261004005400113875": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5425"
+  ],
+  "20261004005400113877": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5426"
+  ],
+  "20261004005400113879": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5036"
+  ],
+  "20261004005400113882": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5040"
+  ],
+  "20261004005400113889": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5434"
+  ],
+  "20261004005400113890": [
+   "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/154300005045"
+  ],
+  "20261004005400113896": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5437"
+  ],
+  "20261004005400213837": [
+   "https://www.4242.or.kr/total_board/view/id/36882"
+  ],
+  "20261004005400213838": [
+   "https://www.sejong.go.kr/shrUrl/DmrpAF0MBR.do"
+  ],
+  "20261004005400213839": [
+   "https://www.sejong.go.kr/shrUrl/91jVWrt40k.do"
+  ],
+  "20261004005400213840": [
+   "https://www.4242.or.kr/total_board/view/id/36863"
+  ],
+  "20261004005400213841": [
+   "https://www.sejong.go.kr/welfare/sub05_06_04.do"
+  ],
+  "20261004005400213844": [
+   "https://www.4242.or.kr/total_board/view/id/36877"
+  ],
+  "20261004005400213845": [
+   "https://4242.or.kr/total_board/view/id/36871"
+  ],
+  "20261004005400213846": [
+   "https://sjtp.or.kr/bbs/board.php?bo_table=business01&wr_id=1951"
+  ],
+  "20261004005400213847": [
+   "https://www.4242.or.kr/total_board/view/id/36868"
+  ],
+  "20261004005400213848": [
+   "https://www.4242.or.kr/total_board/view/id/36845"
+  ],
+  "20261004005400213850": [
+   "https://www.4242.or.kr/total_board/view/id/36885"
+  ],
+  "20261004005400213851": [
+   "https://www.4242.or.kr/sub0506/view/search_field/eNortjI2tlJy1CsuTcpKTS7RdtTLS8xNBVIlielAMjk_ryQ1r6RYyRpcMAypDUU~/search_keyword/eNoBKlww1f9zOjM0Olwi7LKt64WE7J6Q7Jyo7Y647ISx7JiI7IKw7KCcIOyatOyYgVwiOxBQGVxc/page/1/id/2611#u"
+  ],
+  "20261004005400213862": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5051"
+  ],
+  "20261004005400213864": [
+   "https://www.cba.ne.kr/home/sub.php?menukey=172&mod=view&no=30629"
+  ],
+  "20261004005400213876": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5428"
+  ],
+  "20261004005400213878": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=4949"
+  ],
+  "20261004005400213881": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5430"
+  ],
+  "20261004005400213884": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5409"
+  ],
+  "20261004005400213892": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5439"
+  ],
+  "20261004005400213893": [
+   "https://www.esangdance.net/B06/1566"
+  ],
+  "20261004005400213894": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5440"
+  ],
+  "20261004005400213895": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5055"
+  ],
+  "20261004005400213898": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=1315"
+  ],
+  "20261004005400213899": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=1319"
+  ],
+  "20261004005400213900": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5057"
+  ],
+  "20261004005400213901": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=5058"
+  ],
+  "20261004005400213903": [
+   "https://www.chungbuk.go.kr/young/contents.do?key=1318"
+  ],
+  "20261006005400113908": [
+   "https://www.kocca.kr/kocca/bbs/view/B0000137/2011194.do?searchCnd=1&searchWrd=%EC%B0%BD%EC%9D%98%EC%9D%B8%EC%9E%AC&cateTp1=&cateTp2=&useYn=&menuNo=204802&categorys=0&subcate=0&cateCode=&type=&instNo=0&questionTp=&ufSetting=&recovery=&option1=&option2=&year=&morePage=&qtp=&domainId=&sortCode=&pageIndex=1"
+  ],
+  "20261007005400213916": [
+   "https://job.iksan.go.kr/www/192"
+  ],
+  "20261007005400213917": [
+   "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?currentPageNo=1&recordCountPerPage=10&systId=SI00000337"
+  ],
+  "20261007005400213919": [
+   "https://www.iksan.go.kr/farm"
+  ],
+  "20261007005400213920": [
+   "https://www.iksan.go.kr/farm"
+  ],
+  "20261007005400213921": [
+   "https://youthforest.iksan.go.kr/index.iksan?menuCd=DOM_000000102003000000"
+  ],
+  "20261007005400213922": [
+   "https://m.blog.naver.com/hiksanin/224172590469"
+  ],
+  "20261007005400213923": [
+   "http://www.iksanlocalmall.com/yboard/read.php?table=allim3&oid=3&r_page=3&category=&searchword=&rd="
+  ],
+  "20261007005400213924": [
+   "https://www.iksan.go.kr/index.do?menuUid=ff80808198eafcbd0198f965f8bd25a7"
+  ],
+  "20261008005400113930": [
+   "https://www.jobkorea.co.kr/Recruit/GI_Read/49098517"
+  ],
+  "20261012005400213935": [
+   "https://m.blog.naver.com/PostView.naver?blogId=busan_suyeong&logNo=224323138376&referrerCode=0&searchKeyword=%EA%B4%91%EC%95%88%EB%A6%AC%20SUP%20%EC%A0%84%EA%B5%AD%20%EB%8C%80%ED%95%99%EA%B5%90%20%EB%8C%80%ED%95%AD%EC%A0%84"
+  ],
+  "20261012005400213939": [
+   "https://m.blog.naver.com/mujucounty/224156809776"
+  ],
+  "20261016005400113969": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20250421CT000000000002277"
+  ],
+  "20261016005400213961": [
+   "https://youth.gg.go.kr/gg/intro/youth-policy-culture-test.do?mode=view&articleNo=8949&article.offset=0&articleLimit=10"
+  ],
+  "20261016005400213975": [
+   "https://www.gjf.or.kr/main/main_biz/search/view.do?main_biz_sn=67&search=dUhjSklrU2ZoT2NRVVU2NDUyR2FtUHc5V1A3NzZ5N01kaUVGS2hiWUlMYz0="
+  ],
+  "20261017005400213978": [
+   "https://www.daejeonyouthportal.kr/search/unifiedSearchResult.do?searchKeyword=%EC%B2%AD%EB%85%84+%EC%8B%A0%ED%98%BC%EB%B6%80%EB%B6%80+%EC%A3%BC%ED%83%9D+%EC%A0%84%EC%84%B8%EC%9E%90%EA%B8%88+%EB%8C%80%EC%B6%9C+%EC%9D%B4%EC%9E%90%EC%A7%80%EC%9B%90"
+  ],
+  "20261018005400213980": [
+   "https://m.work24.go.kr/wk/v/a/1000/youngGrowIntro.do"
+  ],
+  "20261018005400213981": [
+   "https://www.akei.or.kr/bbs/board.php?bo_table=schedule&wr_id=104718"
+  ],
+  "20261018005400213985": [
+   "https://www.gepa.kr/?page_id=36&vid=2215"
+  ],
+  "20261018005400213986": [
+   "https://www.gacf.kr/home/sub3/sub3_5.asp"
+  ],
+  "20261018005400213987": [
+   "https://www.gyeongju.go.kr/health/page.do?pageNo=38&pagePrvNxt=1&pageRef=0&pageOrder=0&step=258&parm_bod_uid=328612&srchVoteType=-1&parm_mnu_uid=423&srchEnable=1&srchKeyword=&srchBgpUid=-1&srchSDate=2026-06-21&srchColumn=&srchEDate=2026-09-21&mnu_uid=3143&"
+  ],
+  "20261018005400213988": [
+   "https://thevc.kr/grants/6c698aa8dd93cbecd0b83884"
+  ],
+  "20261019005400214005": [
+   "https://news.seoul.go.kr/traffic/archives/515047",
+   "https://pay.tmoney.co.kr/ncs/pct/cardrgt/ReadClmtAcmpCardYthDscd.dev"
+  ],
+  "20261019005400214009": [
+   "https://www.gbhome.kr/?menu_code=51"
+  ],
+  "20261019005400214017": [
+   "https://www.jangheung.go.kr/www/life_welfare/population_plan/youth"
+  ],
+  "20261019005400214018": [
+   "https://www.jangheung.go.kr/www/life_welfare/population_plan/youth"
+  ],
+  "20261019005400214021": [
+   "https://www.kbsm.net/news/view.php?idx=523852"
+  ],
+  "20261019005400214025": [
+   "https://ycg.kr/open.content/eunpung/news/notice/?i=175741&p=10"
+  ],
+  "20261019005400214027": [
+   "https://gbyfarmer.kr/pages/sub.htm?nav_code=yfa1625548573"
+  ],
+  "20261019005400214031": [
+   "http://ygpolicy.kr/living/14"
+  ],
+  "20261019005400214033": [
+   "https://www.gb.go.kr/Main/economy2020/page.do?mnu_uid=15302&dept_code=&dept_name=&BD_CODE=job_support&bdName=&cmd=2&Start=0&B_NUM=240695701&B_STEP=240695700&B_LEVEL=0&key=4&word=&p1=0&p2=0&V_NUM=31&tbbscode1=job_support"
+  ],
+  "20261019005400214036": [
+   "https://www.rda.go.kr/board/board.do?boardId=farmlcltinfo&prgId=day_farmlcltinfoEntry&currPage=2&dataNo=100000812674&mode=updateCnt&searchSDate=&searchEDate=&searchKey=&searchVal="
+  ],
+  "20261019005400214042": [
+   "https://www.gb.go.kr/Main/open_contents/section/finace/page.do?mnu_uid=6742&dept_code=&dept_name=&BD_CODE=gosi_notice&bdName=&cmd=2&Start=90&B_NUM=511472501&B_STEP=511472500&B_LEVEL=0&key=4&word=&p1=0&p2=0&V_NUM=17342&tbbscode1=gosi_notice"
+  ],
+  "20261019005400214049": [
+   "https://www.smartfarmkorea.net/edu/pnbsns/all.do?menuId=M11020401"
+  ],
+  "20261019005400214050": [
+   "http://ygpolicy.kr/part/80"
+  ],
+  "20261019005400214059": [
+   "https://www.mohw.go.kr/menu.es?mid=a10706040400"
+  ],
+  "20261020005400214066": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20702000000"
+  ],
+  "20261020005400214067": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20702000000"
+  ],
+  "20261020005400214068": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20702000000"
+  ],
+  "20261020005400214069": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20702000000"
+  ],
+  "20261020005400214070": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20702000000"
+  ],
+  "20261020005400214071": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20704000000"
+  ],
+  "20261020005400214072": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20704000000"
+  ],
+  "20261020005400214076": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20704000000"
+  ],
+  "20261020005400214079": [
+   "https://www.yeonggwang.go.kr/bbs/?b_id=gosigonggo&site=headquarter_new&mn=9059&type=view&sc_cate=&per_page=10&start_date=&end_date=&sc_key=subject&sc_word=%EC%9A%B4%EC%A0%84%EB%A9%B4%ED%97%88&bs_idx=29214"
+  ],
+  "20261020005400214082": [
+   "https://www.ggnurim.or.kr/PageLink.do"
+  ],
+  "20261020005400214087": [
+   "https://www.gb.go.kr/Main/open_contents/section/kblri/page.do?mnu_uid=6792&dept_code=&dept_name=&BD_CODE=bbs_bodo&bdName=&cmd=2&Start=50&B_NUM=510567601&B_STEP=510567600&B_LEVEL=0&key=4&word=&p1=0&p2=0&V_NUM=14621&tbbscode1=bbs_bodo"
+  ],
+  "20261020005400214091": [
+   "https://www.goryeong.go.kr/kor/boardView.do?BRD_ID=1143&BOARD_IDX=967&IDX=427"
+  ],
+  "20261020005400214093": [
+   "https://www.goryeong.go.kr/kor/boardView.do?BRD_ID=1023&BOARD_IDX=41116&IDX=154"
+  ],
+  "20261020005400214096": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20703000000"
+  ],
+  "20261020005400214097": [
+   "https://narangdesign.com/mail/gbmhc/202212/b2.html"
+  ],
+  "20261020005400214098": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20703000000"
+  ],
+  "20261020005400214103": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20706000000"
+  ],
+  "20261020005400214107": [
+   "https://www.sj.go.kr/page.do?mnu_uid=1044&"
+  ],
+  "20261020005400214111": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20706000000"
+  ],
+  "20261020005400214113": [
+   "https://www.samcheok.go.kr/media/00084/00095.web?amode=view&mgtNo=37890&cd=01&cpage=1&sstring=%EC%B2%AD%EB%85%84%EB%AA%B0&stype=title"
+  ],
+  "20261020005400214115": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20708000000"
+  ],
+  "20261020005400214116": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20708000000"
+  ],
+  "20261020005400214117": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20708000000"
+  ],
+  "20261020005400214120": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20708000000"
+  ],
+  "20261020005400214122": [
+   "https://www.dailydgnews.com/news/article.html?no=250723"
+  ],
+  "20261020005400214123": [
+   "https://www.wonju.go.kr/wjyouth/selectBbsNttView.do?key=5882&bbsNo=1190&nttNo=478867&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=1&integrDeptCode="
+  ],
+  "20261020005400214124": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20708000000"
+  ],
+  "20261020005400214128": [
+   "https://bukgu.gwangju.kr/menu.es?mid=c20709000000"
+  ],
+  "20261020005400214129": [
+   "https://www.yw.go.kr/www/selectBbsNttView.do?key=273&bbsNo=17&nttNo=150477&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=1&integrDeptCode=&pageUnit=10"
+  ],
+  "20261020005400214130": [
+   "https://www.gb.go.kr/Main/open_contents/section/finace/page.do?mnu_uid=6786&dept_code=&dept_name=&BD_CODE=bbs_gongji&bdName=&cmd=2&Start=0&B_NUM=502100301&B_STEP=502100300&B_LEVEL=0&key=4&word=&p1=0&p2=0&V_NUM=24023&tbbscode1=bbs_gongji"
+  ],
+  "20261020005400214134": [
+   "https://www.wevity.com/index_university.php?c=find&s=_university&cidx=19&gbn=viewok&gp=5&ix=110419"
+  ],
+  "20261020005400214136": [
+   "https://gbtp.or.kr/user/boardDetail.do?bbsId=BBSMSTR_000000000021&nttNo=11216",
+   "https://gbyouth.go.kr/policy/list.tc?mn=2379&pageNo=5069&searchPolicyNm=%EA%BF%88%EC%9D%B4%EC%9D%8C+%EC%B2%AD%EC%B6%98%EC%B9%B4%ED%8E%98+%EC%A7%80%EC%9B%90%EC%82%AC%EC%97%85&_csrf=5ff74cc9-7e5c-4c76-bda2-4407ba03281a"
+  ],
+  "20261020005400214139": [
+   "https://www.gokseong.go.kr/board/GosiView.do?menuNo=102001003000&pageIndex=1&searchCnd=0&not_ancmt_mgt_no=33717&not_ancmt_se_code=&list_gubun=&srhCate=title&searchWrd=%EA%B2%B0%ED%98%BC%EC%B6%95%ED%95%98%EA%B8%88"
+  ],
+  "20261020005400214140": [
+   "https://www.impactsquare.com/news-1/isq-local-2026-731-1800"
+  ],
+  "20261020005400214145": [
+   "https://www.uljin.go.kr/index.uljin?menuCd=DOM_000000103002007001&type=view&ancmtMgtNo=34284"
+  ],
+  "20261020005400214146": [
+   "https://www.uljin.go.kr/index.uljin?menuCd=DOM_000000103002007001&type=view&ancmtMgtNo=33772"
+  ],
+  "20261020005400214147": [
+   "https://www.yc.go.kr/job/contents.do?mId=1700000000"
+  ],
+  "20261020005400214149": [
+   "https://www.welfarehello.com/policy/2026-%EA%B2%BD%EB%B6%81-%EC%9A%B8%EC%A7%84-%EC%9E%90%EA%B2%A9%EC%A6%9D-%EC%B7%A8%EB%93%9D-%EA%B5%90%EC%9C%A1%EC%A7%80%EC%9B%90--6233a001-f95c-4e47-88d4-4412383ae0eb"
+  ],
+  "20261020005400214150": [
+   "https://www.uljin21.com/bbs/view.html?idxno=524989&sc_category=&page=31&sc_area=&sc_word="
+  ],
+  "20261020005400214153": [
+   "https://www.yc.go.kr/job/contents.do?mId=1702000000"
+  ],
+  "20261020005400214154": [
+   "https://www.uljin.go.kr/index.uljin?menuCd=DOM_000000103002007001&type=view&ancmtMgtNo=33676"
+  ],
+  "20261020005400214160": [
+   "http://ygpolicy.kr/job/39"
+  ],
+  "20261021005400214173": [
+   "https://www.gangjin.go.kr/www/government/notice/gosi?idx=27905&mode=view&search_type=title&search_word=%EC%9D%BC%EC%9E%90%EB%A6%AC%20%EC%9E%A5%EB%A0%A4%EA%B8%88&start_date=20251021&finish_date=20261021"
+  ],
+  "20261021005400214175": [
+   "https://www.yc.go.kr/job/contents.do?mId=1701000000"
+  ],
+  "20261021005400214176": [
+   "https://youngplus.univjobcenter.kr/region/gyeongbuk/%EC%98%81%EC%B2%9C%EC%8B%9C"
+  ],
+  "20261021005400214182": [
+   "https://www.yc.go.kr/job/contents.do?mId=1703000000"
+  ],
+  "20261021005400214183": [
+   "https://www.yc.go.kr/portal/saeol/gosi/view.do?notAncmtMgtNo=41875&mId=0301040000"
+  ],
+  "20261021005400214184": [
+   "https://www.yc.go.kr/job/contents.do?mId=1705000000"
+  ],
+  "20261021005400214186": [
+   "https://www.gangjin.go.kr/www/government/notice/gosi?idx=27906&mode=view&search_type=title&search_word=%EC%9E%84%EB%8C%80%EB%A3%8C&start_date=20251021&finish_date=20261021"
+  ],
+  "20261021005400214187": [
+   "https://www.yc.go.kr/job/contents.do?mId=1705000000"
+  ],
+  "20261021005400214198": [
+   "https://www.gunwi.go.kr/ko/page.do?board_code=&srchSDate=&srchKwd=%EC%B2%AD%EB%85%84%EB%AC%B8%ED%99%94&srchColumn=title&srchDept=&srchEDate=&mnu_uid=666&not_ancmt_mgt_no=25737&pageNo=1&cmd=2"
+  ],
+  "20261021005400214203": [
+   "https://www.gokseong.go.kr/board/GosiView.do?menuNo=102001003000&pageIndex=1&searchCnd=0&not_ancmt_mgt_no=33716&not_ancmt_se_code=&list_gubun=&srhCate=title&searchWrd=%EC%B2%AD%EB%85%84%EB%B6%80%EB%B6%80"
+  ],
+  "20261021005400214206": [
+   "https://wis.seoul.go.kr/sec/ctg/categorySearch.do?awsName=저축"
+  ],
+  "20261021005400214208": [
+   "https://housing.seoul.go.kr/site/main/content/sh01_060513#n"
+  ],
+  "20261021005400214225": [
+   "https://www.kaae.kr/bbs/index.kin?bbs_mode=view&f_wbcode=board_notice&f_master_idx=136&f_page=1&f_template_type=list&f_query=&f_target=1"
+  ],
+  "20261021005400214236": [
+   "https://www.gokseong.go.kr/kr/board/view.do?bbsId=BBS_000000000000150&pageIndex=1&nttId=112936&menuNo=102001001000&searchCategory1=&searchCategory2=&searchCategory3="
+  ],
+  "20261021005400214237": [
+   "https://www.d-youth.or.kr/post/3299"
+  ],
+  "20261021005400214238": [
+   "https://www.gangjin.go.kr/www/government/notice/gosi?mode=view&idx=27942"
+  ],
+  "20261021005400214241": [
+   "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000120868",
+   "https://www.jnstartup.co.kr/business.cs?act=view&bsinId=1861"
+  ],
+  "20261021005400214244": [
+   "https://www.jeonnam-gwangju.go.kr/boardView.do?boardId=JG_0000000001&pageId=jngj21&searchSn=112"
+  ],
+  "20261021005400214246": [
+   "https://www.work24.go.kr/wk/v/b/1000/youngGrowPgmList.do"
+  ],
+  "20261022005400114252": [
+   "https://www.cepa.or.kr/notice/cepapressdetail.do?seq=1023"
+  ],
+  "20261022005400214259": [
+   "http://www.refarm.or.kr/bbs/board.php?bo_table=g_notice&wr_id=2365"
+  ],
+  "20261022005400214260": [
+   "https://www.boseong.go.kr/www/open_administration/city_news/notice"
+  ],
+  "20261022005400214272": [
+   "https://www.mof.go.kr/doc/ko/selectDoc.do?docSeq=48409&menuSeq=971&bbsSeq=10"
+  ],
+  "20261023005400214279": [
+   "https://yeyak.seoul.go.kr/web/reservation/selectReservView.do?rsv_svc_id=S260415162403373083",
+   "https://yeyak.seoul.go.kr/web/reservation/selectReservView.do?rsv_svc_id=S260415170002708750"
+  ],
+  "20261023005400214288": [
+   "https://www.wbridge.or.kr/platform/edc/area/intrcn/viewEdcAreaIntrcn.do?utm_source=chatgpt.com"
+  ],
+  "20261023005400214289": [
+   "https://www.iris.go.kr/contents/retrieveBsnsAncmView.do?ancmId=020254&ancmPrg=ancmPre"
+  ],
+  "20261023005400214291": [
+   "https://swwu.ac.kr/download/1775809893054/index.html?utm_source=chatgpt.com"
+  ],
+  "20261023005400214294": [
+   "https://www.gb.go.kr/page/10107/10004.do?pageDtlOrdrNo=1&pageIndex=1&boardNo=1338341&boardMngNo=12&searchStrtDt=2025-10-24&searchEndDt=2026-10-23&searchCondition=1&searchKeyword=%EC%B4%88%EC%B2%AD+&recordCountPerPage=10&_csrf=afaab2c0-69a8-48c6-ba68-aced93e2b6c6&importUrl=%2Fboard%2Fview.do"
+  ],
+  "20261023005400214299": [
+   "https://netzero.gbtp.or.kr/centerinfo/centerinfo2_3"
+  ],
+  "20261023005400214301": [
+   "https://www.gb.go.kr/page/10109/67.do?pageDtlOrdrNo=1&pageIndex=1&boardNo=1334101&boardMngNo=71&searchStrtDt=2025-10-24&searchEndDt=2026-10-23&searchCondition=1&searchKeyword=%EB%B9%84%EC%A6%88%EC%BF%A8&recordCountPerPage=10&_csrf=afaab2c0-69a8-48c6-ba68-aced93e2b6c6&importUrl=%2Fboard%2Fview.do"
+  ],
+  "20261023005400214302": [
+   "https://www.gb.go.kr/page/10107/10004.do?pageDtlOrdrNo=1&pageIndex=1&boardNo=1331013&boardMngNo=12&searchStrtDt=2025-10-24&searchEndDt=2026-10-23&searchCondition=1&searchKeyword=%ED%83%91%ED%8B%B0%EC%96%B4&recordCountPerPage=10&_csrf=afaab2c0-69a8-48c6-ba68-aced93e2b6c6&importUrl=%2Fboard%2Fview.do"
+  ],
+  "20261023005400214317": [
+   "https://gbfv.or.kr/contents/business/3/"
+  ],
+  "20261023005400214320": [
+   "https://www.jeongeup.go.kr/index.jeongeup?menuCd=DOM_000000103003005003"
+  ],
+  "20261023005400214322": [
+   "https://www.jeongeup.go.kr/index.jeongeup?menuCd=DOM_000000103003005021"
+  ],
+  "20261023005400214325": [
+   "https://www.hampyeong.go.kr/youth"
+  ],
+  "20261023005400214333": [
+   "https://www.jcia.or.kr/cf/facility/regionfacility.do"
+  ],
+  "20261023005400214335": [
+   "https://www.jeonnam-gwangju.go.kr/boardView.do?boardId=JG_0000000031&pageId=jngj141&searchSn=101"
+  ],
+  "20261023005400214336": [
+   "https://www.jntle.kr/main/uBusiness3/2026005"
+  ],
+  "20261023005400214348": [
+   "https://www.jntle.kr/main/uBusiness9/2026026"
+  ],
+  "20261023005400214354": [
+   "https://www.jeonnam.go.kr/J0203/boardView.do?seq=23699&menuId=jeonnam0203000000&boardId=J0203"
+  ],
+  "20261023005400214356": [
+   "https://www.seogu.gwangju.kr/goodjob/",
+   "https://www.seogu.gwangju.kr/menu.es?mid=b70801000000"
+  ],
+  "20261023005400214359": [
+   "https://www.seogu.gwangju.kr/board.es?mid=a10612000000&bid=0154&list_no=143505&act=view"
+  ],
+  "20261023005400214367": [
+   "https://www.seogu.gwangju.kr/menu.es?mid=b20109000000"
+  ],
+  "20261024005400214370": [
+   "https://youth.gg.go.kr/gg/intro/youth-policy-culture-test.do?mode=view&articleNo=8966&title=%25EA%25B2%25BD%25EA%25B8%25B0%25EB%258F%2584+%25EC%259E%2590%25EB%25A6%25BD%25EC%25A4%2580%25EB%25B9%2584%25EC%25B2%25AD%25EB%2585%2584+%25EC%25BD%2594%25EC%25B9%25AD+%25EC%25A7%2580%25EC%259B%2590%25EC%2582%25AC%25EC%2597%2585"
+  ],
+  "20261024005400214371": [
+   "https://youth.gg.go.kr/gg/intro/youth-policy-housing-test.do?mode=view&articleNo=7693&title=%25EC%259E%2590%25EB%25A6%25BD%25EC%25A4%2580%25EB%25B9%2584%25EC%25B2%25AD%25EB%2585%2584+%25EC%259E%2590%25EB%25A6%25BD%25EC%25A7%2580%25EC%259B%2590%25EC%25A0%2595%25EC%25B0%25A9%25EA%25B8%2588+%25EC%25A7%2580%25EC%259B%2590"
+  ],
+  "20261025005400214373": [
+   "https://jares.jangheung.go.kr/www/life_welfare/population_plan/youth/newly"
+  ],
+  "20261025005400214374": [
+   "https://jares.jangheung.go.kr/www/life_welfare/population_plan/youth/newly"
+  ],
+  "20261025005400214375": [
+   "https://jares.jangheung.go.kr/www/life_welfare/population_plan/youth/newly"
+  ],
+  "20261025005400214376": [
+   "https://jares.jangheung.go.kr/www/life_welfare/population_plan/youth/newly"
+  ],
+  "20261025005400214380": [
+   "https://www.jeonnam.go.kr/J0203/boardView.do?seq=23784&menuId=jeonnam0203000000&boardId=J0203"
+  ],
+  "20261025005400214391": [
+   "https://www.ncmh.go.kr/ncmh/board/boardView.do?no=10424&fno=106&gubun_no=9&menu_cd=04_03_00_04&bn=newsView&search_item=&search_content=&pageIndex=1"
+  ],
+  "20261025005400214396": [
+   "https://www.mohw.go.kr/menu.es?mid=a10709020400"
+  ],
+  "20261025005400214400": [
+   "https://www.suncheon.go.kr/kr/news/0004/0005/0001/?mode=view&seq=61681"
+  ],
+  "20261025005400214401": [
+   "https://www.jeonnam.go.kr/contentsView.do?menuId=brand0401000000"
+  ],
+  "20261026005400114416": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20250417CT000000000002261"
+  ],
+  "20261026005400114418": [
+   "https://www.chungnam.go.kr/cnportal/media/article/view.do?articleNo=MD0003478142&menuNo=500181&edate=2026-10-07&sdate=2025-10-07&articleSectNo2=500181&pageIndex=1"
+  ],
+  "20261026005400114419": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-10/view?bizId=A20250421CT000000000002278"
+  ],
+  "20261026005400114420": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-11/view?bizId=A20250421CT000000000002276"
+  ],
+  "20261026005400114421": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20250417CT000000000002260"
+  ],
+  "20261026005400214431": [
+   "https://www.seogu.gwangju.kr/menu.es?mid=b71001000000"
+  ],
+  "20261026005400214440": [
+   "https://www.yeongam.go.kr/home/moonlight/notice/notice_01/show/ugn115kktibhfvi7mnv7h?page=1&search=search_title&keyword=%EC%9B%94%EC%84%B8"
+  ],
+  "20261026005400214441": [
+   "https://www.gimje.go.kr/index.gimje?menuCd=DOM_000000109006000000&cpath="
+  ],
+  "20261027005400214443": [
+   "https://www.jbci.or.kr/sub/business_1_view.html?id=5872"
+  ],
+  "20261027005400214446": [
+   "https://www.jbexport.or.kr/other/spWork/spWorkSupportBusiness/detail1.do?menuUUID=402880867c8174de017c819251e70009&spSeq=4f9399b9e254470596fc51265f0d2605"
+  ],
+  "20261027005400214448": [
+   "https://www.sangju.go.kr/opencenter/board/detail.tc?mn=6053&viewType=sub&mngNo=1&pageIndex=1&boardName=RHDWLTKGKD&boardNo=466&boardCategory=&pageSeq=6048&preview=&previewTempl=&searchCondition=0&searchKeyword="
+  ],
+  "20261027005400214451": [
+   "http://sjjh.or.kr/page.do?mid=8&ArticleId=151&PageNum=1"
+  ],
+  "20261027005400214452": [
+   "http://sjjh.or.kr/page.do?mid=8"
+  ],
+  "20261027005400214453": [
+   "https://www.sangju.go.kr/opencenter/board/detail.tc?mn=6053&viewType=sub&mngNo=1&pageIndex=1&boardName=RHDWLTKGKD&boardNo=481&boardCategory=&pageSeq=6048&preview=&previewTempl=&searchCondition=0&searchKeyword=%EC%9E%90%EA%B2%A9%EC%A6%9D"
+  ],
+  "20261027005400214456": [
+   "https://www.sangju.go.kr/gosi/detail.tc?mn=10297&mgtNo=28980"
+  ],
+  "20261027005400214458": [
+   "https://www.yeongam.go.kr/home/moonlight/notice/notice_01/show/cghdyu36u18xfnorzmmgr"
+  ],
+  "20261027005400214460": [
+   "https://www.yeongam.go.kr/home/www/open_information/yeongam_news/announcement/announcement_01/show/38512?page=1&search=search_title&not_ancmt_sj=%EC%B0%B8%EC%97%AC"
+  ],
+  "20261028005400114468": [
+   "https://www.sealife.go.kr/policy/policy2.do"
+  ],
+  "20261028005400114469": [
+   "https://www.chungnam.go.kr/cnportal/media/article/view.do?articleNo=MD0003425694&menuNo=500170&articleSectNo2=500170&edate=2026-05-10&sdate=2025-05-10&pageIndex=1"
+  ],
+  "20261028005400114470": [
+   "https://www.chungnam.go.kr/cnportal/media/article/view.do?articleNo=MD0003326872&menuNo=500190&layerType=all&searchCnd=2&searchWrd=%ED%83%A0%EC%88%98&edate=2026-03-25&sdate=2025-03-25&pageIndex=1"
+  ],
+  "20261028005400214472": [
+   "https://www.gimje.go.kr/board/view.gimje?boardId=BBS_0000046&menuCd=DOM_000000104005000000&paging=ok&startPage=1&searchType=DATA_TITLE&searchOperation=AND&keyword=%EC%A0%95%EC%B0%A9%EC%88%98%EB%8B%B9&dataSid=308870"
+  ],
+  "20261028005400214473": [
+   "https://www.gimje.go.kr/board/view.gimje?menuCd=DOM_000000104001000000&boardId=BBS_0000027&dataSid=318761"
+  ],
+  "20261028005400214474": [
+   "https://www.gimje.go.kr/town/board/view.gimje?menuCd=DOM_000002217004001000&boardId=BBS_0000027&dataSid=366194"
+  ],
+  "20261029005400114483": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-02/view?bizId=A20250415CT000000000002224"
+  ],
+  "20261029005400114487": [
+   "https://www.glocal30.kr/bbs/content.php?co_id=glocal30"
+  ],
+  "20261029005400214491": [
+   "https://www.jeongeup.go.kr/index.jeongeup?menuCd=DOM_000000103003005025"
+  ],
+  "20261029005400214500": [
+   "https://www.jbwelfare.or.kr/bbs/view.do?key=2401020015&pstSn=2601210044"
+  ],
+  "20261029005400214501": [
+   "https://xn--5h5b11aern0q.com/bbs/board.php?bo_table=jejob&wr_id=110"
+  ],
+  "20261029005400214502": [
+   "https://www.jeongeup.go.kr/index.jeongeup?menuCd=DOM_000000103003005019"
+  ],
+  "20261029005400214511": [
+   "https://www.pohang.go.kr/portal/saeol/gosi/view.do?notAncmtMgtNo=70216&mid=0202010000"
+  ],
+  "20261029005400214512": [
+   "https://www.gbmg.go.kr/portal/contents.do?mId=0601040711"
+  ],
+  "20261029005400214514": [
+   "https://www.pohang.go.kr/economy/contents.do?mid=0105010000"
+  ],
+  "20261029005400214516": [
+   "https://www.pohang.go.kr/economy/contents.do?mid=0105020000"
+  ],
+  "20261029005400214522": [
+   "https://www.pohang.go.kr/portal/board/post/view.do?idx=1017744&bcIdx=100&mid=0201010000"
+  ],
+  "20261029005400214523": [
+   "https://ccei.creativekorea.or.kr/pohang/"
+  ],
+  "20261029005400214528": [
+   "https://xn--289an1an6j5ul35d48ai5dj0ixsc0uid4bh0n.kr/2025/gb_epa_info01.php?ACATE=03"
+  ],
+  "20261029005400214529": [
+   "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000088168"
+  ],
+  "20261029005400214532": [
+   "https://www.pohang.go.kr/dept/board/post/view.do?bcIdx=100&mid=0108010000&idx=1020282"
+  ],
+  "20261029005400214534": [
+   "https://www.gyeongju.go.kr/open_content/ko/page.do?mnu_uid=423&&parm_bod_uid=311493&step=258"
+  ],
+  "20261029005400214540": [
+   "https://www.gyeongju.go.kr/webzine/GJstory/vol160/html/post/3365.html"
+  ],
+  "20261029005400214541": [
+   "https://www.gc.go.kr/jobPortal/bbs/view.do?bIdx=4518939&ptIdx=3765&mId=0401000000"
+  ],
+  "20261029005400214542": [
+   "https://www.gc.go.kr//jobPortal/bbs/view.do?bIdx=4520756&ptIdx=3765&mId=0401000000"
+  ],
+  "20261029005400214544": [
+   "https://www.gc.go.kr//jobPortal/bbs/view.do?bIdx=4519733&ptIdx=3765&mId=0401000000"
+  ],
+  "20261029005400214547": [
+   "https://www.andong.go.kr/portal/contents.do?mId=0615080100"
+  ],
+  "20261029005400214553": [
+   "https://www.gumi.go.kr/portal/board/post/view.do?bcIdx=1&mid=0401020000&idx=833507"
+  ],
+  "20261029005400214563": [
+   "https://www.gumi.go.kr/portal/board/post/view.do?bcIdx=1&mid=0401020000&idx=833647"
+  ],
+  "20261029005400214566": [
+   "https://www.gumi.go.kr/portal/board/post/view.do?bcIdx=1&mid=0401020000&idx=841229"
+  ],
+  "20261029005400214569": [
+   "https://www.gumi.go.kr/portal/saeol/gosi/view.do?notAncmtMgtNo=69553&mid=0401040000"
+  ],
+  "20261029005400214571": [
+   "https://www.4242.or.kr/total_board/view/id/36836"
+  ],
+  "20261029005400214577": [
+   "https://sjepa.or.kr/programs-jobs-growth-project"
+  ],
+  "20261029005400214578": [
+   "https://www.sejong.go.kr/bbs/R0071/view.do?nttId=B000000154621Vr1xU6k&mno=sub02_01"
+  ],
+  "20261029005400214579": [
+   "https://www.4242.or.kr/total_board/view/id/36843"
+  ],
+  "20261030005400214588": [
+   "https://www.gbgs.go.kr/open_content/ko/page.do?mnu_uid=2160&&parm_bod_uid=258224&step=258"
+  ],
+  "20261030005400214591": [
+   "https://www.jeonbuk.go.kr/board/list.jeonbuk?menuCd=DOM_000000102002005000&boardId=BBS_0000129&listCel=1&searchStartDt=&searchEndDt=&categoryCode1=&categoryCode2=&searchType=DATA_TITLE&listRow=10&keyword=%EC%9D%BC%EC%9E%90%EB%A6%AC"
+  ],
+  "20261030005400214594": [
+   "https://www.jbct.or.kr/organ/site/menu/MENU_000000000000238?id=1464"
+  ],
+  "20261030005400214598": [
+   "https://www.jbct.or.kr/organ/site/menu/MENU_000000000000238?id=1546"
+  ],
+  "20261030005400214599": [
+   "https://www.jbct.or.kr/organ/site/menu/MENU_000000000000238?id=1455"
+  ],
+  "20261030005400214600": [
+   "https://www.jbct.or.kr/organ/site/menu/MENU_000000000000238?id=1469"
+  ],
+  "20261030005400214601": [
+   "https://www.yeosu.go.kr/www/govt/news/notify/new_notify?idx=77679&mode=view"
+  ],
+  "20261030005400214602": [
+   "https://www.jeongeup.go.kr/index.jeongeup?menuCd=DOM_000000103003008000"
+  ],
+  "20261030005400214603": [
+   "https://www.saha.go.kr/startup/contents.do?mId=0301000000"
+  ],
+  "20261030005400214605": [
+   "https://www.jeongeup.go.kr/index.jeongeup?menuCd=DOM_000000103003005033"
+  ],
+  "20261030005400214606": [
+   "https://www.jeongeup.go.kr/index.jeongeup?menuCd=DOM_000000103003005034"
+  ],
+  "20261030005400214607": [
+   "https://www.jeongeup.go.kr/index.jeongeup?menuCd=DOM_000000103003005027"
+  ],
+  "20261030005400214608": [
+   "https://www.jeongeup.go.kr/index.jeongeup?menuCd=DOM_000000103003005036"
+  ],
+  "20261030005400214610": [
+   "https://www.gov.kr/portal/rcvfvrSvc/dtlEx/119200000174"
+  ],
+  "20261030005400214611": [
+   "https://youth.gg.go.kr/gg/intro/youth-policy-job-test.do?mode=view&articleNo=8981&title=%25EB%2582%2598%25EB%2585%25B8%25EA%25B8%25B0%25EC%2588%25A0+%25EC%259D%25B8%25EB%25A0%25A5%25EC%2596%2591%25EC%2584%25B1+%25EC%2582%25AC%25EC%2597%2585"
+  ],
+  "20261030005400214613": [
+   "https://youth.gg.go.kr/gg/intro/youth-policy-job-test.do?mode=view&articleNo=8982&title=%25EB%25B0%2598%25EB%258F%2584%25EC%25B2%25B4+%25EC%2582%25B0%25EC%2597%2585+%25EC%25A0%2584%25EB%25AC%25B8%25EC%259D%25B8%25EB%25A0%25A5+%25EC%2596%2591%25EC%2584%25B1%25EC%2582%25AC%25EC%2597%2585"
+  ],
+  "20261030005400214618": [
+   "https://youth.gg.go.kr/gg/intro/youth-policy-job-test.do?mode=view&articleNo=8998&title=%EC%86%8C%EC%83%81%EA%B3%B5%EC%9D%B8+%EC%B2%AD%EB%85%84+%EC%B0%BD%EC%97%85+%EC%9B%90%EC%8A%A4%ED%85%9D"
+  ],
+  "20261030005400214620": [
+   "https://youth.gg.go.kr/gg/intro/youth-policy-job-test.do?mode=view&articleNo=8999&title=%EC%B2%AD%EB%85%84+%EC%82%AC%ED%9A%8C%EC%A0%81%EA%B2%BD%EC%A0%9C+%EC%B0%BD%EC%97%85%EB%8F%99%EC%95%84%EB%A6%AC"
+  ],
+  "20261030005400214624": [
+   "https://youth.gg.go.kr/gg/intro/youth-policy-job-test.do?mode=view&articleNo=9027&title=%EA%B2%BD%EA%B8%B0%EB%8F%84%ED%98%95+%EC%B0%BD%EC%97%85%ED%8A%B9%ED%99%94%EC%A3%BC%ED%83%9D+%EC%A1%B0%EC%84%B1+%EB%B0%8F+%EC%9A%B4%EC%98%81"
+  ],
+  "20261030005400214627": [
+   "https://www.saha.go.kr/startup/contents.do?mId=0100000000"
+  ],
+  "20261030005400214628": [
+   "https://www.saha.go.kr/startup/bbs/view.do?mId=0503000000&bIdx=154426&ptIdx=682"
+  ],
+  "20261030005400214630": [
+   "https://www.saha.go.kr/portal/contents.do?mId=0402000000"
+  ],
+  "20261030005400214634": [
+   "https://www.gjf.or.kr/main/main_biz/view.do?lclsf_sn=115&sclsf_sn=305&main_biz_sn=16"
+  ],
+  "20261030005400214637": [
+   "https://youth.gg.go.kr/gg/intro/youth-policy-culture-test.do?mode=view&articleNo=8963&title=%EC%B2%AD%EB%85%84%EB%86%8D%EC%97%85%EC%9D%B8+%EA%B2%BD%EC%9F%81%EB%A0%A5+%EC%A0%9C%EA%B3%A0%EC%82%AC%EC%97%85"
+  ],
+  "20261030005400214640": [
+   "https://www.gg.go.kr/1ingg/bbs/boardView.do?bsIdx=871&bIdx=110888836&page=1&menuId=4111&bcIdx=531"
+  ],
+  "20261030005400214641": [
+   "https://young.busan.go.kr/policySupport/view.nm?menuCd=13&bizSid=SUP0000003184"
+  ],
+  "20261030005400214642": [
+   "https://young.busan.go.kr/index.nm?menuCd=68"
+  ],
+  "20261030005400214644": [
+   "https://youth.gg.go.kr/gg/intro/youth-policy-educational-testing.do?mode=view&articleNo=7667&title=%EA%B2%BD%EA%B8%B0%EB%8F%84+%EA%B3%B5%EA%B3%B5%EA%B8%B0%EC%88%99%EC%82%AC+%EC%9A%B4%EC%98%81"
+  ],
+  "20261030005400214645": [
+   "https://young.busan.go.kr/policySupport/view.nm?menuCd=13&bizSid=SUP0000003954"
+  ],
+  "20261030005400214648": [
+   "https://www.saha.go.kr/job/contents.do?mId=0301040000",
+   "https://www.saha.go.kr/startup/bbs/list.do?ptIdx=681&mId=0501000000"
+  ],
+  "20261030005400214651": [
+   "https://www.gg.go.kr/contents/contents.do?ciIdx=987237&menuId=1534071"
+  ],
+  "20261030005400214653": [
+   "https://housing.gg.go.kr/html/51502.do"
+  ],
+  "20261031005400214654": [
+   "https://youth.gg.go.kr/gg/intro/youth-policy-housing-test.do?mode=view&articleNo=7682&title=%EA%B7%BC%EB%A1%9C%EB%8A%A5%EB%A0%A5+%EC%9E%88%EB%8A%94+%EC%88%98%EA%B8%89%EC%9E%90%EC%9D%98+%ED%83%88%EC%88%98%EA%B8%89+%EC%A7%80%EC%9B%90"
+  ],
+  "20261031005400214655": [
+   "https://account.gfgf.kr/main/freshman_main.do"
+  ],
+  "20261031005400214657": [
+   "https://www.mohw.go.kr/board.es?mid=a10501010100&bid=0003&act=view&list_no=1489983"
+  ],
+  "20261031005400214659": [
+   "https://youth.gg.go.kr/gg/intro/youth-policy-housing-test.do?mode=view&articleNo=8986&title=%EC%9E%AC%EB%82%9C%EB%B3%B5%EA%B5%AC%EC%A7%80%EC%9B%90+%EA%B5%B0+%EC%9E%A5%EB%B3%91+%EC%83%81%ED%95%B4%EB%B3%B4%ED%97%98+%EA%B0%80%EC%9E%85+%EC%A7%80%EC%9B%90"
+  ],
+  "20261031005400214661": [
+   "https://www.gg.go.kr/myggd/vol197/2_1.php"
+  ],
+  "20261031005400214662": [
+   "https://youth.gg.go.kr/gg/intro/youth-policy-housing-test.do?mode=view&articleNo=7703&title=%EC%A7%80%EC%97%AD%EC%82%AC%ED%9A%8C+%EC%84%9C%EB%B9%84%EC%8A%A4%EB%B6%84%EC%95%BC+%EC%B2%AD%EB%85%84%EC%82%AC%EC%97%85%EB%8B%A8+%EC%A7%80%EC%9B%90"
+  ],
+  "20261031005400214665": [
+   "https://youth.gg.go.kr/gg/intro/youth-policy-law-test.do?mode=view&articleNo=9015&title=%EA%B2%BD%EA%B8%B0%EB%B6%81%EB%B6%80+%EC%B2%AD%EB%85%84+%EC%84%9C%ED%8F%AC%ED%84%B0%EC%A6%88+%EC%9A%B4%EC%98%81"
+  ],
+  "20261101005400214676": [
+   "https://www.dganchor.or.kr/bbs/bbsView?mid=603002000000&bbsId=5&postNo=203"
+  ],
+  "20261101005400214682": [
+   "https://minwon.daegu.go.kr/cvpl/AUTN-011/info"
+  ],
+  "20261103005400114715": [
+   "https://www.kocca.kr/kocca/bbs/view/B0000137/2012372.do?searchCnd=1&searchWrd=%EC%9D%B8%ED%84%B4&cateTp1=&cateTp2=&useYn=&menuNo=204802&categorys=0&subcate=0&cateCode=&type=&instNo=0&questionTp=&ufSetting=&recovery=&option1=&option2=&year=&morePage=&qtp=&domainId=&sortCode=&pageIndex=1"
+  ],
+  "20261103005400214699": [
+   "https://www.yeonggwang.go.kr/bbs/?b_id=gosigonggo&site=headquarter_new&mn=9059&type=view&sc_cate=&per_page=10&start_date=&end_date=&sc_key=subject&sc_word=%EC%A3%BC%ED%83%9D%EA%B5%AC%EC%9E%85&bs_idx=28498"
+  ],
+  "20261103005400214706": [
+   "https://www.yeonggwang.go.kr/bbs/?b_id=gosigonggo&site=headquarter_new&mn=9059&type=view&sc_cate=&per_page=10&start_date=&end_date=&sc_key=subject&sc_word=%EC%9D%B8%ED%84%B4&bs_idx=28825"
+  ],
+  "20261104005400214720": [
+   "https://anbang.daegu.go.kr/supportNewlyweds/businessOverView.do"
+  ],
+  "20261106005400214759": [
+   "https://www.jeonnam.go.kr/M7116/boardView.do?seq=1960965&menuId=jeonnam0202000000&boardId=M7116"
+  ],
+  "20261111005400114814": [
+   "https://www.chungnam.go.kr/cnportal/province/province/view.do?nttId=2165359&menuNo=500487&searchCnd=1&searchWrd=%EC%B2%AD%EB%85%84&pageIndex=1&cl1CdValue=&sdate=2024-10-24&edate=2025-10-24"
+  ],
+  "20261111005400114815": [
+   "https://www.chungnam.go.kr/cnportal/province/province/view.do?nttId=2172034&menuNo=500487&pageIndex=1&sdate=2025-02-09&edate=2026-02-09"
+  ],
+  "20261111005400114824": [
+   "https://www.chungnam.go.kr/cnportal/media/article/view.do?articleNo=MD0003486558&menuNo=500190&layerType=all&searchCnd=2&searchWrd=%EC%B6%A9%EB%82%A8%EC%BD%98%ED%85%90%EC%B8%A0%EC%A7%84%ED%9D%A5%EC%9B%90&edate=2026-09-11&sdate=2025-09-11&pageIndex=1"
+  ],
+  "20261111005400214817": [
+   "https://www.asan.go.kr/naeil/page/?page=020100"
+  ],
+  "20261112005400214832": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20260402LC000000000003160"
+  ],
+  "20261112005400214833": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M030-01/view?bizId=A20260401LC000000000003138"
+  ],
+  "20261112005400214834": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20260401LC000000000003149"
+  ],
+  "20261112005400214836": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20260401LC000000000003147"
+  ],
+  "20261112005400214837": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-05/view?bizId=A20260401LC000000000003130"
+  ],
+  "20261112005400214838": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20260401LC000000000003084"
+  ],
+  "20261112005400214839": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M060-09/view?bizId=A20260401LC000000000003148"
+  ],
+  "20261112005400214840": [
+   "https://youth.chungnam.go.kr/web/main/customSupp/M040-06/view?bizId=A20260402LC000000000003156"
+  ],
+  "20261118005400214869": [
+   "https://www.wonju.go.kr/www/selectBbsNttView.do?key=216&bbsNo=140&nttNo=495903&searchCtgry=&searchCnd=SJ&searchKrwd=%EB%84%A4%ED%8A%B8%EC%9B%8C%ED%81%AC&pageIndex=1&integrDeptCode="
+  ]
+ }
+}
