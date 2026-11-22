@@ -59,9 +59,11 @@ with sync_playwright() as p:
     assert page.evaluate(FITS)
     page.screenshot(path=str(BASE / '.local/mobile-results.png'))
     page.locator('.cardbtn').first.click()
-    expect(page.locator('main')).to_contain_text('조건 대조')
-    # 공식 사이트: 온통청년 정책 페이지는 모든 정책에 있고, '공식 공고' 버튼은 항상 주소가 있다
-    expect(page.locator('main a[href^="https://www.youthcenter.go.kr/youthPolicy/ythPlcyTotalSearch/ythPlcyDetail/"]')).to_have_text('온통청년 정책 페이지')
+    expect(page.locator('main h3').filter(has_text='지원 조건')).to_be_visible()
+    text = page.locator('main').inner_text()
+    assert '조건 대조' not in text and '내 정보:' not in text and '공식 사이트' not in text
+    assert text.index('지원 내용') < text.index('지원 조건')                    # 지원 내용이 먼저
+    # '공식 공고' 버튼은 항상 주소가 있다
     assert page.locator('.act a.btn').get_attribute('href').startswith('https://')
     page.locator('[data-a=sheet]').first.click()
     expect(page.locator('.sheet')).to_contain_text('지원 조건')
@@ -76,7 +78,8 @@ with sync_playwright() as p:
     page.locator('input[data-a=sel]').nth(1).check()
     expect(page.locator('.act')).to_contain_text('2개 선택')
     page.locator('[data-a=plan]').click()
-    expect(page.locator('main')).to_contain_text('고른 정책')
+    expect(page.locator('.ord li')).to_have_count(2)
+    assert '고른 정책' not in page.locator('main').inner_text()
     assert '신청 순서' not in page.locator('main').inner_text()
     # 안내 글에 서로 막는 문구가 있으면 그 문장을, 없으면 확인 필요 안내를 보여 준다.
     expect(page.locator('.warnbox')).to_contain_text('함께 받')
@@ -92,8 +95,7 @@ with sync_playwright() as p:
             expect(page.locator('input[data-a=doc]:not(:checked)')).to_have_count(left - 1)
     page.locator('[data-a=check]').click()
     expect(page.locator('main')).to_contain_text('중복 수혜 여부')
-    expect(page.locator('#msg')).to_contain_text('문의드립니다')
-    expect(page.locator('main a[href^="https://www.youthcenter.go.kr/youthPolicy/ythPlcyTotalSearch/ythPlcyDetail/"]')).to_have_count(2)                 # 고른 정책마다 공식 사이트 링크
+    assert '문의 문구' not in page.locator('main').inner_text() and '공식 사이트' not in page.locator('main').inner_text()                 # 고른 정책마다 공식 사이트 링크
     assert page.locator('.act a.btn').inner_text() in ('공식 신청 페이지로 이동', '공식 공고로 이동')
     assert page.locator('.act a.btn').get_attribute('href').startswith('https://')
     # 승인 전에는 아무것도 저장되지 않는다.
@@ -139,7 +141,7 @@ with sync_playwright() as p:
     expect(page.locator('main')).to_contain_text('공식 페이지에서 보완한 정보')
     expect(page.locator('main')).to_contain_text('사람 검수 전')
     # 조건 줄은 '지원 조건'으로 나오고, 보완 기록마다 출처에서 문장을 확인했는지 표시가 붙는다
-    expect(page.locator('main')).to_contain_text('지원 조건:')
+    expect(page.locator('main')).to_contain_text('지원 조건')
     assert page.locator('details.more .pill').filter(has_text='출처에서 문장 확인').count() + page.locator('details.more .pill').filter(has_text='자동 대조 안 됨').count() >= 1
     page.locator('[data-a=back]').click()
 

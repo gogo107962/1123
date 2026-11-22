@@ -55,7 +55,7 @@ with sync_playwright() as p:
     for i in range(5):
         page.locator('.browse-item').nth(i).click()
         page.locator('[data-a=prep]').click()
-        expect(page.locator('main')).to_contain_text('고른 정책')
+        expect(page.locator('.ord li').first).to_be_visible()
         page.locator('[data-a=back]').click()                      # 신청 계획 → 상세
         page.locator('[data-a=back]').click()                      # 상세 → 지원 찾기
         expect(page.locator('.browse-item').first).to_be_visible()
@@ -79,7 +79,7 @@ with sync_playwright() as p:
     # 5) 상세 → 뒤로 가도 목록과 선택이 그대로다. 새로고침해도 선택이 남는다.
     first = page.locator('.browse-item strong').first.inner_text()
     page.locator('.browse-item').first.click()
-    expect(page.locator('main')).to_contain_text('조건 대조')
+    expect(page.locator('main')).to_contain_text('지원 조건')
     expect(page.locator('main')).to_contain_text('내 정보를 입력하면 조건을 비교해 드려요')
     page.locator('[data-a=back]').click()
     expect(page.locator('.browse-item strong').first).to_have_text(first)
@@ -91,7 +91,7 @@ with sync_playwright() as p:
     expect(page.locator('main')).to_contain_text('아직 세운 신청 계획이 없어요')
     expect(page.locator('main')).to_contain_text('고른 정책 5개')
     page.locator('main [data-a=plan]').click()
-    expect(page.locator('main h3').filter(has_text='고른 정책')).to_be_visible()
+    expect(page.locator('.ord li').first).to_be_visible()
     assert page.locator('.ord li').count() == 5 and page.evaluate(FITS)
     page.screenshot(path=str(BASE / '.local/mobile-edge-plan.png'))
     done.append('back_and_reload_keep_selection')
