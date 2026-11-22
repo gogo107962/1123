@@ -97,7 +97,9 @@ function cond(key,d){const st=d.bundle.structured,p=d.bundle.public_fields,a=st.
  const found=key==='age'&&d.bundle.supplements.filter(sure).flatMap(x=>x.rules||[]).find(r=>r.predicate.fact==='age');
  if(found){const v=found.predicate.value,op=found.predicate.op;return (op==='gte'?`${v}세 이상`:op==='lte'?`${v}세 이하`:`${v[0]}~${v[1]}세`)+' (공식 페이지)'}
  if(key==='age')return a.kind==='range'?(a.max>=99?`${a.min}세 이상 (상한 ${a.max})`:`${a.min}~${a.max}세`):a.kind==='min_only'?`${a.min}세 이상`:a.kind==='max_only'?`${a.max}세 이하`:a.no_limit?'제한없음':'정보 없음';
- if(key==='region')return st.region.nationwide?'전국':st.region.sido_names.join(', ')||'정보 없음';
+ if(key==='region'){const r=st.region,out=Object.keys(S.names.sido).filter(c=>!r.sido.includes(c));
+  // 수집본에서 시도 12곳 이상이 등록됐는데 전국이 아닌 정책은 24건이고 모두 1~4곳만 빠졌다(2026-11-22). 그런 정책은 빠진 곳만 적는다.
+  return r.nationwide?'전국':r.sido.length>=12&&out.length&&out.length<=4&&!(r.unknown_sido||[]).length?`전국(${out.map(c=>shortSido(S.names.sido[c])).join(' · ')} 제외)`:r.sido_names.join(', ')||'정보 없음'}
  if(key==='exclusion')return st.exclusions.explicit_none?'해당 없음':`안내 ${st.exclusions.count}건`+(st.exclusions.kinds.length?` (${st.exclusions.kinds.join(', ')})`:'');
  if(key==='apply')return '정보 없음';
  if(key==='exam')return st.exam.kinds.length?'글에 적힌 종류: '+st.exam.kinds.join(', '):'응시료 지원 · 대상 시험은 공고에서 확인';
