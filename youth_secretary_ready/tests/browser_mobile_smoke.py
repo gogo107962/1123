@@ -60,7 +60,14 @@ with sync_playwright() as p:
     # 공식 사이트: 온통청년 정책 페이지는 모든 정책에 있고, '공식 공고' 버튼은 항상 주소가 있다
     expect(page.locator('main a[href^="https://www.youthcenter.go.kr/youthPolicy/ythPlcyTotalSearch/ythPlcyDetail/"]')).to_have_text('온통청년 정책 페이지')
     assert page.locator('.act a.btn').get_attribute('href').startswith('https://')
+    # 신청기간 줄은 맨 위에 판정 없이 표시만(회색) 나오고, 누르면 오늘 날짜와 '표시만' 안내가 보인다
+    expect(page.locator('[data-a=sheet]').first).to_contain_text('신청기간')
+    assert page.locator('[data-a=sheet]').first.locator('.pill.gray').count() == 1
     page.locator('[data-a=sheet]').first.click()
+    expect(page.locator('.sheet')).to_contain_text('표시만 해요')
+    expect(page.locator('.sheet')).to_contain_text('오늘 ' + page.evaluate('today()')[2:].replace('-', '.'))
+    page.locator('.sheet button[data-a=closesheet]').click()
+    page.locator('[data-a=sheet]').nth(1).click()
     expect(page.locator('.sheet')).to_contain_text('지원 조건')
     expect(page.locator('.sheet')).to_contain_text('온통청년 정책 페이지의')     # 근거의 위치
     assert '정보 수집일' not in page.locator('.sheet').inner_text()                # 팝업에는 수집일을 보여 주지 않는다
