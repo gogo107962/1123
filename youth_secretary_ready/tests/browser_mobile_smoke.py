@@ -69,7 +69,7 @@ with sync_playwright() as p:
     page.locator('.sheet button[data-a=closesheet]').click()
     page.locator('[data-a=sheet]').nth(1).click()
     expect(page.locator('.sheet')).to_contain_text('지원 조건')
-    expect(page.locator('.sheet')).to_contain_text('온통청년 정책 페이지의')     # 근거의 위치
+    assert '위치' not in page.locator('.sheet').inner_text()                    # 팝업에 '위치' 줄은 보여 주지 않는다
     assert '정보 수집일' not in page.locator('.sheet').inner_text()                # 팝업에는 수집일을 보여 주지 않는다
     page.screenshot(path=str(BASE / '.local/mobile-detail.png'))
     page.locator('.sheet button[data-a=closesheet]').click()
