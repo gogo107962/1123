@@ -240,6 +240,9 @@ def _coded(item, value):
     return 'mismatch', '등록된 조건: ' + ', '.join(item['labels'])
 
 
+UNCOUNTED = ('period',)   # 화면에 표시만 하고 판정(맞아요·확인 필요·달라요)에는 넣지 않는 항목
+
+
 def _period(status, long_window=False, scale=None):
     if status == 'open' and not long_window and scale and scale['first_come']:
         people = f" {scale['count']:,}명" if scale['count'] else ''
@@ -535,11 +538,14 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
         else:
             kinds = f" 확인할 것: {', '.join(limits['kinds'])}." if limits['kinds'] else ''
             rows.append(('exclusion', 'unknown', f"온통청년 정보에 참여 제한 안내가 있습니다: “{limits['sentences'][0]}”{more}.{kinds} 해당하는지는 공고에서 확인하세요."))
-    results = {r[1] for r in rows}
+    # 신청기간은 판정에 넣지 않는다(2026-11-22 사용자 결정). '상시'·'연중'으로 등록된 정책이 모두 '확인 필요'가 되어 '맞아요'가 0건이었다.
+    # 기간은 근거와 함께 남겨 화면에 표시만 한다(counted: False). 마감된 정책은 목록에서 '원문 링크만'으로 따로 나뉜다.
+    counted = [row for row in rows if row[0] not in UNCOUNTED]
+    results = {r[1] for r in counted}
     outcome = 'api_mismatch' if 'mismatch' in results else 'needs_check' if 'unknown' in results else 'api_match'
     return {'outcome': outcome, 'qualification_determined': False,
-            'criteria': [{'key': k, 'result': r, 'basis': b, 'where': _where(k, b)} for k, r, b in rows],
-            'to_confirm': [k for k, r, _ in rows if r in ('unknown', 'mismatch')], 'notice': NOTICE}
+            'criteria': [{'key': k, 'result': r, 'basis': b, 'where': _where(k, b), 'counted': k not in UNCOUNTED} for k, r, b in rows],
+            'to_confirm': [k for k, r, _ in counted if r in ('unknown', 'mismatch')], 'notice': NOTICE}
 
 
 def approved_policy(external_id, check, approved):
