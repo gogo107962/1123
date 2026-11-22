@@ -26,6 +26,8 @@ with sync_playwright() as p:
     expect(page.locator('h1.hero')).to_contain_text('공고는 저희가 읽을게요')
     page.locator('[data-a=demo]').click()
     expect(page.locator('.greeting')).to_contain_text('민지 님')
+    expect(page.locator('main')).to_contain_text('지금 할 일')
+    expect(page.locator('[data-a=openchat].btn')).to_have_text('받고 싶은 지원 찾기')   # 처음: 1단계
     expect(page.locator('.pill.ok').first).to_contain_text('조건 맞아요')
     assert page.evaluate(FITS)
     page.screenshot(path=str(BASE / '.local/mobile-home.png'))
@@ -101,6 +103,7 @@ with sync_playwright() as p:
     expect(page.locator('[data-a=start]')).to_have_text('새 정보 입력')
     page.locator('[data-a=continue]').click()
     expect(page.locator('.greeting')).to_contain_text('민지 님')
+    expect(page.locator('main .btn[data-a=detail]')).to_have_text('공식 사이트에서 신청하기')   # 승인 뒤: 4단계
     # 홈 '이어서 준비하기': 저장한 정책에 서류가 있으면 '서류 준비 n / m', 없으면 '확인한 일 n / m'
     expect(page.locator('.prep-count')).to_be_visible()
     assert page.locator('.prep-count span').first.inner_text() in ('서류 준비', '확인한 일')
