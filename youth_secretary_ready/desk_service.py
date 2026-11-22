@@ -121,13 +121,31 @@ def workspace(wid:str):
             WHERE b.workspace_id=? ORDER BY b.created_at DESC,c.external_id DESC''',(wid,))]
         rows=[dict(r) for r in con.execute('''SELECT t.*,c.name AS policy_name FROM desk_tasks t
             JOIN ontong_candidates c ON c.external_id=t.external_id WHERE workspace_id=? ORDER BY t.created_at,t.external_id,t.task_key''',(wid,))]
-    fingerprints={}
+    seen={}
     for row in rows:
         eid=row['external_id']
-        if eid not in fingerprints:fingerprints[eid]=evidence(eid)[2]
-        row['outdated']=not still_valid(eid,row.pop('evidence_hash'),fingerprints[eid])
+        if eid not in seen:seen[eid]=evidence(eid)
+        row['outdated']=not still_valid(eid,row.pop('evidence_hash'),seen[eid][2])
         row['sources']=json.loads(row.pop('sources_json'));row.pop('workspace_id')
-    return {'id':wid,'bookmarks':saved,'tasks':rows}
+    return {'id':wid,'bookmarks':saved,'tasks':rows,'plans':plans(rows,seen)}
+
+
+def plans(rows,seen):
+    """승인해 저장한 신청 계획을 정책별로 묶은 요약. 저장한 날(한국 날짜), 지금의 접수 상태, 준비 작업 진행, 공식 링크. 저장한 순서대로."""
+    from datetime import datetime,timedelta
+    from policy_structure import period_status,structure,timing
+    from temporal import korean_now
+    on,out=korean_now().date(),[]
+    for eid in dict.fromkeys(r['external_id'] for r in rows):
+        mine=[r for r in rows if r['external_id']==eid];bundle,links,_=seen[eid]
+        item=structure(bundle['public_fields']);status=period_status(item['application'],on,bundle['source_check'])
+        deadline,label=timing(item['application'],status,on)
+        # 저장 시각은 DB에 UTC로 남는다. 화면에는 한국 날짜로 보여 준다.
+        first=datetime.strptime(min(r['created_at'] for r in mine),'%Y-%m-%d %H:%M:%S')+timedelta(hours=9)
+        out.append({'external_id':eid,'name':mine[0]['policy_name'],'agency':bundle['public_fields'].get('sprvsnInstCdNm',''),'saved_on':first.date().isoformat(),
+                    'period_status':status,'period_label':label,'deadline':deadline,'total':len(mine),'done':sum(r['status']=='done' for r in mine),
+                    'outdated':any(r['outdated'] for r in mine),'links':links})
+    return out
 
 
 @router.put('/workspaces/{wid}/bookmarks/{external_id}')
