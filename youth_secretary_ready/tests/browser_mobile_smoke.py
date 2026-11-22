@@ -45,6 +45,13 @@ with sync_playwright() as p:
     # 데모 프로필에는 '받고 있는 지원'이 없어서 그 질문을 되묻는다.
     expect(page.locator('.m.bot').last).to_contain_text('지금 받고 있는 지원이 있나요?')
     page.screenshot(path=str(BASE / '.local/mobile-chat.png'))
+    # 이전 대화: '새 대화'를 눌러도 방금 대화가 목록에 남고, 눌러서 다시 열 수 있다
+    page.locator('[data-a=newchat]').click()
+    expect(page.locator('.m.bot')).to_have_count(1)
+    page.locator('[data-a=history]').click()
+    expect(page.locator('.hist')).to_have_count(1)
+    page.locator('.hist .cardbtn').click()
+    expect(page.locator('.m.bot').last).to_contain_text('관련 정책')
     page.locator('[data-a=results]').click()
 
     # 결과 → 상세 → 근거 시트
