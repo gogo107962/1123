@@ -89,12 +89,19 @@ with sync_playwright() as p:
     assert page.evaluate("fetch('/api/desk/workspaces/'+localStorage.getItem('youth-desk-workspace')).then(r=>r.json()).then(d=>d.tasks.length)") == 0
     page.locator('[data-a=approve]').click()
     expect(page.locator('header h1')).to_have_text('내 신청')
+    # 내 신청: 계획을 세운 정책만 접힌 카드로 나온다. 정책을 눌러야 준비 작업 체크리스트가 펼쳐지고, 다시 누르면 접힌다.
+    expect(page.locator('.plan-card')).to_have_count(2)
     tasks = page.locator('input[data-a=task]')
-    expect(tasks.first).to_be_visible()
     saved = tasks.count()
     assert saved >= 6, saved
+    expect(tasks.first).to_be_hidden()
+    page.locator('.plan-card summary').first.click()
+    expect(tasks.first).to_be_visible()
     tasks.first.check()
-    expect(page.locator('main')).to_contain_text(f'{saved}개 중 1개 완료')
+    expect(page.locator('.plan-card').first).to_contain_text('중 1개 완료')
+    expect(tasks.first).to_be_visible()                                # 체크해서 화면을 다시 그려도 펼친 채로 남는다
+    page.locator('.plan-card summary').first.click()
+    expect(tasks.first).to_be_hidden()
 
     # 새로고침 뒤 복원
     page.reload(wait_until='networkidle')
@@ -106,10 +113,10 @@ with sync_playwright() as p:
     expect(page.locator('.policy-line .pill')).to_be_visible()
     assert len(page.locator('.policy-line .pill').inner_text().strip()) >= 2
     page.locator('nav [data-s=plan]').click()
-    expect(page.locator('main')).to_contain_text(f'{saved}개 중 1개 완료')
-    # 내 신청 탭: 고른 정책이 없어도 저장한 정책의 필요한 서류·신청 순서를 보여 준다(고르는 중이 아니므로 '빼기'와 점검 버튼은 없다)
-    expect(page.locator('main')).to_contain_text('신청 순서')
-    expect(page.locator('.ord li')).to_have_count(2)
+    # 내 신청 탭: 새로 고친 뒤에도 세운 계획 2건이 남아 있고 진행이 그대로다. 서류·순서는 이 탭에 없다(고르는 중이 아니므로 '빼기'와 점검 버튼도 없다)
+    expect(page.locator('.plan-card')).to_have_count(2)
+    expect(page.locator('.plan-card').first).to_contain_text('중 1개 완료')
+    assert page.locator('.ord li').count() == 0
     assert page.locator('[data-a=unsel]').count() == 0 and page.locator('[data-a=check]').count() == 0
     assert page.evaluate(FITS)
 
