@@ -218,6 +218,8 @@ class AskRequest(BaseModel):
     on: str | None=None
     # '잘 모르겠어요'로 넘긴 질문. 이 대화에서는 다시 묻지 않는다.
     skip: list[Annotated[str,Field(min_length=1,max_length=20)]]=Field(default=[],max_length=10)
+    # 사용자가 화면에서 이미 고른 정책 번호. '뭐부터 신청해야 해?'처럼 주제 없이 물으면 이 정책들로 플래너·서류 준비판을 부른다.
+    selected: list[Annotated[str,Field(min_length=1,max_length=40)]]=Field(default=[],max_length=5)
 
 # 대화로 정책 찾기. 로컬 모델이 검색어를 고르고 걸러보기·문장은 코드가 만든다. 저장하지 않는다.
 @app.post('/api/integrations/ontong/ask')
@@ -227,7 +229,7 @@ def ontong_ask(payload:AskRequest):
     try:
         on=iso_date(payload.on) if payload.on else korean_now().date()
         if not payload.message.strip():raise ValueError('질문을 입력해 주세요.')
-        return find(payload.message.strip(),payload.profile.model_dump(),on,payload.skip)
+        return find(payload.message.strip(),payload.profile.model_dump(),on,payload.skip,payload.selected)
     except ValueError as exc:raise HTTPException(422,str(exc)) from None
 
 # 정책 하나를 내 정보와 비교한다. API 기재값 비교이며 자격 판정이 아니다.
