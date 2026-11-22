@@ -10,8 +10,9 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: python -X utf8 start.py
     healthCheckPath: /api/health
-    # 저장소에 올린다고 바로 다시 배포되지 않게 한다(제출 마감 뒤 변경 금지). 다시 배포하려면 Render 화면에서 직접 누른다.
-    autoDeployTrigger: "off"
+    # 연결한 저장소의 main이 바뀌면(youth_secretary_ready 안의 파일) 자동으로 다시 배포한다(2026-11-22 사용자 요청).
+    # 제출 마감(2026-11-23 17:00) 뒤에는 기능·데이터를 바꾸면 안 되므로, 마감 뒤에는 main에 올리지 않거나 이 값을 "off"로 되돌린다.
+    autoDeployTrigger: commit
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
