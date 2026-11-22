@@ -115,8 +115,12 @@ login:()=>`<main class="pad"><div class="login-intro"><h1 class="hero">공고는
 <p class="tiny c mt">체험용 서비스예요. 실제 개인정보를 입력하지 마세요. 로그인 기능은 아직 없어요.</p></main>`,
 
 home:()=>{const p=S.profile||{},t=tasks(),done=t.filter(x=>x.status==='done').length,c=S.counts,groups=new Set(t.map(x=>x.external_id)).size,next=t.find(x=>x.status!=='done'),top=c?.items[0],chev=ms('chevron_right'),hp=S.homePlan?.policies.length?S.homePlan:null,have=hp?hp.must.filter(d=>S.docs[d.key]).length:0,lack=hp?.must.find(d=>!S.docs[d.key]);
+ // 지금 할 일: 고른 정책·저장한 정책·서류 체크로 네 단계 가운데 어디인지 정하고 다음 한 걸음만 보여 준다
+ const step=!(selIds().length||t.length)?1:!selIds().length?4:hp&&!lack?3:2;
+ const todo=[['openchat','','받고 싶은 지원 찾기'],['tab',' data-s="plan"',hp?.must.length?`서류 준비하기 (${hp.must.length}종 중 ${have}종)`:'서류 준비하기'],['check','','신청 전 점검하기'],['detail',` data-id="${esc(t[0]?.external_id)}"`,'공식 사이트에서 신청하기']][step-1];
  return `<header class="home-head"><span class="wordmark">청년비서</span><button class="ib" data-a="notice" aria-label="알림">${ms('notifications')}</button></header>
 <main class="pad home-main"><div class="greeting"><span>${esc(p.name||'체험 사용자')} 님</span><button data-a="tab" data-s="profile">${esc(area(p)||'내 정보 입력')} ${chev}</button></div>
+<section class="feed-card"><h2 class="h18">지금 할 일</h2><div class="pills" style="margin:12px 0" aria-label="신청 준비 4단계 중 ${step}단계">${['지원 찾기','서류 준비','신청 전 점검','공식 사이트'].map((x,i)=>pill(`${i+1} ${x}`,i+1<step?'ok':i+1===step?'warn':'')).join('')}</div><button class="btn w" data-a="${todo[0]}"${todo[1]}>${todo[2]}</button></section>
 <section class="balance-card"><div class="row"><h2>내가 준비 중인 지원</h2><span class="small-tag">저장한 정책</span></div><div class="balance-value">${groups}<span>건</span></div><p class="balance-caption">찾아둔 지원, 신청까지 차근차근</p>
 <div class="account-actions"><button data-a="tab" data-s="browse">지원 더 찾기 ${ms('add')}</button><button data-a="tab" data-s="plan">내 신청 보기 ${chev}</button></div></section>
 <section class="feed-card"><button class="section-heading" data-a="tab" data-s="plan">이어서 준비하기 ${chev}</button>
