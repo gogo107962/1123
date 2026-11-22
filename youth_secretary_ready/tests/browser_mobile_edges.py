@@ -108,6 +108,19 @@ with sync_playwright() as p:
     assert page.evaluate("fetch('/api/desk/workspaces/'+localStorage.getItem('youth-desk-workspace')).then(r=>r.json()).then(d=>d.tasks.length)") == 0
     done.append('plan_header_without_remove_and_no_saving')
 
+    # 6-2) 내 신청의 임시저장 카드에서 하나를 지우면 4건이 되고, 서버에는 여전히 저장된 것이 없다
+    page.locator('[data-a=back]').click()                      # '이어서 하기'로 들어온 계획에서 뒤로 가면 '내 신청' 탭으로 돌아간다
+    expect(page.locator('header h1')).to_have_text('내 신청')
+    expect(page.locator('.draft-card')).to_have_count(5)
+    if page.locator('.draft-card').first.get_attribute('open') is None:   # 앞에서 펼친 카드는 펼친 채로 남아 있다
+        page.locator('.draft-card summary').first.click()
+    page.locator('.draft-card').first.locator('[data-a=deldraft]').click()
+    expect(page.locator('.draft-card')).to_have_count(4)
+    expect(page.locator('#toast')).to_contain_text('임시저장한 계획을 지웠어요')
+    assert len(page.evaluate("JSON.parse(localStorage.getItem('youth-desk-selected'))")) == 4
+    assert page.evaluate("fetch('/api/desk/workspaces/'+localStorage.getItem('youth-desk-workspace')).then(r=>r.json()).then(d=>d.tasks.length)") == 0
+    done.append('delete_draft_plan')
+
     # 7) 넓은 화면에서도 폰 크기를 유지하고, 가로 화면에서도 넘치지 않는다
     page.set_viewport_size({'width': 1440, 'height': 900})
     assert page.locator('#app').evaluate('(e)=>e.getBoundingClientRect().width<=430')
