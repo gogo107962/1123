@@ -76,7 +76,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -X utf8 start.py
 ```
 
-- **정책이 0건으로 나온다.** 저장소에는 실행 DB(`data/youth_secretary.sqlite3`)와 API 키가 없다. 앱은 빈 DB를 새로 만들고 뜬다. 정책 4,020건을 보려면 팀에서 DB 파일을 받아 `data/` 폴더에 넣는다(서버를 끈 상태에서).
+- **정책 데이터는 저장소에 들어 있다.** 실행 DB(`data/youth_secretary.sqlite3`, 2026-11-19 수집 3,995건)를 2026-11-22에 올렸다. API 키 없이 받아서 바로 실행하면 정책이 나온다. 키는 다시 수집할 때만 필요하다. 정책이 0건으로 나오면 DB 파일이 받아졌는지 확인한다.
 - **브라우저 테스트 도구는 따로 설치한다.** `requirements-dev.txt`에는 `playwright`가 들어 있는데, 폴더 경로가 길면 Windows 경로 길이 제한(260자) 때문에 설치가 실패한다(실제로 겪음). 짧은 경로(예: `C:\work\1123`)에 받거나 위처럼 `pytest`만 설치한다. 단위 테스트에는 `playwright`가 필요 없다.
 - AI 챗봇은 로컬 Ollama와 `qwen3:4b` 모델이 있어야 한다. 없어도 낱말 일치로 찾기는 동작한다.
 

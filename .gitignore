@@ -3,6 +3,8 @@
 .env
 # 실행 DB와 그 복사본 (덮어쓰기 방지, 공개 샘플 아님)
 *.sqlite3
+# 예외: 실행 DB는 다른 사람이 바로 열 수 있게 올린다(2026-11-22 사용자 지시)
+!youth_secretary_ready/data/youth_secretary.sqlite3
 *.sqlite3-wal
 *.sqlite3-shm
 # 수집 원문 전체(11MB, 공고 담당자 연락처 포함) — 앱은 DB만 읽는다

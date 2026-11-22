@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 .pytest_cache/
 *.sqlite3
+!data/youth_secretary.sqlite3
 .env
 .venv/
 *.sqlite3-wal
