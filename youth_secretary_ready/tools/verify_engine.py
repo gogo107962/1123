@@ -88,7 +88,7 @@ def main():
             expected = 'api_mismatch' if 'mismatch' in counted.values() else 'needs_check' if 'unknown' in counted.values() else 'api_match'
             check(out['outcome'] == expected and out['qualification_determined'] is False, f'outcome {eid}', (out['outcome'], got))
             check(out['to_confirm'] == [k for k, r in counted.items() if r in ('unknown', 'mismatch')], f'to_confirm {eid}')
-            check(set(got) - set(counted) <= {'period'}, f'only period is display-only {eid}', set(got) - set(counted))
+            check(set(got) - set(counted) <= {'period', 'apply'}, f'only period and apply are display-only {eid}', set(got) - set(counted))
             check(got['age'] == 'skipped' if profile.get('age') is None else got['age'] != 'skipped', f'age skip {eid}', profile)
             has_area = bool(profile.get('sido') or profile.get('region_code'))
             check((got['region'] == 'skipped') != has_area, f'region skip {eid}', profile)
