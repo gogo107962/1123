@@ -55,7 +55,7 @@ with sync_playwright() as p:
     for i in range(5):
         page.locator('.browse-item').nth(i).click()
         page.locator('[data-a=prep]').click()
-        expect(page.locator('.ord li').first).to_be_visible()
+        expect(page.locator('.plan-head h2')).to_be_visible()              # 계획 머리에 어떤 정책인지 나온다
         page.locator('[data-a=back]').click()                      # 신청 계획 → 상세
         page.locator('[data-a=back]').click()                      # 상세 → 지원 찾기
         expect(page.locator('.browse-item').first).to_be_visible()
@@ -68,8 +68,10 @@ with sync_playwright() as p:
     page.locator('.browse-item').nth(4).click()
     page.locator('[data-a=prep]').click()
     expect(page.locator('[data-a=all]')).to_contain_text('고른 정책 5개 함께 보기')
-    expect(page.locator('.ord li')).to_have_count(1)
+    expect(page.locator('.plan-head h2')).not_to_contain_text('신청 준비')     # 정책 하나면 머리에 그 정책 이름
+    assert page.locator('.ord li').count() == 0
     page.locator('[data-a=all]').click()
+    expect(page.locator('.plan-head h2')).to_have_text('정책 5개 신청 준비')
     expect(page.locator('.ord li')).to_have_count(5)
     page.locator('[data-a=back]').click()
     page.locator('[data-a=back]').click()
@@ -99,11 +101,12 @@ with sync_playwright() as p:
     page.screenshot(path=str(BASE / '.local/mobile-edge-plan.png'))
     done.append('back_and_reload_keep_selection')
 
-    # 6) 계획에서 하나씩 빼면 줄어들고, 저장은 일어나지 않는다
-    page.locator('[data-a=unsel]').first.click()
-    expect(page.locator('.ord li')).to_have_count(4)
+    # 6) 신청 계획 머리에 어떤 정책인지 나오고(여럿이면 'N개 신청 준비'와 목록), 빼기 버튼은 없다. 저장은 일어나지 않는다.
+    expect(page.locator('.plan-head h2')).to_have_text('정책 5개 신청 준비')
+    expect(page.locator('.plan-head')).to_contain_text('기준일')
+    assert page.locator('[data-a=unsel]').count() == 0
     assert page.evaluate("fetch('/api/desk/workspaces/'+localStorage.getItem('youth-desk-workspace')).then(r=>r.json()).then(d=>d.tasks.length)") == 0
-    done.append('remove_from_plan_without_saving')
+    done.append('plan_header_without_remove_and_no_saving')
 
     # 7) 넓은 화면에서도 폰 크기를 유지하고, 가로 화면에서도 넘치지 않는다
     page.set_viewport_size({'width': 1440, 'height': 900})
