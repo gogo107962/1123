@@ -1914,3 +1914,28 @@ def test_docboard_reads_issue_date_only_when_it_says_issued_and_rejects_unknown_
     for path in ('plan', 'docboard'):
         bad = ctx.post(f'/api/desk/workspaces/{wid}/{path}', json={'external_ids': ['H1'], 'profile': PROFILE, 'on': '2026-11-17', 'have': ['application', 'nope']})
         assert bad.status_code == 422 and 'nope' in bad.text
+
+
+# ── v0.48: 대화 오케스트레이터(팀 문서 'MVP 구조') ─────────────────────────────
+def test_orchestrator_calls_the_planner_only_when_asked_and_reports_each_step(ctx, monkeypatch):
+    seed([good('OR1', plcyNm='청년 월세 지원', plcySprtCn='월 20만원 지원', plcyPvsnMthdCd='0042006'), good('OR2', plcyNm='청년 월세 특별 지원', plcySprtCn='최대 50만원 지원', plcyPvsnMthdCd='0042006')])
+    monkeypatch.setattr(desk_finder, 'model_status', lambda: {'ready': True})
+    ask = lambda message: ctx.post(ASK, json={'message': message, 'profile': PROFILE, 'on': '2026-11-17'}).json()
+    who = lambda r: [x['who'] for x in r['steps']]
+    monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['월세']))
+    plain = ask('월세 지원 받을 수 있어?')
+    assert plain['compare'] is None and who(plain)[0] == 'orchestrator' and 'planner' not in who(plain)
+    assert plain['steps'][0]['by'] == 'ai' and who(plain)[-1] == 'output'
+    monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['월세'], tools=['find', 'plan']))      # 모델이 플래너를 고름
+    chosen = ask('월세 지원 뭐가 있어?')
+    assert {p['external_id'] for p in chosen['compare']['policies']} == {'OR1', 'OR2'} and chosen['compare']['amounts']['all']['monthly_krw'] == 200000
+    assert '신청 순서' in chosen['compare']['text'] and 'planner' in who(chosen)
+    monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['월세']))                               # 모델이 놓쳐도 말에 낱말이 있으면 부른다
+    assert ask('월세 지원 둘 다 받을 수 있어?')['compare'] is not None
+    monkeypatch.setattr(desk_finder, 'model_status', lambda: {'ready': False})                                      # AI가 꺼져도 같은 길
+    off = ask('월세 지원 둘 다 받을 수 있어?')
+    assert off['ai'] == 'unavailable' and off['compare'] is not None and off['steps'][0]['by'] == 'code'
+    assert desk_finder.check(picked(tools=['plan']))['tools'] == ['find', 'plan'] and desk_finder.check(picked())['tools'] == ['find']
+    with pytest.raises(ValueError):
+        desk_finder.check(picked(tools=['save']))
+

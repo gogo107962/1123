@@ -18,6 +18,28 @@ _SUBMIT = re.compile(r'제출|첨부|지참|구비')
 FILE_READ = ('attachment_pdf', 'attachment_hwpx', 'image')   # 보완 기록의 read_from: 공고의 첨부파일·이미지에서 읽음
 
 
+def _exclusions(item, bundle):
+    return item['exclusions']['sentences'] + [q for x in bundle['supplements'] if x['field'] == 'conditions' for q in x['quotes'] if EXCLUDE.search(q)]
+
+
+def compare(external_ids, on):
+    """대화 오케스트레이터가 충돌·순서 플래너(planner.plan)를 부를 때 쓴다. 찾은 정책 몇 건의 순서·함께 받기 어려운 조합·예상 금액.
+    읽기 전용이고 준비 공간이 필요 없다. 화면 문장(text)은 플래너가 틀로 만든 brief를 그대로 쓴다(모델이 쓰지 않는다)."""
+    from desk_service import evidence
+    policies = []
+    for eid in external_ids:
+        bundle = evidence(eid)[0]
+        fields, item = bundle['public_fields'], structure(bundle['public_fields'])
+        status = period_status(item['application'], on, bundle['source_check'])
+        deadline, label = timing(item['application'], status, on)
+        policies.append({'external_id': eid, 'name': fields['plcyNm'], 'period_status': status, 'period_label': label, 'deadline': deadline,
+                         'amounts': item['amounts'], 'provision': item['provision'], 'early_close': item['said']['early_close'],
+                         'region_codes': item['region']['codes'], 'category': item['category'], 'exclusions': _exclusions(item, bundle)})
+    planned = plan_order(policies, on)
+    return {**planned, 'policies': [{'external_id': p['external_id'], 'name': p['name'], 'period_label': p['period_label']} for p in policies],
+            'text': '\n'.join(planned['brief']) + '\n' + planned['notice']}
+
+
 def build(wid, external_ids, profile, on, have=()):
     from desk_service import evidence, preview
     ids = list(dict.fromkeys(external_ids))
@@ -67,8 +89,7 @@ def build(wid, external_ids, profile, on, have=()):
             'scale': item['scale'], 'selection': item['selection'],
             'criteria': result['criteria'] if result else None, 'links': links,
             # 수집 글의 참여 제한 문장 + 공식 페이지에서 보완한 조건 문장 중 제외·중복 문구
-            'exclusions': item['exclusions']['sentences'] + [q for x in bundle['supplements'] if x['field'] == 'conditions'
-                                                              for q in x['quotes'] if EXCLUDE.search(q)],
+            'exclusions': _exclusions(item, bundle),
             'tasks': [{'key': t['key'], 'title': t['title'], 'instructions': t['instructions']} for t in plan['tasks']],
             'preview_token': plan['preview_token']})
     planned = plan_order(policies, on)
