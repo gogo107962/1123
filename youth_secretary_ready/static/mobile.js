@@ -5,7 +5,6 @@ const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const n=v=>Number(v||0).toLocaleString();
 const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
-const DEMO={name:'민지',birth:'2000-03',moved:'2024-02',age:26,sido:'28',region_code:'28177',job_code:'0013003',school_code:'',household:1,housing:'월세',exams:[{name:'정보처리기사',month:(d=>{d.setDate(1);d.setMonth(d.getMonth()-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')})(new Date())}]};
 // 오늘 날짜(한국 시간). D-day와 접수 상태는 서버가 요청 때마다 오늘 기준으로 계산하고, 화면은 날짜가 바뀌면 다시 불러온다.
 const today=()=>new Date(Date.now()+9*3600e3).toISOString().slice(0,10);
 // 지원 찾기의 종류 버튼. 앞의 다섯은 정책 대분류, 'k:'로 시작하는 둘은 글에서 찾는 낱말이다.
@@ -109,18 +108,19 @@ function cond(key,d){const st=d.bundle.structured,p=d.bundle.public_fields,a=st.
 function myValue(key){const p=mine();return {period:'오늘 기준',apply:'공고에서 확인',age:p.age!=null?p.age+'세':'',region:area(p),target:p.groups?.length?p.groups.join(', '):'해당 항목 선택 안 함',income:p.income_monthly!=null&&p.household?`월 ${p.income_monthly}만원 · ${p.household}인 가구`:'소득 입력 안 함',exclusion:p.benefits?.length?'받는 지원: '+p.benefits.join(', '):p.benefits?'받는 지원 없음':'받는 지원 입력 안 함',job:S.names.job_code[p.job_code],school:S.names.school_code[p.school_code],exam:p.exams?.join(', '),housing:p.housing}[key]||'입력 안 함'}
 const rows=d=>d.cmp?.screen?d.cmp.screen.criteria.filter(c=>c.result!=='skipped'):[];
 
+// 달을 고르는 칸: 비어 있으면 '선택'이라고 보여 준다(휴대폰에서는 빈 칸이 아무것도 없는 것처럼 보인다). 보이는 글 위에 투명한 입력 칸을 덮어, 누르면 기기의 달 고르기가 열린다.
+const pick=(k,v)=>`<span class="pick"><span>${ym(v)||'선택'}</span><input id="${k}" class="mon" data-k="${k}" type="month" min="1930-01" max="2099-12" value="${esc(v||'')}"></span>`;
+
 const V={
 login:()=>`<main class="pad"><div class="login-intro"><h1 class="hero">공고는 저희가 읽을게요.<br>신청 준비만 하세요.</h1><p class="sub">청년비서 · 청년 지원 신청 준비 도우미</p></div>
-<div class="col">${S.profile?`<button class="btn" data-a="continue">기존 정보로 계속 이용</button><p class="sub c">${esc(S.profile.name||'체험 사용자')} 님이 입력한 정보로 이어서 해요</p>`:''}<button class="btn ${S.profile?'line':''}" data-a="start">새 정보 입력</button></div>
-<div class="or"><span></span>또는<span></span></div><button class="btn line" data-a="demo">데모 계정으로 체험</button><p class="sub c">가상 인물 '민지'의 정보로 바로 체험해요</p>
-<p class="tiny c mt">체험용 서비스예요. 실제 개인정보를 입력하지 마세요. 로그인 기능은 아직 없어요.</p></main>`,
+<div class="col">${S.profile?`<button class="btn" data-a="continue">기존 정보로 계속 이용</button><p class="sub c">${S.profile.name?esc(S.profile.name)+' 님이 ':''}입력한 정보로 이어서 해요</p><div class="or"><span></span>또는<span></span></div>`:''}<button class="btn ${S.profile?'line':''}" data-a="start">새 정보 입력</button></div></main>`,
 
 home:()=>{const p=S.profile||{},t=tasks(),done=t.filter(x=>x.status==='done').length,c=S.counts,groups=new Set(t.map(x=>x.external_id)).size,next=t.find(x=>x.status!=='done'),top=c?.items[0],chev=ms('chevron_right'),hp=S.homePlan?.policies.length?S.homePlan:null,have=hp?hp.must.filter(d=>S.docs[d.key]).length:0,lack=hp?.must.find(d=>!S.docs[d.key]);
  // 지금 할 일: 고른 정책·저장한 정책·서류 체크로 네 단계 가운데 어디인지 정하고 다음 한 걸음만 보여 준다
  const step=!(selIds().length||t.length)?1:!selIds().length?4:hp&&!lack?3:2;
  const todo=[['openchat','','받고 싶은 지원 찾기'],['plan','',hp?.must.length?`서류 준비하기 (${hp.must.length}종 중 ${have}종)`:'서류 준비하기'],['check','','신청 전 점검하기'],['tab',' data-s="plan"','공식 사이트에서 신청하기']][step-1];
  return `<header class="home-head"><span class="wordmark">청년비서</span><button class="ib" data-a="notice" aria-label="알림">${ms('notifications')}</button></header>
-<main class="pad home-main"><div class="greeting"><span>${esc(p.name||'체험 사용자')} 님</span><button data-a="tab" data-s="profile">${esc(area(p)||'내 정보 입력')} ${chev}</button></div>
+<main class="pad home-main"><div class="greeting"><span>${p.name?esc(p.name)+' 님':'반가워요'}</span><button data-a="tab" data-s="profile">${esc(area(p)||'내 정보 입력')} ${chev}</button></div>
 <section class="feed-card"><h2 class="h18">지금 할 일</h2><div class="pills" style="margin:12px 0" aria-label="신청 준비 4단계 중 ${step}단계">${['지원 찾기','서류 준비','신청 전 점검','공식 사이트'].map((x,i)=>pill(`${i+1} ${x}`,i+1<step?'ok':i+1===step?'warn':'')).join('')}</div><button class="btn w" data-a="${todo[0]}"${todo[1]}>${todo[2]}</button></section>
 <section class="balance-card"><div class="row"><h2>내가 준비 중인 지원</h2><span class="small-tag">저장한 정책</span></div><div class="balance-value">${groups}<span>건</span></div><p class="balance-caption">찾아둔 지원, 신청까지 차근차근</p>
 <div class="account-actions"><button data-a="tab" data-s="browse">지원 더 찾기 ${ms('add')}</button><button data-a="tab" data-s="plan">내 신청 보기 ${chev}</button></div></section>
@@ -139,7 +139,7 @@ ${!compared()?`<button class="next-row" style="margin-top:22px" data-a="tab" dat
 <details class="more" data-d="moreHome" ${S.moreHome?'open':''}><summary>내 조건과 비교한 결과 보기</summary><div class="pills">${pill('조건 맞아요 '+n(c.outcomes.api_match),'ok')}${pill('확인 필요 '+n(c.outcomes.needs_check),'warn')}${pill('조건 달라요 '+n(c.outcomes.api_mismatch),'bad')}</div>
 <p class="tiny">온통청년에 등록된 값과 비교한 건수예요. 자격 판정이 아니에요. 중복 등록 ${n(c.merged)}건은 묶었고 ${n(c.tiers.link_only)}건은 비교하지 않았어요.</p></details>`}</section>
 <button class="help-line" data-a="openchat">${ms('auto_awesome')} 복잡한 공고, 비서에게 물어보세요 ${chev}</button>
-<p class="demo-note">가상 정보로 체험하는 화면이에요 · 정책 정보는 온통청년에서 가져왔어요</p></main>`+dock('home');},
+<p class="demo-note">정책 정보는 온통청년에서 가져왔어요</p></main>`+dock('home');},
 
 chats:()=>{const list=store.get(CHATS,[]);
  return bar('이전 대화','b')+`<main class="pad">${list.length?list.map(x=>`<div class="card hist"><button class="cardbtn" data-a="oldchat" data-id="${esc(x.id)}"><span class="h16">${esc(x.title)}</span><span class="sub s13">${esc(x.on)} · 주고받은 말 ${x.chat.length}개${x.id===S.chatId?' · 지금 대화':''}</span></button><button class="link" data-a="delchat" data-id="${esc(x.id)}" aria-label="${esc(x.title)} 대화 지우기">지우기</button></div>`).join('')+'<p class="tiny mt">이 브라우저에만 남아요(최근 10개). 내 정보를 지우면 함께 지워져요.</p>':'<div class="card"><h3>이전 대화가 없어요</h3><p class="sub">챗봇에게 물어본 대화가 여기에 남아요.</p></div>'}</main>`},
@@ -254,11 +254,11 @@ profile:()=>{const d=S.draft||(S.draft={name:'',sido:'',job_code:'',school_code:
  const ko=(a,b)=>a[1].localeCompare(b[1],'ko'),age=d.birth?ageOf(d.birth):d.age===''||d.age==null?null:+d.age,place=area(d);
  // 취업 상태는 팀 화면의 세 가지를 앞에 두고, 코드표의 나머지를 뒤에 붙인다. '학생'은 대상 집단(대학(원)생)으로 저장한다.
  const jobs=[['0013003','취업 준비 중'],['0013001','재직 중'],['student','학생'],...Object.entries(S.names.job_code).filter(([c])=>!['0013003','0013001'].includes(c))];
- const month=(k,label,value)=>`<div class="prow"><label class="sub" for="${k}" style="margin:0;font-weight:400">${label}</label><span class="b"><input id="${k}" class="mon" data-k="${k}" type="month" min="1930-01" max="2099-12" value="${esc(value||'')}"></span></div>`;
+ const month=(k,label,value)=>`<div class="prow"><label class="sub" for="${k}" style="margin:0;font-weight:400">${label}</label><span class="b">${pick(k,value)}</span></div>`;
  const old=S.profile&&S.back[S.back.length-1]!=='login';
- return bar('내 정보',old?null:'b')+`<main class="pad"><div class="card"><div class="row" style="justify-content:flex-start;gap:14px"><span class="avl">${ME}</span><div class="f1"><p class="h20" style="margin:0">${esc(d.name||'체험 사용자')}</p><p class="tiny">챗봇 대화에 이 사진과 이름이 보여요</p></div>${pill(d.name==='민지'?'데모 계정':'체험')}</div></div>
+ return bar('내 정보',old?null:'b')+`<main class="pad"><div class="card"><div class="row" style="justify-content:flex-start;gap:14px"><span class="avl">${ME}</span><div class="f1"><div class="addr" style="border:0;padding:0"><label for="name">이름</label><input id="name" data-k="name" maxlength="20" autocomplete="off" placeholder="이름 또는 별명" value="${esc(d.name||'')}"><p class="tiny">홈과 챗봇 대화에 이 이름이 보여요</p></div></div></div></div>
 <div class="card"><h3>기본 정보</h3><p class="tiny">나이와 거주 조건을 확인하는 데 써요</p>
-<div class="prow"><label class="sub" for="birth" style="margin:0;font-weight:400">출생 연월</label><span class="b"><input id="birth" class="mon" data-k="birth" type="month" min="1930-01" max="2099-12" value="${esc(d.birth||'')}">${age!=null?` · ${age}세`:''}</span></div>
+<div class="prow"><label class="sub" for="birth" style="margin:0;font-weight:400">출생 연월</label><span class="b">${pick('birth',d.birth)}${age!=null?` · ${age}세`:''}</span></div>
 <div class="addr"><label for="sido">주소</label><div class="pair">${sel('sido','거주 시도',Object.entries(S.names.sido).sort(ko),'시 · 도').replace('<select ','<select id="sido" ')}${sel('region_code','시군구',Object.entries(S.names.sigungu).filter(([c])=>c.startsWith(d.sido||'-')).sort(ko),'시 · 군 · 구')}</div><p class="tiny">지원 조건 확인에는 <strong>${esc(place||'시 · 군 · 구')}</strong>까지만 써요</p></div>
 ${month('moved','전입한 달',d.moved)}</div>
 <div class="card"><h3>일 · 학업</h3><p class="tiny">미취업 · 재직 · 재학 조건을 확인해요</p><div class="prow"><span class="sub">취업 상태</span>${sel('job_pick','취업 상태',jobs)}</div><div class="prow"><span class="sub">최종 학력</span>${sel('school_code','최종 학력',Object.entries(S.names.school_code))}</div></div>
@@ -332,7 +332,6 @@ async function approve(){const P=S.plan;
 
 document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!el||el.tagName==='INPUT')return;const a=el.dataset.a,d=el.dataset;
  if(a==='back')back();
- else if(a==='demo'){saveProfile(DEMO);go('home',true);run(loadCounts)}
  else if(a==='continue'){go('home',true);run(loadCounts)}
  else if(a==='start'){S.draft={name:'',sido:'',job_code:'',school_code:''};go('profile')}
  else if(a==='tab'){S.draft=null;if(d.s==='plan')run(()=>showPlan(true));else if(d.s==='browse')run(()=>showResults([],true));else{S.back=[];S.screen=d.s;S.sheet=null;render(true);if(d.s==='home')run(async()=>{if(!S.counts||!S.homePlan)await loadCounts()})}}
@@ -341,7 +340,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!
  else if(a==='newchat'){if(!S.busy){S.chat=[];S.skip=[];S.chatId=null;S.chatOn=null;openChat();render(true)}}
  else if(a==='history'){if(!S.busy)go('chats')}
  else if(a==='oldchat'){const x=store.get(CHATS,[]).find(c=>c.id===d.id);if(x){S.chat=x.chat;S.chatId=x.id;S.skip=x.skip||[];S.chatOn=x.on;back()}}
- else if(a==='delchat'){store.set(CHATS,store.get(CHATS,[]).filter(c=>c.id!==d.id));if(S.chatId===d.id)S.chatId=null;render()}else if(a==='attach')toast('체험판에서는 파일을 첨부할 수 없어요');else if(a==='notice')toast('새로운 알림이 없어요');
+ else if(a==='delchat'){store.set(CHATS,store.get(CHATS,[]).filter(c=>c.id!==d.id));if(S.chatId===d.id)S.chatId=null;render()}else if(a==='attach')toast('아직 파일을 첨부할 수 없어요');else if(a==='notice')toast('새로운 알림이 없어요');
  else if(a==='apply'){const m=S.chat[d.i];saveProfile({...(S.profile||{}),...m.suggest});m.suggest=null;m.ask=null;say(m.asked,true)}
  else if(a==='skipask'){const m=S.chat[d.i];S.skip=[...(S.skip||[]),m.ask.key];S.chat.push({who:'user',t:'잘 모르겠어요'});m.ask=null;say(m.asked,true)}
  else if(a==='answer'){const m=S.chat[d.i];saveProfile({...(S.profile||{}),[m.ask.key]:m.ask.key==='benefits'?(d.v?[d.v]:[]):d.v});S.chat.push({who:'user',t:el.textContent});m.ask=null;say(m.asked,true)}
@@ -381,7 +380,9 @@ document.addEventListener('change',e=>{const t=e.target,d=t.dataset;
  else if(d.a==='group'&&S.draft){const now=new Set(S.draft.groups||[]);t.checked?now.add(d.v):now.delete(d.v);S.draft.groups=[...now]}
  else if(d.a==='benefit'&&S.draft){const now=new Set(S.draft.benefits||[]);t.checked?now.add(d.v):now.delete(d.v);S.draft.benefits=[...now];render()}
  else if(d.k&&S.draft){S.draft[d.k]=t.value;if(d.k==='sido'){S.draft.region_code='';render()}else if(d.k==='birth'||d.k==='region_code'||d.k==='business')render()}});
-document.addEventListener('input',e=>{const t=e.target;if(t.dataset.k&&S.draft)S.draft[t.dataset.k]=t.value});
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset.k&&S.draft)S.draft[t.dataset.k]=t.value;if(t.matches('.pick input'))t.previousElementSibling.textContent=ym(t.value)||'선택'});
+// PC 브라우저는 칸을 눌러도 달 고르기가 열리지 않아 직접 연다(지원하지 않는 브라우저는 그대로 둔다).
+document.addEventListener('click',e=>{if(e.target.matches?.('.pick input'))try{e.target.showPicker()}catch(_){}});
 // 접어 둔 부분은 다시 그려도 펼친 상태를 기억한다.
 document.addEventListener('toggle',e=>{const k=e.target.dataset?.d;if(k)S[k]=e.target.open},true);
 document.addEventListener('submit',e=>{e.preventDefault();const f=e.target.dataset.f;

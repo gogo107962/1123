@@ -39,7 +39,7 @@ with sync_playwright() as p:
     assert page.evaluate("localStorage.getItem('youth-desk-profile')") is None
     page.locator('#birth').fill('')
     page.locator('[data-a=save]').click()
-    expect(page.locator('.greeting')).to_contain_text('체험 사용자')
+    expect(page.locator('.greeting')).to_contain_text('반가워요')
     expect(page.locator('main')).to_contain_text('내 정보를 입력하면 맞는 지원부터 보여드려요')
     done.append('invalid_age_rejected_and_empty_profile_ok')
 
