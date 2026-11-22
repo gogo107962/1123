@@ -140,6 +140,9 @@ def _age(item, value, rule=None):
     return result, basis + f' 조건 글에는 {text}로 적혀 있습니다.'
 
 
+ADULT = 19   # 하한이 등록되지 않은 정책에서, 이 나이 이상이면 숨은 하한에 걸리지 않는다고 본다(등록된 하한의 97%가 19세 이하)
+
+
 def _age_field(item, value, rule=None):
     if value is None:
         return 'skipped', '나이를 입력하지 않았습니다.'
@@ -161,6 +164,20 @@ def _age_field(item, value, rule=None):
         if high >= 99:  # 실제 수집본에 99·100·120·999가 100건 있다. 숫자를 그대로 보여 주면 '19~999세'가 된다.
             return 'match', f'등록된 연령 {low}세 이상입니다(상한이 {high}로 적혀 있어 사실상 상한 없음으로 보임). 공고에서 상한을 확인하세요.'
         return 'match', f'등록된 연령 {low}~{high}세 안입니다.'
+    if kind == 'max_only':
+        # 최대 나이만 등록된 정책(68건). 최소 칸의 0은 '안 적음'일 수 있어 전에는 모두 확인 필요로 뒀다.
+        # 조건 글도 같은 숫자로 'N세 이하'라고 하면 하한이 없는 정책으로 본다. 글에 나이가 없어도 19세 이상이면 맞는 것으로 본다:
+        # 범위가 다 적힌 2,802건 중 2,717건(97%)의 하한이 19세 이하라서, 19세 이상에게는 숨은 하한이 걸릴 일이 거의 없다(2026-11-22 수집본).
+        said = item.get('max_said')
+        if said == 'lt' and value == high:
+            return 'unknown', f"온통청년 정보에는 최대 {high}세로 적혀 있지만 조건 글에는 '{high}세 미만'으로 적혀 있습니다. {high}세가 포함되는지 공고에서 확인하세요."
+        if high >= 99:
+            if value >= ADULT:
+                return 'match', f'등록된 연령 상한이 {high}로 적혀 있어 사실상 나이 제한이 없는 것으로 보입니다. 공고에서 확인하세요.'
+        elif said:
+            return 'match', f"등록된 연령 {high}세 이하이고, 조건 글에도 '{high}세 {'미만' if said == 'lt' else '이하'}'로 적혀 있습니다."
+        elif value >= ADULT:
+            return 'match', f'등록된 연령 {high}세 이하입니다. 하한은 등록돼 있지 않으니 공고에서 확인하세요.'
     side = f'최소 {low}세' if low else f'최대 {high}세'
     return 'unknown', f'온통청년 정보에 {side}만 적혀 있습니다. 반대쪽 기준은 공고에서 확인하세요.'
 
@@ -475,7 +492,13 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
         rows[0] = (rows[0][0], rows[0][1], rows[0][2] + f' 공식 페이지에 적힌 신청 시기(사람 검수 전): “{official}”')
     # 공식 페이지에 나이 문장이 있는데 규칙으로 옮기지 못한 경우(출생연도 기준, 문장이 서로 다름)에는 등록된 나이로 단정하지 않는다.
     aged = next((q for x in notes if x['field'] == 'conditions' for q in x['quotes'] if _AGE_SAID.search(q)), None)
-    if aged and not rule and rows[1][1] in ('match', 'mismatch'):
+    # 다만 그 문장이 등록된 나이와 같은 말이면('최대 34세'로 등록, 문장은 '만 34세 이하 청년 누구나') 낮추지 않고 근거에 덧붙인다.
+    high = structured['age']['max']
+    same = bool(aged and structured['age']['kind'] == 'max_only' and re.search(rf'(?<!\d){high}\s*세\s*(?:이하|까지)', aged)
+                and not [n for n in re.findall(r'(\d{1,2})\s*세', aged) if int(n) != high])
+    if same and not rule and rows[1][1] == 'match':
+        rows[1] = ('age', 'match', rows[1][2] + f' 공식 페이지에도 “{aged}”로 적혀 있습니다(사람 검수 전).')
+    elif aged and not rule and rows[1][1] in ('match', 'mismatch'):
         rows[1] = ('age', 'unknown', f'공식 페이지의 나이 기준이 등록 정보와 다를 수 있습니다(사람 검수 전): “{aged}”')
     # 이름에 특정 대상이 드러난 정책은, 내가 그 대상이라고 한 경우에만 '맞아요'로 본다. 아니라고 단정하지는 않는다.
     if structured['targets']:
