@@ -240,7 +240,10 @@ def age(payload):
             # 실제 수집본에서 범위가 빈 1,120건 중 1,046건이 Y다. 범위와 Y가 함께 적힌 741건은 서로 어긋난 값이다.
             'no_limit': flag == 'Y', 'limit_flag_raw': flag, 'limit_flag_verified': False,
             # 조건 글에 적힌 나이 범위('만 19~39세'). 나이 칸과 다르면 걸러보기가 단정하지 않는다. 10세 미만으로 시작하는 범위(자녀 나이 등)는 뺀다.
-            'text_ranges': sorted({(int(a), int(b)) for a, b in _AGE_RANGE.findall(_conditions(payload)) if 10 <= int(a) < int(b) <= 70})}
+            'text_ranges': sorted({(int(a), int(b)) for a, b in _AGE_RANGE.findall(_conditions(payload)) if 10 <= int(a) < int(b) <= 70}),
+            # 최대 나이만 등록된 정책에서 조건 글도 같은 숫자로 'N세 이하'(lte)·'N세 미만'(lt)이라고 하는가. 하한이 정말 없는지 보는 근거다.
+            'max_said': (lambda m: None if not m else 'lt' if m.group(1) == '미만' else 'lte')(
+                re.search(rf'(?<!\d){high}\s*세\s*(이하|미만|까지)', _conditions(payload)) if high and not low else None)}
 
 
 def application(payload):
