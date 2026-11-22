@@ -64,6 +64,16 @@ with sync_playwright() as p:
     page.locator('[data-a=prep]').click()
     expect(page.locator('#toast')).to_contain_text('5개까지')
     page.locator('[data-a=back]').click()
+    # '이 정책 준비하기'로 들어온 신청 계획은 그 정책 하나만 보여 준다. 전에 고른 정책은 '함께 보기'를 눌러야 나온다(고른 목록은 그대로 5개)
+    page.locator('.browse-item').nth(4).click()
+    page.locator('[data-a=prep]').click()
+    expect(page.locator('[data-a=all]')).to_contain_text('고른 정책 5개 함께 보기')
+    expect(page.locator('.ord li')).to_have_count(1)
+    page.locator('[data-a=all]').click()
+    expect(page.locator('.ord li')).to_have_count(5)
+    page.locator('[data-a=back]').click()
+    page.locator('[data-a=back]').click()
+    expect(page.locator('.browse-item').first).to_be_visible()
     done.append('five_policy_limit')
 
     # 5) 상세 → 뒤로 가도 목록과 선택이 그대로다. 새로고침해도 선택이 남는다.

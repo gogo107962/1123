@@ -83,6 +83,14 @@ FALLBACK_NOTE = {'unavailable': '로컬 AI가 꺼져 있어 낱말로 찾았어�
                  'invalid': 'AI 응답을 검증하지 못해 낱말로 찾았어요. '}
 
 
+# 검색어가 좁아서 쓸 만한 결과가 없을 때 함께 찾아볼 말. 실제 모델에 질문 50개를 보내 0건이 나온 검색어를 보고 정했다(2026-11-20).
+# 정책 글에 실제로 쓰이는 낱말이다(예: 군 복무 정책은 '군대'가 아니라 '장병·전역'으로 적혀 있다).
+SYNONYMS = {'토익': ('어학', '응시료'), '토플': ('어학', '응시료'), '시험비': ('응시료',), '군대': ('장병', '전역', '군 복무'), '전역': ('장병', '제대'),
+            '밥값': ('식비', '급식', '식사'), '식비': ('급식', '식사'), '통신비': ('통신',), '문화생활': ('문화',), '해외취업': ('해외',), '스터디카페': ('스터디', '학습공간'),
+            '독서실': ('스터디', '학습공간'), '코딩': ('소프트웨어', 'SW', '디지털'), '농사': ('농업', '영농'), '여행': ('관광',), '어학연수': ('어학', '연수'),
+            '중개수수료': ('중개',), '운전면허': ('면허',), '자취': ('월세', '주거'), '빚': ('채무', '신용회복'), '운동': ('체육', '건강'), '헬스장': ('체육', '건강')}
+
+
 def fallback(message):
     """모델 없이 쓰는 대체 경로. AI가 한 것처럼 보이지 않게 응답에 ai 상태를 함께 돌려준다."""
     age = re.search(r'(\d{1,3})\s*(?:살|세)', message)
@@ -168,6 +176,13 @@ def find(message, profile, on, skip=()):
     except ValueError:
         suggestion = {}
     compared = provided(profile)
+    # 내게 해당할 수 있는 결과(맞아요·확인 필요)가 하나도 없으면 비슷한 말로 넓혀 한 번 더 찾고, 더 나을 때만 그 결과를 쓴다.
+    usable = lambda r: r['outcomes']['api_match'] + r['outcomes']['needs_check'] if compared else r['total']
+    wider = list(dict.fromkeys([*words, *(s for w in words for s in SYNONYMS.get(w, ()))]))[:4]   # 결과 화면의 검색어는 4개까지다
+    if words and not usable(result) and wider != words:
+        again = screen_catalog(profile, on, keywords=wider, page_size=6)
+        if usable(again) > usable(result) or again['total'] > result['total'] == 0:
+            words, result = wider, again
     # 아직 모르는 정보 중 하나만 묻는다. 방금 말에서 읽어 제안한 값은 다시 묻지 않는다.
     question = next_question(profile, suggestion, result['splits'], skip)
     topic = "'" + '·'.join(words) + "' 관련" if words else '전체'

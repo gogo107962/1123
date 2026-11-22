@@ -16,6 +16,13 @@ from temporal import korean_now, application_period, aware_time
 
 init_db()
 app=FastAPI(title='청년비서 정책 준비 API',version='0.8.0',description='로컬 정책 준비 서비스. 실제 지원 자격을 확정하지 않습니다.')
+
+# 서버가 뜨면 정책 구조화를 미리 해 둔다(첫 화면이 2~3초 멈추지 않게). 실패해도 첫 요청 때 다시 만든다.
+@app.on_event('startup')
+def warm_catalog():
+    import threading
+    from screening import _catalog
+    threading.Thread(target=_catalog,daemon=True).start()
 app.mount('/static',StaticFiles(directory=str(BASE/'static')),name='static')
 from desk_service import router as desk_router
 app.include_router(desk_router)
@@ -189,6 +196,9 @@ def desk_plan(wid:str,payload:PlanRequest):
     try:
         on=iso_date(payload.on) if payload.on else korean_now().date()
         validate_profile(payload.profile.model_dump())
+        from policy_structure import DOC_KIND
+        unknown=[k for k in payload.have if k not in DOC_KIND]
+        if unknown:raise ValueError('have에 목록에 없는 서류 키가 있습니다: '+', '.join(unknown))
     except ValueError as exc:raise HTTPException(422,str(exc)) from None
     return build(wid,payload.external_ids,payload.profile.model_dump(),on,payload.have)
 

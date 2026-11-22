@@ -116,7 +116,7 @@ def main():
             words = st['said']
             if st['job']['unrestricted'] and profile.get('job_code') == '0013001' and words['unemployed'] and not words['employed']:
                 check(got['job'] != 'match', f'job text {eid}', got['job'])
-            if st['job']['unrestricted'] and profile.get('job_code') == '0013003' and words['employed'] and not words['unemployed'] and not profile.get('business'):
+            if st['job']['unrestricted'] and profile.get('job_code') == '0013003' and words['employed_only'] and not profile.get('business'):
                 check(got['job'] != 'match', f'job text {eid}', got['job'])
             if st['school']['unrestricted'] and words['student'] and profile.get('school_code') and profile['school_code'] not in ('0049002', '0049003', '0049005', '0049006'):
                 check(got['school'] != 'match', f'school text {eid}', got['school'])

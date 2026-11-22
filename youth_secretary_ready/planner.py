@@ -3,6 +3,7 @@
 규칙만 쓴다(AI를 부르지 않는다). 입력은 정책 목록, 출력은 작은 JSON이라 다른 AI가 도구로 불러 쓸 수 있다(TOOL).
 - 근거는 온통청년의 참여 제한 문장이다. 사람 검수 전이므로 '못 받는다'로 단정하지 않고 문장을 그대로 보여 준다.
 - A의 글이 B를 가리키면 A→B로만 적는다. 뒤집어 적용하지 않는다.
+- 등록된 지역이 겹치지 않는 정책끼리는 함께 받을 일이 없으므로 충돌로 적지 않는다(지역을 모르면 겹치는 것으로 본다).
 - 순서는 등록된 마감일과 글의 조기 마감 문구만 쓴다. 다음 모집일을 추정하지 않는다.
 - 금액은 글에 적힌 금액을 더한 참고 값이다. 지원 기간(몇 달)을 곱하지 않는다.
 """
@@ -18,10 +19,17 @@ GENERIC = {'지원사업', '지원제도', '프로젝트', '프로그램', '청�
            '대한민국', '공공기관', '중소기업', '고등학교', '대학원생', '소상공인', '자영업자', '청년농업인', '청년창업', '청년일자리',
            '일자리사업', '아카데미', '네트워크', '아르바이트', '신혼부부', '사관학교', '역량강화', '산업단지', '오프라인', '취업준비', '창업지원사업'}
 # 시도 이름과 '취업지원'·'창업지원'처럼 두 글자 뒤에 '지원'이 붙은 말은 분야를 말할 뿐이다('국민취업지원제도' 안에도 들어 있다).
-_PLACE = re.compile(r'(특별시|광역시|자치시|자치도|남도|북도)$|^..지원$')
+# '거주청년'·'광주청년'처럼 '청년'으로 끝나는 말은 사람을 가리킬 뿐이다.
+_PLACE = re.compile(r'(특별시|광역시|자치시|자치도|남도|북도|청년)$|^..지원$')
 # 아래 식은 띄어쓰기를 뺀 글에 쓴다.
-_STATUS = re.compile(r'(?:에|의|등)?(?:재직|근무|재학|졸업|소속|임직원|종사|직원|국적|취업)')   # 받는 지원이 아니라 신분을 말하는 문장
-_RECEIVE = re.compile(r'수혜|수급|참여|지원금?[을를]?받|선정|이용|입주|중복')
+_STATUS = re.compile(r'(?:에|의|등)?(?:재직|근무|재학|졸업|소속|임직원|종사|직원|국적|취업|거주|입주)')   # 받는 지원이 아니라 신분을 말하는 문장('공공임대주택 거주자')
+_WORDS = r'수혜|수급|참여|지원금?[을를]?받|선정|이용|중복'
+_RECEIVE = re.compile(_WORDS)
+_BREAK = re.compile(r'[①-⑳.;]')                      # 다음 항목으로 넘어가는 자리. 그 뒤의 말은 이 낱말과 상관없다
+_SUFFIX = re.compile(r'(?:지원)?(?:사업|제도|금)?')      # 이름 뒤에 흔히 붙는 말
+# 낱말 바로 뒤가 이렇게 이어지면 그 낱말로 끝나는 이름이다: 나열(및·등·또는), 조사, '기수혜자' 같은 받는 말, 글자가 아닌 것
+_NEXT = re.compile(r'및|등|또는|이나|과|와|(?:[을를에의은는이가도로])?(?:기|이미|현재)?(?:' + _WORDS + r'|가입)|[^가-힣]|$')
+_ALIKE = re.compile(r'유사|동일')
 _JOIN = re.compile(r'가입')                            # 통장·적금·공제 같은 이름 뒤에서만 '받는 지원'으로 본다(고용보험 가입자는 신분이다)
 _SAVINGS = re.compile(r'통장|계좌|적금|공제|저축|펀드')
 _ALLOW = re.compile(r'(?:중복|동시|병행|함께)[^.]{0,8}가능|제외대상이?아님|제외하지않|제한하지않')
@@ -36,12 +44,17 @@ def core_tokens(name):
 
 def _named(flat, name):
     """문장이 그 정책을 '받는 지원'으로 가리키면 'named', 함께 받을 수 있다고 적었으면 'allowed', 아니면 None."""
+    target = name.replace(' ', '')
     for token in core_tokens(name):
         at = flat.find(token)
         if at < 0:
             continue
-        tail = flat[at + len(token):at + len(token) + 60]
-        if _STATUS.match(tail):
+        tail = _BREAK.split(flat[at + len(token):at + len(token) + 40])[0]
+        if _STATUS.match(tail) or (_JOIN.match(tail) and not _SAVINGS.search(token)):   # '고용보험 가입자'도 신분이다
+            continue
+        # 낱말 뒤에 다른 말이 이어지면 더 좁은 이름이다('청년월세 한시 특별지원'). 그 말까지 이름에 있는 정책만 가리킨다.
+        rest = tail[_SUFFIX.match(tail).end():]
+        if not _NEXT.match(rest) and rest[:2] not in target:
             continue
         if not (_RECEIVE.search(tail) or (_JOIN.search(tail) and _SAVINGS.search(token))):
             continue
@@ -50,16 +63,26 @@ def _named(flat, name):
     return None
 
 
+def overlap(a, b):
+    """등록된 지역이 겹치는가. 어느 한쪽이라도 지역을 모르면 겹치는 것으로 본다(모르는 것을 '안 겹친다'로 바꾸지 않는다)."""
+    x, y = a.get('region_codes'), b.get('region_codes')
+    return not x or not y or bool(set(x) & set(y))
+
+
 def relations(policies):
     """정책 쌍마다 A의 참여 제한 문장이 B를 가리키는지 본다. conflicts는 함께 받기 어려울 수 있는 것, compatible은 함께 받을 수 있다고 적힌 것."""
     conflicts, compatible = [], []
     for a in policies:
         for b in policies:
-            if a is b:
+            if a is b or not overlap(a, b):
                 continue
             for sentence in a['exclusions']:
                 kind = _named(sentence.replace(' ', ''), b['name'])
-                if not kind and SIMILAR.search(sentence) and any(t in a['name'] and t in b['name'] for t in TOPICS):
+                # '유사한 사업(대출이자 사업 등)'처럼 비슷한 사업을 말하는 문장은 분야가 같은 정책만 가리킨다(주거 이자 지원과 학자금 대출이자).
+                apart = bool(a.get('category') and b.get('category') and a['category'] != b['category'])
+                if kind and _ALIKE.search(sentence) and apart:
+                    kind = None
+                if not kind and not apart and SIMILAR.search(sentence) and any(t in a['name'] and t in b['name'] for t in TOPICS):
                     kind = 'allowed' if _ALLOW.search(sentence.replace(' ', '')) else 'similar'
                 if kind:
                     (compatible if kind == 'allowed' else conflicts).append(
@@ -161,7 +184,8 @@ NOTICE = '온통청년에 등록된 글만으로 계산한 참고 결과입니�
 
 
 def plan(policies, on):
-    """policies: external_id, name, exclusions(문장 목록), amounts, provision, period_status, period_label, deadline, early_close(없으면 None)."""
+    """policies: external_id, name, exclusions(문장 목록), amounts, provision, period_status, period_label, deadline, early_close(없으면 None),
+    region_codes(등록된 시군구 코드. 모르면 빈 목록), category(분야. 모르면 빈 글)."""
     ids = [p['external_id'] for p in policies]
     found, compatible = relations(policies)
     total = estimate(policies)

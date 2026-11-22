@@ -8,7 +8,7 @@
 """
 import re
 from datetime import date
-from policy_structure import DOCS, DOC_KIND, _BULLET, _PLACEHOLDER, doc_hit
+from policy_structure import DOCS, DOC_KIND, _BULLET, _DOC_CUT, _DOC_IF, _PLACEHOLDER, doc_hit
 
 # 준비하는 순서: 남에게 요청(시간을 내가 정할 수 없다) → 직접 작성 → 온라인·앱 발급 → 가지고 있는 것 찾기
 LEAD = {**dict.fromkeys(('employment_cert', 'medical', 'career', 'recommendation', 'estimate', 'payslip', 'interview', 'completion'), 'request'),
@@ -20,9 +20,8 @@ _TIER = ('request', 'write', 'online', 'keep')
 SITES = {'정부24': 'https://www.gov.kr', '홈택스': 'https://www.hometax.go.kr', '위택스': 'https://www.wetax.go.kr',
          '국민건강보험공단': 'https://www.nhis.or.kr', '전자가족관계등록시스템': 'https://efamily.scourt.go.kr',
          '고용24': 'https://www.work24.go.kr', '인터넷등기소': 'https://www.iros.go.kr'}
-_CUT = re.compile(r'[\r\n]+|(?:^|\s)(?:[-–•○□▪◦※☞❍ㅇ]|[①-⑳]|\d{1,2}[.)])\s+|\s/\s|;')
-_IF = re.compile(r'해당\s*자|해당\s*시|해당하는|경우|대리|한함|한해|선택')
-_ISSUED = re.compile(r'(?:최근|공고일|모집공고일|신청일|접수일)[^,)]{0,16}(?:이내|이후)(?:\s*발급분?)?|발급[^,)]{0,10}(?:이내|이후)')
+# 발급일 조건. '발급·발행'이라는 말이 있을 때만 읽는다('월세이체 증빙서류(최근 3개월 이내)', '최근 2년 이내 주소변동 포함'은 발급일이 아니다).
+_ISSUED = re.compile(r'(?:최근|공고일|모집공고일|신청일|접수일)[^,)]{0,16}(?:이내|이후)\s*(?:발급|발행)분?|(?:발급|발행)[^,)]{0,10}(?:이내|이후)')
 _EITHER = re.compile(r'또는|대체|중\s*(?:택|하나|1)|혹은')
 _DOCLIKE = re.compile(r'서\b|증\b|서류|자료|사본|내역|등본|초본|대장|확인원|증명|명세')
 
@@ -30,7 +29,7 @@ _DOCLIKE = re.compile(r'서\b|증\b|서류|자료|사본|내역|등본|초본|�
 def segments(text):
     """서류 안내 글을 서류 하나쯤 되는 조각으로 나눈다. 괄호 안의 쉼표에서는 자르지 않는다."""
     out = []
-    for piece in _CUT.split(text):
+    for piece in _DOC_CUT.split(text):
         depth, start = 0, 0
         for i, ch in enumerate(piece + ','):
             depth += (ch in '([（') - (ch in ')]）')
@@ -61,7 +60,7 @@ def board(policies, have=(), on=None):
             doc = docs.setdefault(key, {'key': key, 'name': name, 'kind': DOC_KIND[key], 'lead': LEAD.get(key, 'online'), 'how': how,
                                         'sites': [{'name': site, 'url': url} for site, url in SITES.items() if site in how], 'policies': []})
             doc['policies'].append({'external_id': p['external_id'], 'name': p['name'], 'quote': quote[:160] if quote else None,
-                                    'conditional': bool(quote and _IF.search(quote)), 'issue_rule': issued.group(0) if issued else None,
+                                    'conditional': bool(quote and _DOC_IF.search(quote)), 'issue_rule': issued.group(0) if issued else None,
                                     'one_of': [n for n in either.get(at, []) if n != name]})
             needed.append(key)
         # 이름을 못 찾았지만 서류처럼 보이는 조각. 빠뜨리지 않도록 그대로 보여 준다.

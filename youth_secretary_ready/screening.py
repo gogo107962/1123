@@ -7,6 +7,7 @@
 """
 import json
 import re
+import threading
 from collections import Counter
 from datetime import date
 from pathlib import Path
@@ -78,11 +79,12 @@ URBAN = json.loads(_URBAN_FILE.read_text(encoding='utf-8')) if _URBAN_FILE.exist
 REGION_FACT = {'11': '서울', '41': '경기', '28': '인천', '26': '부산'}
 JOB_FACT = {'0013003': 'unemployed', '0013001': 'employed'}
 _CACHE = {'key': None, 'rows': []}
+_BUILD = threading.Lock()   # 동시에 온 첫 요청들이 저마다 3,995건을 구조화하지 않게 한 번만 만든다
 
 
 def _catalog():
     """수집 정책과 그 구조화 결과. 수집 내용이 바뀌면(건수·마지막 수집 시각·원문 길이 합) 다시 만든다."""
-    with connect() as con:
+    with _BUILD, connect() as con:
         from ontong import CURRENT   # 온통청년 정보에서 사라진 정책은 목록에 넣지 않는다
         key = (str(db.DB_PATH), *con.execute('SELECT count(*), max(last_seen_at), total(length(payload_json)) FROM ontong_candidates WHERE ' + CURRENT).fetchone())
         if _CACHE['key'] != key:
@@ -248,6 +250,17 @@ def _side(pct, bounds, extra=0):
 
 
 def _income(item, profile):
+    """소득. 금액·비율로 견준 결과가, 소득 글이 내 가구가 아닌 기준(부모·원가구, 'N인 가구 기준')을 말하면 단정하지 않는다."""
+    result, basis = _income_field(item, profile)
+    compared = '입력한' in basis   # 내 소득 값과 견준 결과일 때만
+    if compared and item['fixed_household'] and result in ('match', 'mismatch'):
+        return 'unknown', basis.split('. ')[0] + '. 그런데 소득 글이 특정 가구원 수를 기준으로 적혀 있어 내 가구 기준으로는 단정할 수 없습니다. 공고에서 확인하세요.'
+    if compared and item['parents'] and result == 'match':
+        return 'unknown', basis.split('. ')[0] + '. 그런데 소득 글에 부모·원가구 소득 기준이 함께 적혀 있어 내 소득만으로는 맞다고 할 수 없습니다. 공고에서 확인하세요.'
+    return result, basis
+
+
+def _income_field(item, profile):
     if item['code'] == '0043001':
         return 'match', '소득 무관으로 등록돼 있습니다. 공고와 다른 사례가 있어 원문 확인이 필요합니다.'
     if item['missing']:
@@ -427,8 +440,8 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
     if rows[4][1] == 'match' and structured['job']['unrestricted']:
         if job == '0013001' and words['unemployed'] and not words['employed']:
             soften(4, f"등록된 취업 요건은 '제한없음'인데 조건 글에 미취업·구직 청년이 나옵니다: “{words['unemployed']}”. 재직자도 대상인지 공고에서 확인하세요.")
-        elif job == '0013003' and words['employed'] and not words['unemployed']:
-            soften(4, f"등록된 취업 요건은 '제한없음'인데 조건 글에 재직자·근로자가 나옵니다: “{words['employed']}”. 미취업자도 대상인지 공고에서 확인하세요.")
+        elif job == '0013003' and words['employed_only']:
+            soften(4, f"등록된 취업 요건은 '제한없음'인데 조건 글에 재직자·근로자가 나옵니다: “{words['employed_only']}”. 미취업자도 대상인지 공고에서 확인하세요.")
     elif rows[4][1] == 'mismatch' and words['short_work']:
         soften(4, f"등록된 취업 요건({', '.join(structured['job']['labels'])})과는 다르지만 조건 글에 단기근로·아르바이트 등을 함께 적었습니다: “{words['short_work']}”. 내 근로 형태가 해당하는지 공고에서 확인하세요.")
     if rows[5][1] == 'match' and structured['school']['unrestricted'] and words['student'] and school not in STUDENT:

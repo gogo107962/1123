@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>청년비서 작업 정리 (2026-11-22)</title>
+<style>
+:root{--bg:#f6f6f4;--card:#fff;--ink:#1c1c1a;--sub:#66665f;--line:#e4e3de;--ok:#1f7a4d;--warn:#9a5b00;--accent:#ffe14d}
+@media (prefers-color-scheme:dark){:root{--bg:#171715;--card:#22221f;--ink:#f1f0ea;--sub:#a9a79d;--line:#3a3934;--ok:#6fd3a0;--warn:#f0b454;--accent:#8a7500}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Pretendard","Malgun Gothic",system-ui,sans-serif}
+main{max-width:860px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;margin:0 0 6px}
+h2{font-size:19px;margin:34px 0 10px;padding-left:10px;border-left:5px solid var(--accent)}
+p{margin:6px 0}.sub{color:var(--sub);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.num{font-size:24px;font-weight:700}.num small{font-size:13px;font-weight:400;color:var(--sub)}
+.wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--sub);font-weight:600;white-space:nowrap}
+td:first-child{white-space:nowrap;font-weight:600}
+ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
+.ok{color:var(--ok);font-weight:600}.warn{color:var(--warn);font-weight:600}
+code{background:var(--line);border-radius:5px;padding:1px 5px;font-size:13.5px}
+</style>
+</head>
+<body>
+<main>
+<h1>청년비서 작업 정리</h1>
+<p class="sub">2026-11-22 기준 · 2026 대한민국 청년 CAREER FAIR AI 해커톤(대한상공회의소) · 제출 마감 2026-11-23 17:00 · 담당: 데이터 구조화와 판별 엔진</p>
+<p class="sub">저장소 <code>github.com/trewqyu/1123</code> (main) · 마지막 버전 v0.46 (2026-11-20) · 숫자는 모두 2026-11-20에 잰 값이고, 자세한 근거는 <code>youth_secretary_ready/VALIDATION.md</code>에 있습니다.</p>
+
+<h2>한눈에</h2>
+<div class="grid">
+<div class="card"><div class="num">3,995<small>건</small></div><p class="sub">온통청년에서 수집한 정책 (11-19 재수집)</p></div>
+<div class="card"><div class="num">1,448<small>건</small></div><p class="sub">내 정보와 조건을 비교할 수 있는 정책</p></div>
+<div class="card"><div class="num">385<small>개</small></div><p class="sub">자동 테스트, 모두 통과</p></div>
+<div class="card"><div class="num">55,930<small>번</small></div><p class="sub">판정 규칙 점검, 위반 0건 (v0.42 때 잼)</p></div>
+<div class="card"><div class="num">924<small>건</small></div><p class="sub">서류 이름이 화면에 나오는 정책 (전 797건)</p></div>
+<div class="card"><div class="num">40 / 40</div><p class="sub">실제 AI(Ollama)로 본 챗봇 질문 평가</p></div>
+</div>
+
+<h2>서비스가 하는 일</h2>
+<div class="card">
+<ul>
+<li>청년이 내 정보(나이·지역·취업 상태·시험·주거 등)를 넣으면, 정책마다 조건을 <b>맞아요 / 확인 필요 / 달라요</b>로 비교합니다.</li>
+<li>고른 정책의 서류를 합치고, 예상 지원 금액과 참여 제한 문장을 보여 줍니다.</li>
+<li>사용자가 승인한 준비 작업만 저장하고, 마지막에는 <b>공식 홈페이지로 넘깁니다</b>.</li>
+<li>판정은 신청 준비를 돕는 비교이고 자격 확정이 아닙니다. 모르는 것은 '달라요'가 아니라 '확인 필요'로 둡니다.</li>
+</ul>
+</div>
+
+<h2>한 일 (날짜순)</h2>
+<div class="card wrap">
+<table>
+<tr><th>날짜</th><th>버전</th><th>한 일</th></tr>
+<tr><td>11-16~17</td><td>v0.5~v0.12</td><td>온통청년 전체 수집, 데이터 구조화와 1차 걸러보기, 앱 흐름(내 정보 → 추천 → 대화로 찾기), 신청 계획 화면, 데이터 전체 점검</td></tr>
+<tr><td>11-18</td><td>v0.13~v0.26</td><td>중복 등록 묶기, 시군구 단위 비교, 거주 기간, 소득 기준(중위소득·학자금 지원구간·도시근로자 월평균소득), 참여 제한 분류, 사람 검수 화면, 공식 페이지 보완 기록, 실제 모델 평가, 저장소 첫 푸시</td></tr>
+<tr><td>11-19</td><td>v0.27~v0.30</td><td>화면을 팀 화면 파일에 맞추고 실제 데이터 연결, 인용 문장 자동 대조(확인된 문장만 판단에 사용)</td></tr>
+<tr><td>11-19</td><td>v0.31~v0.34</td><td>자격증·시험과 주거를 조건 비교에 사용, 공식 공고·신청 페이지로 이동, 데이터 정합성 도구와 링크 점검(없어진 주소는 숨김), 재수집 3,995건, 지원금과 대출을 구분한 예상 지원 금액</td></tr>
+<tr><td>11-19</td><td>v0.35~v0.36</td><td>판별 엔진 점검: 코드 칸과 조건 글이 어긋나면 단정하지 않음. 완성 기준 다섯 가지를 정하고 잼. 근거마다 '위치' 표시</td></tr>
+<tr><td>11-19</td><td>v0.37~v0.39</td><td>'자료가 바뀌었어요' 안내를 내용이 바뀌었을 때만, 어색한 문구 정리, 날짜 실시간 연동</td></tr>
+<tr><td>11-20</td><td>PR 검토</td><td>팀원 PR #1(충돌·순서 플래너)·#2(서류 준비판) 검토. 병합했다가 요청에 따라 되돌리고, 검토 의견을 PR #2에 답글로 남김</td></tr>
+<tr><td>11-20</td><td>v0.40</td><td>판별 엔진 두 번째 점검: 글을 읽는 규칙의 정확도, 내 가구가 아닌 소득 기준(부모 소득 등)은 단정하지 않음</td></tr>
+<tr><td>11-20</td><td>v0.41~v0.42</td><td>실제 Ollama로 챗봇 경로 확인, 결과 0건 질문 17 → 6개(50개 중), 통합 서류에 서류 아닌 말이 섞이던 문제 수정, '해당하는 경우만' 내는 서류 표시, 공고 첨부파일·이미지에서 서류 읽기</td></tr>
+<tr><td>11-20</td><td>v0.43~v0.45</td><td>서류 0건 채우기(공식 페이지 223건 확인, 첨부 조사 36건, 신청 방법 글에서 읽기). 신청 계획에는 방금 고른 정책만 보이게</td></tr>
+<tr><td>11-20</td><td>v0.46</td><td>시연 시나리오 선정, '예시로 시작'의 민지를 인천 미추홀구로</td></tr>
+</table>
+</div>
+
+<h2>판별 엔진 (담당 영역)</h2>
+<div class="card">
+<p><b>완성 기준 다섯 가지를 정하고 잰 값</b> (<code>data/COVERAGE.md</code> 3장)</p>
+<ul>
+<li><span class="ok">1,448 / 1,448</span> 비교 가능한 정책이 모두 판정됨</li>
+<li><span class="ok">13,085 / 13,085</span> 판정 줄마다 근거와 위치가 붙음</li>
+<li><span class="ok">3,995 / 3,995</span> 모든 정책에 공식 링크가 있음</li>
+<li><span class="ok">위반 0건</span> 가상 프로필 14개 × 전체 정책, 55,930번 판정에서 원칙 위반 없음</li>
+<li><span class="ok">어긋남 0건</span> 목록과 상세의 판정이 같고, 데이터 파일끼리 정합성 문제 없음</li>
+</ul>
+<p><b>지키는 원칙</b></p>
+<ul>
+<li>빈값·0·미기재를 '제한 없음'으로 바꾸지 않습니다.</li>
+<li>조건 글과 코드 칸이 어긋나면 '확인 필요'로만 낮춥니다. 글만 보고 '맞아요·달라요'를 만들지 않습니다.</li>
+<li>A→B 제한을 B→A로 뒤집어 적용하지 않습니다.</li>
+<li>공식 페이지에서 따로 찾은 문장은 출처에서 자동 확인된 것만 판정에 씁니다.</li>
+</ul>
+</div>
+
+<h2>데이터</h2>
+<div class="card wrap">
+<table>
+<tr><th>항목</th><th>값</th></tr>
+<tr><td>수집 정책</td><td>3,995건 (API에서 사라진 37건은 DB에 남기고 화면에서는 뺌)</td></tr>
+<tr><td>공식 링크 점검</td><td>3,214개 주소: 정상 3,073 · 없어짐 48(화면에서 숨김) · 오류 27 · 접속 실패 66</td></tr>
+<tr><td>공식 페이지 보완 기록</td><td>222건: 문장 자동 확인 192 · 문장 없음 20 · 일부 4 · 파일에서 읽음 5 · 접속 실패 1. 모두 사람 검수 전</td></tr>
+<tr><td>서류가 나오는 정책</td><td>924건 (서류 칸 797 · 보완 기록 31 · 신청 방법 글 96). 접수 중·상시 337건 중에는 126건</td></tr>
+<tr><td>사람이 승인한 실제 정책</td><td>0건 (가상 3건, 실제 초안 3건은 draft). 완성 기준이 아니라고 11-19에 정리</td></tr>
+</table>
+</div>
+
+<h2>시연 시나리오</h2>
+<div class="card">
+<p><b>인천 미추홀구에 사는 26세 취준생 민지가 정보처리기사 응시료와 면접수당을 함께 준비한다.</b> '예시로 시작' 버튼으로 바로 시작됩니다.</p>
+<ul>
+<li>챗봇 "정보처리기사 봤는데 응시료 지원돼?" → '(미추홀구) 청년 자격증 응시료 지원'</li>
+<li>조건 비교: 나이·지역·소득·취업 상태·시험이 '맞아요', 신청기간·참여 제한은 '확인 필요'</li>
+<li>챗봇 "면접 보러 가는데 지원받을 수 있는 거 있어?" → '(미추홀구) 청년 면접수당 지원사업'</li>
+<li>두 정책을 함께 보면: 예상 15만원, 서류 7종(3종 공통), 참여 제한 문장</li>
+<li>준비 작업 승인 → 저장 → 공식 신청 사이트로 이동</li>
+</ul>
+<p class="sub">서버 응답과 실제 AI로 확인했습니다. 화면에서 처음부터 끝까지 눌러 보지는 않았습니다.</p>
+</div>
+
+<h2>남은 한계 (솔직하게)</h2>
+<div class="card">
+<ul>
+<li><span class="warn">서류</span> 전체 3,071건, 접수 중 211건은 여전히 서류가 안 나옵니다. 온통청년 원본의 72%가 서류 칸이 비어 있기 때문입니다. 시연 프로필 밖의 접수 중 177건은 첨부파일 조사를 하지 않았습니다.</li>
+<li><span class="warn">API 값</span> 온통청년 등록값은 공고 원문과 다를 수 있습니다(팀 대조 45건 중 32건 불일치). 그래서 판정은 '비교'이고, 마지막은 공식 페이지 확인입니다.</li>
+<li><span class="warn">글 읽기</span> 조건 글을 읽는 규칙은 낱말 기준이라 놓치거나 잘못 걸리는 문장이 있을 수 있습니다.</li>
+<li><span class="warn">검수</span> 보완 기록 222건과 실제 정책 초안은 사람 검수 전입니다.</li>
+<li><span class="warn">팀원 PR</span> #1·#2의 코드는 main에 들어 있지 않습니다(되돌림). 다시 넣으려면 새 PR이 필요합니다.</li>
+<li><span class="warn">읽지 못한 것</span> 옛 한글 파일(.hwp), 로그인·자바스크립트로만 열리는 페이지.</li>
+<li><span class="warn">링크 점검</span> 11-19에 한 번 돌린 결과입니다. 제출 전에 다시 돌리지 않았습니다.</li>
+</ul>
+</div>
+
+<h2>실행 방법</h2>
+<div class="card">
+<p><code>youth_secretary_ready</code> 폴더에서 (Windows PowerShell)</p>
+<ul>
+<li>테스트: <code>.\.venv\Scripts\python.exe -X utf8 -m pytest -q</code></li>
+<li>서버: <code>.\.venv\Scripts\python.exe -X utf8 start.py</code> → <code>http://127.0.0.1:8000</code></li>
+<li>AI가 필요할 때만: <code>.\run_ollama.ps1</code> (로컬 Ollama <code>qwen3:4b</code>)</li>
+</ul>
+</div>
+</main>
+</body>
+</html>

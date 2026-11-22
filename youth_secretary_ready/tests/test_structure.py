@@ -531,7 +531,9 @@ def test_supplement_file_keeps_source_quote_and_unverified_mark():
     rows = json.loads((Path(ontong.BASE) / 'data' / 'supplements.json').read_text(encoding='utf-8'))
     assert rows
     for x in rows:
-        assert set(x) - {'rules'} == {'external_id', 'field', 'value', 'quotes', 'source_url', 'source_title', 'checked_on', 'checked_by', 'verified'}
+        # read_from·file_url: 공고의 첨부파일·이미지에서 읽은 기록에만 붙는다
+        assert set(x) - {'rules', 'read_from', 'file_url'} == {'external_id', 'field', 'value', 'quotes', 'source_url', 'source_title', 'checked_on', 'checked_by', 'verified'}
+        assert x.get('read_from') in (None, 'attachment_pdf', 'attachment_hwpx', 'image') and (not x.get('read_from') or x['field'] == 'documents')
         # 공식 페이지에서 찾은 규칙은 엔진이 읽는 형식이어야 하고, 근거 문장이 함께 있어야 한다.
         for rule in x.get('rules', []):
             assert set(rule) == {'id', 'type', 'predicate', 'message'} and rule['type'] in ('required', 'exclude')
@@ -1650,6 +1652,113 @@ def test_ask_falls_back_to_topic_words_in_the_message_when_model_keywords_find_n
     assert none['total'] == 0 and '없어요' in none['answer']
 
 
+# ── v0.40: 글을 읽는 규칙이 엉뚱한 문장에 걸리지 않게, 내 가구가 아닌 소득 기준 ──────
+def test_text_rules_ignore_unrelated_sentences():
+    said = lambda **f: made(**f)['said']
+    for text in ('전년도 도시근로자 가구원수별 월평균 소득의 100% 이하', '근로자의 날 휴무', '기간제 근로자를 매년 공개 채용', '상시 근로자 3인 이상 중소기업'):
+        assert said(plcySprtCn=text)['employed'] is None, text
+    assert said(plcySprtCn='관내 중소기업 재직자 대상 교육')['employed_only']
+    assert said(plcySprtCn='예비 취·창업자, 대학생, 재직자 등')['employed_only'] is None          # 다른 대상과 함께 적힘
+    assert verdict(made(plcySprtCn='교육대상: 대학생, 재직자 등'), {'job_code': '0013003'})[1]['job'] == 'match'
+    assert said(plcySprtCn='재학생이 졸업 후 농산업분야로 취업')['graduate'] is None
+    assert said(plcySprtCn='졸업 후 5년 이내 미취업자')['graduate'] and said(plcySprtCn='대학생 및 고등학교 졸업생')['graduate']
+    assert said(plcySprtCn='한도: 미혼 3억원, 신혼 4억원 이내')['unmarried'] is None and said(plcySprtCn='무주택 미혼 청년 세대주')['unmarried']
+    assert said(plcySprtCn='고려대학교 재학생 및 지역 청년을 대상')['student'] is None and said(plcySprtCn='중·고등학생 대상 반도체 교실')['student']
+
+
+def test_income_range_floor_and_other_household_bases():
+    money = lambda item, pay: verdict(item, {'income_monthly': pay, 'household': 1})[1]['income']
+    ranged = made(earnCndSeCd='0043003', earnEtcCn='기준중위소득 60 ~ 160%이하인 무주택 청년 가구')
+    assert {'pct': 60, 'kind': 'min'} in ranged['income']['median_bounds'] and {'pct': 160, 'kind': 'max'} in ranged['income']['median_bounds']
+    assert [money(ranged, pay) for pay in (100, 250, 500)] == ['mismatch', 'match', 'mismatch']      # 1인 가구 중위소득의 약 39% / 97% / 195%
+    parents = made(earnCndSeCd='0043003', earnEtcCn='(원가구) 기준중위소득 100% 이하')
+    assert parents['income']['parents'] and [money(parents, pay) for pay in (100, 500)] == ['unknown', 'mismatch']   # 내 소득만으로 '맞아요'라고 하지 않는다
+    fixed = made(earnCndSeCd='0043003', earnEtcCn='4인 가족 기준 중위소득 140% 미만')
+    assert fixed['income']['fixed_household'] and [money(fixed, pay) for pay in (100, 500)] == ['unknown', 'unknown']
+    plain = made(earnCndSeCd='0043003', earnEtcCn='기준 중위소득 150% 이하')
+    assert [money(plain, pay) for pay in (100, 500)] == ['match', 'mismatch']
+
+
+def test_residence_condition_with_alternatives_is_not_compared():
+    for text in ('만 24세 청년 중 3년 이상 계속 또는 합산 10년 이상 거주한 경우', '본인 또는 직계존속이 1년 이상 도내에 주소를 둔 자'):
+        item = made(addAplyQlfcCndCn=text)
+        assert item['region']['residence_min_months'] and item['region']['residence_unclear'], text
+        assert verdict(item, {'region_code': '11305', 'residence_months': 0})[1]['region'] == 'unknown', text      # 짧게 살았어도 '달라요'로 단정하지 않는다
+    plain = made(addAplyQlfcCndCn='신청일 기준 6개월 이상 삼척시에 주민등록을 두고 있는 청년')
+    assert plain['region']['residence_unclear'] is False and verdict(plain, {'region_code': '11305', 'residence_months': 0})[1]['region'] == 'mismatch'
+
+
+# ── v0.41: 서류가 아닌 말에 걸리지 않게, 해당자만 내는 서류 표시 ──────────────────────
+def test_document_words_do_not_match_non_documents_and_optional_ones_are_marked(ctx):
+    from policy_structure import doc_hit, doc_optional, DOCS
+    needles = {key: n for key, _, n, _ in DOCS}
+    assert not doc_hit('○ 필수 신청서류 ① 주민등록등본', needles['application']) and doc_hit('① 지원 신청서 ② 동의서', needles['application'])
+    assert not doc_hit('① 응시료 지원사업 신청서 ② 응시원서', needles['exam']) and doc_hit('시험응시 증빙서류(성적표, 응시확인서 등)', needles['exam'])
+    assert not doc_hit('고용보험(상용)에 가입되어 있는 자', needles['employment_insurance']) and doc_hit('고용보험 피보험 자격이력내역서', needles['employment_insurance'])
+    text = '시험 결제영수증(필수)\n통장사본(본인명의)(필수)\n단기근로자 증빙서류(정부일자리 참여 확인서, 근로계약서 등)(선택)'
+    assert doc_optional(text, needles['labor_contract']) and not doc_optional(text, needles['bankbook'])
+    seed([good('DOC1', sbmsnDcmntCn=text), good('DOC2', sbmsnDcmntCn='근로계약서 1부, 통장사본')])
+    wid = ctx.post('/api/desk/workspaces').json()['id']
+    one = {d['key']: d['optional'] for d in ctx.post(f'/api/desk/workspaces/{wid}/plan', json={'external_ids': ['DOC1']}).json()['documents']}
+    assert one == {'bankbook': False, 'receipt': False, 'labor_contract': True}
+    both = {d['key']: d['optional'] for d in ctx.post(f'/api/desk/workspaces/{wid}/plan', json={'external_ids': ['DOC1', 'DOC2']}).json()['documents']}
+    assert both['labor_contract'] is False                      # 다른 정책에서 필수면 필수로 본다
+
+
+def test_ask_widens_narrow_keywords_only_when_nothing_usable_was_found(ctx, monkeypatch):
+    seed([good('WD1', plcyNm='청년 어학시험 응시료 지원'), good('WD2', plcyNm='토익 특강', zipCd='26110')])
+    monkeypatch.setattr(desk_finder, 'model_status', lambda: {'ready': True})
+    monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['토익']))
+    body = ctx.post(ASK, json={'message': '토익 시험비 지원해 주는 데 있어?', 'profile': PROFILE, 'on': '2026-11-17'}).json()
+    assert body['keywords'][0] == '토익' and '어학' in body['keywords']                 # 내 지역에 해당하는 '토익' 정책이 없어 넓혀 찾음
+    assert {x['external_id'] for x in body['items']} == {'WD1', 'WD2'} and "'토익·어학" in body['answer']
+    seed([good('WD3', plcyNm='토익 응시료 환급')])
+    narrow = ctx.post(ASK, json={'message': '토익 시험비 지원해 주는 데 있어?', 'profile': PROFILE, 'on': '2026-11-17'}).json()
+    assert narrow['keywords'] == ['토익']                                               # 해당하는 결과가 있으면 넓히지 않는다
+
+
+def test_confirmed_supplement_page_becomes_an_official_link(ctx, monkeypatch):
+    import desk_service
+    seed([good('SL1', refUrlAddr1='', refUrlAddr2='', aplyUrlAddr='https://example.go.kr/apply')])
+    note = {'external_id': 'SL1', 'field': 'documents', 'value': '신청서', 'quotes': ['신청서 1부'], 'source_url': 'https://example.go.kr/notice', 'source_title': '공고', 'checked_on': '2026-11-20'}
+    monkeypatch.setattr(ontong, 'supplements', lambda eid: [{**note, 'auto_check': 'found'}])
+    assert [(x['title'], x['url']) for x in desk_service.evidence('SL1')[1]] == [('공식 안내(따로 확인)', 'https://example.go.kr/notice'), ('신청 안내 사이트', 'https://example.go.kr/apply')]
+    monkeypatch.setattr(ontong, 'supplements', lambda eid: [{**note, 'auto_check': 'not_found'}])      # 문장이 확인되지 않은 페이지는 링크로 쓰지 않는다
+    assert [x['title'] for x in desk_service.evidence('SL1')[1]] == ['신청 안내 사이트']
+
+
+def test_documents_read_from_attachment_or_image_are_used_with_their_origin(ctx, monkeypatch):
+    seed([good('AT1', sbmsnDcmntCn='')])
+    wid = ctx.post('/api/desk/workspaces').json()['id']
+    note = {'external_id': 'AT1', 'field': 'documents', 'value': '신청서 등', 'quotes': ['참가신청서 1부', '주민등록초본 1부(해당자)'], 'source_url': 'https://example.go.kr/n',
+            'source_title': '공고', 'checked_on': '2026-11-20'}
+    plan = lambda: ctx.post(f'/api/desk/workspaces/{wid}/plan', json={'external_ids': ['AT1']}).json()
+    monkeypatch.setattr(ontong, 'supplements', lambda eid: [{**note, 'auto_check': 'file', 'read_from': 'image'}])
+    out = plan()
+    assert out['policies'][0]['documents_source'] == 'image' and {d['key']: d['optional'] for d in out['documents']} == {'application': False, 'resident_abstract': True}
+    monkeypatch.setattr(ontong, 'supplements', lambda eid: [{**note, 'auto_check': 'not_found'}])       # 어디서 읽었는지 표시가 없고 대조도 안 된 기록은 쓰지 않는다
+    assert plan()['documents'] == [] and plan()['documents_unlisted'] == ['AT1']
+
+
+def test_pointer_only_document_text_falls_back_to_supplement(ctx, monkeypatch):
+    seed([good('PT1', sbmsnDcmntCn='☞ 자세한 내용은 붙임파일을 확인해주시기 바랍니다.')])
+    wid = ctx.post('/api/desk/workspaces').json()['id']
+    note = {'external_id': 'PT1', 'field': 'documents', 'value': '통장사본', 'quotes': ['통장사본'], 'source_url': 'https://example.go.kr/n', 'source_title': '공고', 'checked_on': '2026-11-20', 'auto_check': 'found'}
+    plan = lambda: ctx.post(f'/api/desk/workspaces/{wid}/plan', json={'external_ids': ['PT1']}).json()
+    assert plan()['documents'] == []
+    monkeypatch.setattr(ontong, 'supplements', lambda eid: [note])
+    assert [d['key'] for d in plan()['documents']] == ['bankbook'] and plan()['policies'][0]['documents_source'] == 'web_check'
+
+
+def test_documents_named_in_how_to_apply_text_are_used_when_the_document_field_has_none(ctx):
+    seed([good('OT1', sbmsnDcmntCn='', plcyAplyMthdCn='군청 방문 접수\n신청서 및 사업계획서 등 구비서류 제출'),
+          good('OT2', sbmsnDcmntCn='', plcyAplyMthdCn='누리집에서 신청', plcySprtCn='자기소개서 첨삭, 통장 유지 시 지급')])
+    wid = ctx.post('/api/desk/workspaces').json()['id']
+    out = ctx.post(f'/api/desk/workspaces/{wid}/plan', json={'external_ids': ['OT1', 'OT2']}).json()
+    assert out['policies'][0]['documents_source'] == 'api_other' and {d['key'] for d in out['documents']} == {'application', 'business_plan'}
+    assert out['documents_unlisted'] == ['OT2']                       # 지원 내용 글의 낱말은 서류로 읽지 않는다
+
+
 
 def _chosen(eid, name, exclusions=(), code='0042006', text='', status='open', label='D-13', deadline='2026-11-30', early=None):
     return {'external_id': eid, 'name': name, 'exclusions': list(exclusions), 'amounts': made(plcySprtCn=text)['amounts'],
@@ -1764,3 +1873,44 @@ def test_docboard_endpoint_takes_have_and_writes_nothing(ctx):
     # 기존 칸은 그대로다(화면이 쓰는 값).
     assert {d['key'] for d in full['documents']} == {'application', 'resident_abstract', 'transcript', 'bankbook'} and full['documents_unlisted'] == ['D2']
     assert set(docboard.TOOL['parameters']['properties']) == {'external_ids', 'have'}
+
+
+def test_planner_skips_other_regions_narrower_names_and_status_sentences():
+    from planner import relations
+    rent = lambda eid, name, codes, *lines: {**_chosen(eid, name, lines), 'region_codes': codes, 'category': '주거'}
+    found, _ = relations([
+        rent('A', '(남동구) 인천시 청년월세 지원사업', ['28200'], '국토부 또는 지자체에서 시행하는 청년월세 지원사업 중복 수혜중인 자',
+             '과거 국토부 청년월세 한시 특별지원을 받은 자', '공공임대주택 거주자'),
+        rent('B', '(부평구) 인천시 청년월세 지원사업', ['28237']),          # 지역이 겹치지 않는다
+        rent('C', '인천 청년월세 지원', ['28200', '28237']),               # 지역이 겹친다
+        rent('D', '청년월세 한시 특별지원', []),                           # 지역을 모른다 → 겹치는 것으로 본다
+        rent('E', '공공임대주택 청년 입주자 모집', ['28200'])])
+    hits = {(c['from'], c['to']): c['quote'] for c in found}
+    # 등록된 지역이 겹치지 않는 정책끼리는 적지 않는다. 지역을 모르는 정책은 빼지 않는다.
+    assert ('A', 'B') not in hits and ('A', 'C') in hits and ('A', 'D') in hits
+    # '청년월세 한시 특별지원'은 그 이름의 정책만 가리킨다. 이름에 '청년월세'만 있는 정책은 '청년월세 지원사업' 문장으로만 걸린다.
+    assert '한시' not in hits[('A', 'C')] and '중복 수혜중' in hits[('A', 'C')]
+    # '공공임대주택 거주자'는 신분이다. 임대주택 정책을 가리키지 않는다.
+    assert ('A', 'E') not in hits
+    alike = lambda category: relations([{**_chosen('H', '청년 주택임차보증금 이자 지원', ['유사한 사업(대출이자 사업 등)으로 지원받고 있는 경우 지원 불가']), 'category': '주거'},
+                                         {**_chosen('S', '학자금 대출이자 지원'), 'category': category}])[0]
+    # '유사한 사업'을 말하는 문장은 분야가 같은 정책만 가리킨다.
+    assert alike('교육') == [] and [(c['from'], c['to']) for c in alike('주거')] == [('H', 'S')]
+
+
+def test_docboard_reads_issue_date_only_when_it_says_issued_and_rejects_unknown_have(ctx):
+    from docboard import board
+    out = board([_papers('A', '월세이체 증빙서류(최근 3개월 이내), 주민등록초본(최근 2년이내 주소변동사항 포함), 재학증명서(최근 2개월 이내 발급)\n'
+                              '대학합격증명서, 지방세 미과세 증명서, 지방세 세목별 과세증명서')])
+    by = {d['key']: d for d in out['to_get']}
+    # '발급·발행'이라는 말이 있을 때만 발급일 조건으로 읽는다.
+    assert by['transfer']['issue_rules'] == [] and by['resident_abstract']['issue_rules'] == [] and by['enrollment']['issue_rules'] == ['최근 2개월 이내 발급']
+    assert not any('신청 직전' in r for r in by['transfer']['reasons'] + by['resident_abstract']['reasons'])
+    # 대학합격증명서는 자격증 사본이 아니고, 미과세 증명서는 과세증명서가 아니다.
+    assert 'license' not in by and by['local_tax']['policies'][0]['quote'] == '지방세 세목별 과세증명서'
+    assert '대학합격증명서' in out['policies'][0]['other_lines'] and '지방세 미과세 증명서' in out['policies'][0]['other_lines']
+    seed([good('H1', sbmsnDcmntCn='신청서')])
+    wid = ctx.post('/api/desk/workspaces').json()['id']
+    for path in ('plan', 'docboard'):
+        bad = ctx.post(f'/api/desk/workspaces/{wid}/{path}', json={'external_ids': ['H1'], 'profile': PROFILE, 'on': '2026-11-17', 'have': ['application', 'nope']})
+        assert bad.status_code == 422 and 'nope' in bad.text
