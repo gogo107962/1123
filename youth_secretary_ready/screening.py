@@ -240,6 +240,11 @@ def _coded(item, value):
     return 'mismatch', '등록된 조건: ' + ', '.join(item['labels'])
 
 
+# 화면에 표시만 하고 판정(맞아요·확인 필요·달라요)에는 넣지 않는 항목. 내 조건이 아니라 절차다.
+# period: 신청기간(정책 옆 표시), apply: 온통청년에 신청 방법이 없음(공식 사이트로 안내, 2026-11-22 사용자 결정)
+UNCOUNTED = ('period', 'apply')
+
+
 def _period(status, long_window=False, scale=None):
     if status == 'open' and not long_window and scale and scale['first_come']:
         people = f" {scale['count']:,}명" if scale['count'] else ''
@@ -535,11 +540,14 @@ def screen(structured, profile, status, rule=None, notes=(), on=None):
         else:
             kinds = f" 확인할 것: {', '.join(limits['kinds'])}." if limits['kinds'] else ''
             rows.append(('exclusion', 'unknown', f"온통청년 정보에 참여 제한 안내가 있습니다: “{limits['sentences'][0]}”{more}.{kinds} 해당하는지는 공고에서 확인하세요."))
-    results = {r[1] for r in rows}
+    # 신청기간은 판정에 넣지 않는다(2026-11-22 사용자 결정). '상시'·'연중'으로 등록된 정책이 모두 '확인 필요'가 되어 '맞아요'가 0건이었다.
+    # 기간은 근거와 함께 남겨 화면에 표시만 한다(counted: False). 마감된 정책은 목록에서 '원문 링크만'으로 따로 나뉜다.
+    counted = [row for row in rows if row[0] not in UNCOUNTED]
+    results = {r[1] for r in counted}
     outcome = 'api_mismatch' if 'mismatch' in results else 'needs_check' if 'unknown' in results else 'api_match'
     return {'outcome': outcome, 'qualification_determined': False,
-            'criteria': [{'key': k, 'result': r, 'basis': b, 'where': _where(k, b)} for k, r, b in rows],
-            'to_confirm': [k for k, r, _ in rows if r in ('unknown', 'mismatch')], 'notice': NOTICE}
+            'criteria': [{'key': k, 'result': r, 'basis': b, 'where': _where(k, b), 'counted': k not in UNCOUNTED} for k, r, b in rows],
+            'to_confirm': [k for k, r, _ in counted if r in ('unknown', 'mismatch')], 'notice': NOTICE}
 
 
 def approved_policy(external_id, check, approved):
@@ -627,7 +635,7 @@ def screen_catalog(profile, on, query='', outcome='', only_tier='', page=1, page
     found.sort(key=lambda x: (bool(words) and not x['name_hit'], not (x['engine'] and x['engine']['status'] == 'review_possible'),
                               ORDER[x['screen']['outcome']] if x['screen'] else 3,
                               # 신청 방법이 비어 있는 정책(제도·과제 성격이 섞여 있다)은 같은 결과 안에서 뒤에 둔다.
-                              bool(x['screen']) and 'apply' in x['screen']['to_confirm'],
+                              bool(x['screen']) and any(c['key'] == 'apply' for c in x['screen']['criteria']),
                               RANK[x['period_status']] + (1.5 if x['long_window'] and x['period_status'] == 'open' else 0), x['deadline'] or ''))
     # 같은 이름·같은 지역 코드로 여러 번 등록된 정책(지난 회차·재등록, 실제 4,020건 중 292건)은 하나로 묶는다.
     # 정렬 뒤 첫 항목(비교 가능한 것, 그다음 최신 등록)을 남기고 몇 건이 등록돼 있는지 알려 준다.
