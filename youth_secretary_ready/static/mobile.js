@@ -14,7 +14,7 @@ const WHO={orchestrator:'대화 오케스트레이터',slots:'내 정보 확인'
 const CIRC='①②③④',HOWMANY=['','한','두','세','네'];
 const NOFILTER={q:'',outcome:'',kind:'',sido:'',ages:'',open:false};
 const shortSido=name=>({'충청북도':'충북','충청남도':'충남','경상북도':'경북','경상남도':'경남','전남광주통합특별시':'전남 · 광주'})[name]||name.replace(/(특별자치도|특별자치시|특별시|광역시|도)$/,'');
-const OUT={api_match:['조건 맞아요','ok'],needs_check:['확인 필요','warn'],api_mismatch:['조건 달라요','bad']};
+const OUT={api_match:['맞아요','ok'],needs_check:['확인 필요','warn'],api_mismatch:['달라요','bad']};
 const RES={match:['맞아요','ok'],unknown:['확인 필요','warn'],mismatch:['달라요','bad']};
 const CRIT={period:'신청기간',age:'나이',region:'거주지',income:'소득',job:'취업 상태',school:'학력',major:'전공',marriage:'결혼',exclusion:'참여 제한',target:'대상',apply:'신청 방법',exam:'대상 시험',housing:'주거'};
 const PERIOD={open:'접수 중',rolling:'상시',upcoming:'시작 전',unknown:'기간 확인 필요',ended:'신청기간 지남',closed_code:'마감',closed_official:'공식 공고 종료'};
@@ -63,7 +63,7 @@ const tasks=()=>(S.space?.tasks||[]).filter(t=>!t.outdated);
 const selIds=()=>Object.keys(S.selected);
 // 아이콘은 글꼴을 내려받지 않고 그린다(팀 앱 화면의 선 아이콘과 같은 모양).
 const ICON={home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/>',search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',
- checklist:'<rect x="5" y="4" width="15" height="17" rx="3"/><path d="M9 3h7v4H9zM9 12l2 2 4-4M9 18h6"/>',notifications:'<path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5ZM10 21h4"/>',
+ checklist:'<rect x="5" y="4" width="15" height="17" rx="3"/><path d="M9 3h7v4H9zM9 12l2 2 4-4M9 18h6"/>',notifications:'<path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5ZM10 21h4"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.6 2.2c-.8.5-1.2 1-1.2 1.9M12 17h.01"/>',
  person:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>',description:'<path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8ZM14 3v5h5M9 12h6M9 16h6"/>',
  chevron_right:'<path d="m9 5 7 7-7 7"/>',arrow_back:'<path d="m15 5-7 7 7 7"/>',school:'<path d="m2 8 10-5 10 5-10 5ZM6 10v6q6 5 12 0v-6M22 8v8"/>',
  home_work:'<path d="m3 10 7-6 7 6v10H3ZM8 20v-6h4v6M16 3h5v17h-4M18 7h1M18 11h1"/>',work:'<rect x="3" y="7" width="18" height="14" rx="3"/><path d="M8 7V3h8v4M3 12q9 6 18 0M12 12v4"/>',
@@ -97,7 +97,7 @@ function cond(key,d){const st=d.bundle.structured,p=d.bundle.public_fields,a=st.
  const found=key==='age'&&d.bundle.supplements.filter(sure).flatMap(x=>x.rules||[]).find(r=>r.predicate.fact==='age');
  if(found){const v=found.predicate.value,op=found.predicate.op;return (op==='gte'?`${v}세 이상`:op==='lte'?`${v}세 이하`:`${v[0]}~${v[1]}세`)+' (공식 페이지)'}
  if(key==='age')return a.kind==='range'?(a.max>=99?`${a.min}세 이상 (상한 ${a.max})`:`${a.min}~${a.max}세`):a.kind==='min_only'?`${a.min}세 이상`:a.kind==='max_only'?`${a.max}세 이하`:a.no_limit?'제한없음':'정보 없음';
- if(key==='region')return st.region.nationwide?'전국(시도 16곳 등록)':st.region.sido_names.join(', ')||'정보 없음';
+ if(key==='region')return st.region.nationwide?'전국':st.region.sido_names.join(', ')||'정보 없음';
  if(key==='exclusion')return st.exclusions.explicit_none?'해당 없음':`안내 ${st.exclusions.count}건`+(st.exclusions.kinds.length?` (${st.exclusions.kinds.join(', ')})`:'');
  if(key==='apply')return '정보 없음';
  if(key==='exam')return st.exam.kinds.length?'글에 적힌 종류: '+st.exam.kinds.join(', '):'응시료 지원 · 대상 시험은 공고에서 확인';
@@ -113,17 +113,18 @@ const resPill=(c,d)=>c.counted===false?pill(esc(short(d.bundle.period_label||PER
 // 달을 고르는 칸: 비어 있으면 '선택'이라고 보여 준다(휴대폰에서는 빈 칸이 아무것도 없는 것처럼 보인다). 보이는 글 위에 투명한 입력 칸을 덮어, 누르면 기기의 달 고르기가 열린다.
 const pick=(k,v)=>`<span class="pick"><span>${ym(v)||'선택'}</span><input id="${k}" class="mon" data-k="${k}" type="month" min="1930-01" max="2099-12" value="${esc(v||'')}"></span>`;
 
+// 이용 방법: 홈의 도움말을 누르면 나온다. 서비스의 끝은 공식 사이트로 넘기는 것이다.
+const HELP=`<div class="scrim" data-a="closehelp"></div><section class="sheet" role="dialog" aria-label="이용 방법"><span class="grab"></span><h2 class="h18">이렇게 이용해요</h2>
+<ol class="ord" style="display:flex;flex-direction:column;gap:12px;line-height:1.6">${[['내 정보 입력','나이 · 사는 곳 · 취업 상태를 넣으면 내 조건에 맞는 지원부터 보여 드려요.'],['지원 찾기','챗봇에게 받고 싶은 지원을 묻거나 ‘지원 찾기’에서 골라요. 정책마다 맞아요 · 확인 필요 · 달라요로 비교해 드려요.'],['서류 준비','‘이 정책 준비하기’를 누르면 필요한 서류를 모아 보여 드려요. 가진 서류를 체크해요.'],['신청 전 점검','조건 · 서류 · 중복 수혜를 한 번 더 보고 계획을 저장해요. 저장한 계획은 ‘내 신청’에 남아요.'],['공식 사이트에서 신청','실제 신청은 공식 사이트에서 해요. 공고 버튼으로 바로 갈 수 있어요.']].map(([t,d])=>`<li><strong>${t}</strong><span class="sub blk">${d}</span></li>`).join('')}</ol>
+<p class="tiny">청년비서는 신청 준비를 돕는 서비스예요. 자격을 확정하지 않으니 신청 전에 공고를 꼭 확인하세요.</p><button class="btn w" data-a="closehelp">확인</button></section>`;
+
 const V={
 login:()=>`<main class="pad"><div class="login-intro"><h1 class="hero">공고는 저희가 읽을게요.<br>신청 준비만 하세요.</h1><p class="sub">청년비서 · 청년 지원 신청 준비 도우미</p></div>
 <div class="col">${S.profile?`<button class="btn" data-a="continue">기존 정보로 계속 이용</button><p class="sub c">${S.profile.name?esc(S.profile.name)+' 님이 ':''}입력한 정보로 이어서 해요</p><div class="or"><span></span>또는<span></span></div>`:''}<button class="btn ${S.profile?'line':''}" data-a="start">새 정보 입력</button></div></main>`,
 
 home:()=>{const p=S.profile||{},t=tasks(),done=t.filter(x=>x.status==='done').length,c=S.counts,groups=new Set(t.map(x=>x.external_id)).size,next=t.find(x=>x.status!=='done'),top=c?.items[0],chev=ms('chevron_right'),hp=S.homePlan?.policies.length?S.homePlan:null,have=hp?hp.must.filter(d=>S.docs[d.key]).length:0,lack=hp?.must.find(d=>!S.docs[d.key]);
- // 지금 할 일: 고른 정책·저장한 정책·서류 체크로 네 단계 가운데 어디인지 정하고 다음 한 걸음만 보여 준다
- const step=!(selIds().length||t.length)?1:!selIds().length?4:hp&&!lack?3:2;
- const todo=[['openchat','','받고 싶은 지원 찾기'],['plan','',hp?.must.length?`서류 준비하기 (${hp.must.length}종 중 ${have}종)`:'서류 준비하기'],['check','','신청 전 점검하기'],['tab',' data-s="plan"','공식 사이트에서 신청하기']][step-1];
- return `<header class="home-head"><span class="wordmark">청년비서</span><button class="ib" data-a="notice" aria-label="알림">${ms('notifications')}</button></header>
+ return `<header class="home-head"><span class="wordmark">청년비서</span><span style="display:flex;gap:6px"><button class="ib" data-a="help" aria-label="이용 방법">${ms('help')}</button><button class="ib" data-a="notice" aria-label="알림">${ms('notifications')}</button></span></header>${S.help?HELP:''}
 <main class="pad home-main"><div class="greeting"><span>${p.name?esc(p.name)+' 님':'반가워요'}</span><button data-a="tab" data-s="profile">${esc(area(p)||'내 정보 입력')} ${chev}</button></div>
-<section class="feed-card"><h2 class="h18">지금 할 일</h2><div class="pills" style="margin:12px 0" aria-label="신청 준비 4단계 중 ${step}단계">${['지원 찾기','서류 준비','신청 전 점검','공식 사이트'].map((x,i)=>pill(`${i+1} ${x}`,i+1<step?'ok':i+1===step?'warn':'')).join('')}</div><button class="btn w" data-a="${todo[0]}"${todo[1]}>${todo[2]}</button></section>
 <section class="balance-card"><div class="row"><h2>내가 준비 중인 지원</h2><span class="small-tag">저장한 정책</span></div><div class="balance-value">${groups}<span>건</span></div><p class="balance-caption">찾아둔 지원, 신청까지 차근차근</p>
 <div class="account-actions"><button data-a="tab" data-s="browse">지원 더 찾기 ${ms('add')}</button><button data-a="tab" data-s="plan">내 신청 보기 ${chev}</button></div></section>
 ${t.length||hp?`<section class="feed-card"><button class="section-heading" data-a="tab" data-s="plan">이어서 준비하기 ${chev}</button>
@@ -138,7 +139,7 @@ ${hp&&hp.must.length?`<div class="prep-count"><span>서류 준비</span><strong>
 ${!compared()?`<button class="next-row" style="margin-top:22px" data-a="tab" data-s="profile"><span>내 정보를 입력하면 맞는 지원부터 보여드려요</span>${chev}</button>`
  :!c?'<p class="sub" style="margin-top:14px">내 조건과 비교하고 있어요…</p>'
  :`${top?`<button class="recommend-line" data-a="detail" data-id="${esc(top.external_id)}"><span class="soft-icon mint">${ms('school')}</span><span class="policy-copy"><strong>${esc(top.name)}</strong><span>내 조건 확인하고 신청 준비하기</span></span>${chev}</button>`:''}
-<details class="more" data-d="moreHome" ${S.moreHome?'open':''}><summary>내 조건과 비교한 결과 보기</summary><div class="pills">${pill('조건 맞아요 '+n(c.outcomes.api_match),'ok')}${pill('확인 필요 '+n(c.outcomes.needs_check),'warn')}${pill('조건 달라요 '+n(c.outcomes.api_mismatch),'bad')}</div>
+<details class="more" data-d="moreHome" ${S.moreHome?'open':''}><summary>내 조건과 비교한 결과 보기</summary><div class="pills">${pill('맞아요 '+n(c.outcomes.api_match),'ok')}${pill('확인 필요 '+n(c.outcomes.needs_check),'warn')}${pill('달라요 '+n(c.outcomes.api_mismatch),'bad')}</div>
 <p class="tiny">온통청년에 등록된 값과 비교한 건수예요. 자격 판정이 아니에요. 중복 등록 ${n(c.merged)}건은 묶었고 ${n(c.tiers.link_only)}건은 비교하지 않았어요.</p></details>`}</section>
 <button class="help-line" data-a="openchat">${ms('auto_awesome')} 복잡한 공고, 비서에게 물어보세요 ${chev}</button>
 <p class="demo-note">정책 정보는 온통청년에서 가져왔어요</p></main>`+dock('home');},
@@ -335,6 +336,7 @@ async function approve(){const P=S.plan;
 
 document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!el||el.tagName==='INPUT')return;const a=el.dataset.a,d=el.dataset;
  if(a==='back')back();
+ else if(a==='help'||a==='closehelp'){S.help=a==='help';render()}
  else if(a==='continue'){go('home',true);run(loadCounts)}
  else if(a==='start'){S.draft={name:'',sido:'',job_code:'',school_code:''};go('profile')}
  else if(a==='tab'){S.draft=null;if(d.s==='plan')run(()=>showPlan(true));else if(d.s==='browse')run(()=>showResults([],true));else{S.back=[];S.screen=d.s;S.sheet=null;render(true);if(d.s==='home')run(async()=>{if(!S.counts||!S.homePlan)await loadCounts()})}}

@@ -42,10 +42,16 @@ with sync_playwright() as p:
     expect(page.locator('.or')).to_be_visible()                                   # 계속 이용 · 또는 · 새 정보 입력
     page.locator('[data-a=continue]').click()
     expect(page.locator('.greeting')).to_contain_text('민지 님')
-    expect(page.locator('main')).to_contain_text('지금 할 일')
-    expect(page.locator('[data-a=openchat].btn')).to_have_text('받고 싶은 지원 찾기')   # 처음: 1단계
-    assert '이어서 준비하기' not in page.locator('main').inner_text()             # 준비 중인 것이 없으면 그 칸은 없다
-    expect(page.locator('.pill.ok').first).to_contain_text('조건 맞아요')
+    assert '지금 할 일' not in page.locator('main').inner_text()
+    # 도움말: 알림 옆의 버튼을 누르면 이용 방법이 나오고, 확인을 누르면 닫힌다
+    page.locator('header [data-a=help]').click()
+    expect(page.locator('.sheet')).to_contain_text('이렇게 이용해요')
+    expect(page.locator('.sheet li')).to_have_count(5)
+    assert page.evaluate(FITS)
+    page.locator('.sheet [data-a=closehelp]').click()
+    expect(page.locator('.sheet')).to_have_count(0)
+    expect(page.locator('.pill.ok').first).to_contain_text('맞아요')
+    assert '조건 맞아요' not in page.locator('main').inner_text()
     assert page.evaluate(FITS)
     page.screenshot(path=str(BASE / '.local/mobile-home.png'))
 
@@ -144,7 +150,6 @@ with sync_playwright() as p:
     expect(page.locator('[data-a=start]')).to_have_text('새 정보 입력')
     page.locator('[data-a=continue]').click()
     expect(page.locator('.greeting')).to_contain_text('민지 님')
-    expect(page.locator('main .btn[data-a=tab][data-s=plan]')).to_have_text('공식 사이트에서 신청하기')   # 승인 뒤: 4단계
     # 홈 '이어서 준비하기': 저장한 정책에 서류가 있으면 '서류 준비 n / m', 없으면 '확인한 일 n / m'
     expect(page.locator('.prep-count')).to_be_visible()
     assert page.locator('.prep-count span').first.inner_text() in ('서류 준비', '확인한 일')
