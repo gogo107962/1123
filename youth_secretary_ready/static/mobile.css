@@ -30,3 +30,7 @@ a.link{text-decoration:underline}.feed-card .pills{margin:14px 0 0}.bub+.opts{ma
 
 /* 근거 보기: 값이 길어도 이름표(위치 등)는 한 줄로 둔다 */
 .sheet .prow>.sub{flex:none;white-space:nowrap;margin-right:14px}
+/* 주제를 둘 이상 물었을 때: 챗봇의 주제 카드, 결과의 구역 머리와 '더 보기' */
+.trow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f6f5f1;border-radius:14px;padding:12px 14px;margin-top:10px;white-space:normal}.trow>div{min-width:0}.trow b{display:block;font-size:15px}.trow .tiny{display:block;margin-top:2px}.trow .btn{flex:none;margin:0}
+.sect{display:flex;align-items:center;gap:8px;margin:20px 2px 10px}.sect b{font-size:16px}.sect i{flex:1;height:2px;background:var(--line);border-radius:2px}
+.more-link{display:flex;align-items:center;justify-content:center;gap:2px;width:100%;min-height:40px;background:none;border:0;color:#6b7280;font:inherit;font-size:14px;cursor:pointer}

@@ -2069,3 +2069,19 @@ def test_official_page_sentence_that_says_the_same_max_age_does_not_lower_the_ve
     assert age(note('만 39세 이하 청년'))['result'] == 'unknown'                    # 숫자가 다르면 단정하지 않는다
     assert age(note('만 34세 이하 청년 누구나'), 35)['result'] == 'unknown'         # 등록값으로는 '달라요'인 경우는 전처럼 낮춘다
 
+
+# ── v0.52: 주제를 둘 이상 물으면 주제별로 나눠 돌려준다 ─────────────────────────
+def test_ask_splits_results_by_topic_when_two_topics_are_asked(ctx, monkeypatch):
+    seed([good('TP1', plcyNm='청년 자격증 응시료 지원'), good('TP2', plcyNm='청년 국가기술자격 응시료 지원'), good('TP3', plcyNm='청년 자격증 취득 지원'),
+          good('TP4', plcyNm='청년 면접 수당'), good('TP5', plcyNm='면접 정장 대여', zipCd='26110')])
+    monkeypatch.setattr(desk_finder, 'model_status', lambda: {'ready': True})
+    ask = lambda message, profile=PROFILE: ctx.post(ASK, json={'message': message, 'profile': profile, 'on': '2026-11-17'}).json()
+    monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['자격증', '응시료', '면접']))
+    two = ask('자격증 지원이랑 면접 지원 둘 다 받고 싶어')['topics']
+    assert [(t['label'], t['keywords'], t['total']) for t in two] == [('자격증 응시료', ['자격증', '응시료'], 3), ('면접', ['면접'], 2)]   # '자격증'·'응시료'는 한 주제
+    assert all(len(t['items']) == 2 for t in two) and two[1]['outcomes']['api_mismatch'] == 1 and two[0]['items'][0]['screen']
+    monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['자격증', '응시료']))
+    assert ask('자격증 응시료 지원 알려줘')['topics'] == []                                          # 주제가 하나면 나누지 않는다
+    monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['응시료', '면접']))
+    assert all(x['screen'] is None for t in ask('응시료랑 면접', {})['topics'] for x in t['items'])    # 내 정보가 없으면 판정을 싣지 않는다
+

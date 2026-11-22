@@ -198,6 +198,26 @@ DOC_HOW = {'per_topic': '물은 주제마다 고른 정책 {n}건의 서류예�
 DOC_WORDS = re.compile(r'서류|준비물|구비|뭘 ?내야|뭐 ?내야|떼야')
 
 
+# 검색어를 화면의 주제 이름으로. 같은 이름이 되는 검색어('자격증'·'응시료')는 한 주제로 묶는다. 없는 낱말은 그 낱말이 이름이다.
+TOPIC_LABEL = {'자격증': '자격증 응시료', '응시료': '자격증 응시료', '월세': '월세 · 주거', '주거': '월세 · 주거', '전세': '전세 · 주거',
+               '면접': '면접', '취업': '취업', '창업': '창업', '교통': '교통비', '교통비': '교통비', '대출': '대출'}
+
+
+def topics_of(words, profile, on, compared):
+    """주제를 둘 이상 물었을 때 주제별로 나눈 결과(이름, 검색어, 건수, 위쪽 정책 2건). 주제가 하나면 빈 목록."""
+    groups = {}
+    for word in words:
+        groups.setdefault(TOPIC_LABEL.get(word, word), []).append(word)
+    if len(groups) < 2:
+        return []
+    out = []
+    for label, keys in groups.items():
+        page = screen_catalog(profile, on, keywords=keys, page_size=2)
+        out.append({'label': label, 'keywords': keys, 'total': page['total'], 'outcomes': page['outcomes'],
+                    'items': page['items'] if compared else [{**x, 'tier': None, 'screen': None} for x in page['items']]})
+    return out
+
+
 def why_missing(word, page, profile, on):
     """그 주제에서 내게 해당할 수 있는 정책을 못 찾은 까닭을 건수와 예시로 적는다(추측하지 않고 판별 엔진의 결과만 옮긴다)."""
     if not page['total']:
@@ -356,7 +376,7 @@ def find(message, profile, on, skip=(), selected=()):
     steps.append({'who': 'output', 'did': '화면의 문장은 정해 둔 틀과 등록된 글로만 만들었어요. 모델이 쓴 문장은 없어요.'})
     note = next((x['did'] for x in steps if x['who'] == 'planner'), '') if asked_plan and not comp else ''
     paper_note = next((x['did'] for x in steps if x['who'] == 'docboard'), '') if asked_docs and not papers else ''
-    return {'steps': steps, 'compare': comp, 'compare_note': note, 'documents': papers, 'documents_note': paper_note, 'answer': FALLBACK_NOTE.get(ai, '') + answer, 'ai': ai, 'answer_origin': 'validated_template', 'keywords': words, 'compared': compared,
+    return {'topics': topics_of(words, profile, on, compared), 'steps': steps, 'compare': comp, 'compare_note': note, 'documents': papers, 'documents_note': paper_note, 'answer': FALLBACK_NOTE.get(ai, '') + answer, 'ai': ai, 'answer_origin': 'validated_template', 'keywords': words, 'compared': compared,
             'profile_suggestion': suggestion, 'question': question, 'total': result['total'], 'outcomes': o, 'tiers': t,
             'items': result['items'] if compared else [{**x, 'tier': None, 'screen': None} for x in result['items']],
             'tools': [{'tool': 'search_policies' if ai == 'used' else 'keyword_match', 'status': 'ok'}, {'tool': 'screen_profile', 'status': 'ok' if compared else 'skipped'},
