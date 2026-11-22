@@ -39,3 +39,4 @@ details.plan-card{font-size:inherit;margin-top:12px}.plan-card>summary{list-styl
 @media (prefers-reduced-motion:reduce){.plan-card .chev{transition:none}}
 /* 챗봇: 이전 대화 */
 .chat-tools{display:flex;gap:6px;flex:none;margin-left:auto;margin-right:8px}.chat-tools .new-chat{margin:0;position:static}.hist{display:flex;align-items:center;gap:10px}.hist .cardbtn{flex:1;min-width:0}.hist .link{flex:none}
+.draft-card{border:1px dashed var(--field-line)}

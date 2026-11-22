@@ -88,8 +88,11 @@ with sync_playwright() as p:
     page.locator('nav [data-s=plan]').click()
     # 내 신청 탭은 세운(저장한) 계획만 보여 준다. 고르기만 한 정책은 '이어서 만들기'로 신청 계획 화면에서 이어 간다.
     expect(page.locator('main')).to_contain_text('아직 세운 신청 계획이 없어요')
-    expect(page.locator('main')).to_contain_text('고른 정책 5개')
-    page.locator('main [data-a=plan]').click()
+    # 승인하지 않은 5건은 '임시저장'에 정책별 카드로 나온다. 카드를 펼쳐 '신청 계획 이어서 하기'로 간다.
+    expect(page.locator('main')).to_contain_text('임시저장')
+    expect(page.locator('.draft-card')).to_have_count(5)
+    page.locator('.draft-card summary').first.click()
+    page.locator('.draft-card[open] [data-a=plan]').click()
     expect(page.locator('main')).to_contain_text('신청 순서')
     assert page.locator('.ord li').count() == 5 and page.evaluate(FITS)
     page.screenshot(path=str(BASE / '.local/mobile-edge-plan.png'))
