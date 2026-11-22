@@ -1758,3 +1758,159 @@ def test_documents_named_in_how_to_apply_text_are_used_when_the_document_field_h
     assert out['policies'][0]['documents_source'] == 'api_other' and {d['key'] for d in out['documents']} == {'application', 'business_plan'}
     assert out['documents_unlisted'] == ['OT2']                       # 지원 내용 글의 낱말은 서류로 읽지 않는다
 
+
+
+def _chosen(eid, name, exclusions=(), code='0042006', text='', status='open', label='D-13', deadline='2026-11-30', early=None):
+    return {'external_id': eid, 'name': name, 'exclusions': list(exclusions), 'amounts': made(plcySprtCn=text)['amounts'],
+            'provision': made(plcyPvsnMthdCd=code)['provision'], 'period_status': status, 'period_label': label, 'deadline': deadline, 'early_close': early}
+
+
+def test_planner_reads_who_is_excluded_not_any_shared_word():
+    from planner import relations
+    found, compatible = relations([
+        _chosen('A', '청년 월세 지원', ['공공기관 재직자 및 대한민국 국적이 아닌 자 제외', '고용보험 가입자 제외', '주거급여 수급자 제외',
+                                  '단, 청년도약계좌/청년미래적금은 신청제외대상이 아님(중복가입 가능)']),
+        _chosen('B', '공공기관 청년인턴 채용'), _chosen('C', '청년 주거급여 분리지급'), _chosen('D', '청년도약계좌'), _chosen('E', '고용보험 미적용자 출산급여'),
+        _chosen('F', '누림통장', ['누림통장 기가입자 및 유사사업 참여자 제외'])])
+    # 신분(재직·국적·보험 가입)을 말하는 문장은 다른 정책을 가리키는 것이 아니다. 받는 지원을 말하는 문장만 잡는다.
+    assert [(c['from'], c['to'], c['kind']) for c in found] == [('A', 'C', 'named')] and found[0]['quote'] == '주거급여 수급자 제외'
+    # '함께 받을 수 있다'고 적힌 문장은 충돌이 아니라 따로 알린다.
+    assert [(c['from'], c['to'], c['kind']) for c in compatible] == [('A', 'D', 'allowed')]
+
+
+def test_planner_groups_conflicts_and_gives_amount_for_each_choice():
+    from datetime import date
+    from planner import plan
+    out = plan([_chosen('G1', '서울 청년 월세 지원', ['서울 청년수당 참여자는 지원 제외'], text='월 20만원씩 최대 12개월'),
+                _chosen('G2', '서울 청년수당', text='최대 30만원 지급', deadline='2026-11-20', label='D-3'),
+                _chosen('G3', '청년 문화패스', text='연 최대 50만원', code='0042010', status='rolling', label='상시', deadline=None)], date(2026, 11, 17))
+    assert out['groups'] == [{'policies': ['G1', 'G2'], 'options': [
+        {'keep': ['G1'], 'drop': ['G2'], 'monthly_krw': 200000, 'other_krw': 0}, {'keep': ['G2'], 'drop': ['G1'], 'monthly_krw': 0, 'other_krw': 300000}]}]
+    assert out['amounts']['all'] == {'monthly_krw': 200000, 'other_krw': 800000}
+    # 묶음에서 한 조합만 받을 때: 묶음 밖의 G3(50만원)는 그대로 더한다.
+    assert out['amounts']['one_per_group'] == {'monthly_krw': [0, 200000], 'other_krw': [500000, 800000]}
+    assert out['order'] == ['G2', 'G1', 'G3'] and out['overlap_checked'] is False
+    why = {s['external_id']: ' '.join(s['reasons']) for s in out['steps']}
+    # 글이 말한 방향대로만 적는다: G1의 글이 G2를 가리킨다. G2 쪽에는 'G1의 글이 그렇게 적고 있다'고만 알린다.
+    assert '「서울 청년수당」와 함께 받기 어려울 수 있다는 문구' in why['G1'] and '「서울 청년 월세 지원」의 안내 글이' in why['G2'] and '3일 남았어요' in why['G2']
+    assert out['steps'][0]['check_with'] == ['G1'] and out['steps'][2]['check_with'] == [] and '상시' in why['G3']
+    assert out['brief'][0] == '신청 순서: 서울 청년수당 → 서울 청년 월세 지원 → 청년 문화패스' and any('200,000' in line for line in out['brief'])
+
+
+def test_planner_puts_early_close_wording_ahead_without_inventing_dates():
+    from datetime import date
+    from planner import plan
+    on = date(2026, 11, 17)
+    late = _chosen('P1', '정책 하나', deadline='2026-12-20', label='D-33', early='예산 소진 시 조기 마감')
+    mid = _chosen('P2', '정책 둘', deadline='2026-11-28', label='D-11')
+    near = _chosen('P3', '정책 셋', deadline='2026-11-19', label='D-2')
+    yearly = _chosen('P4', '정책 넷', deadline='2026-12-31', label='연중 표기 · 모집 회차 확인')
+    out = plan([late, mid, near, yearly], on)
+    # 조기 마감 문구가 있으면 7일 안에 마감하는 정책처럼 줄을 세운다. 더 급한 마감(D-2)보다 앞서지는 않는다. 연중 표기는 뒤.
+    assert out['order'] == ['P3', 'P1', 'P2', 'P4']
+    step = out['steps'][1]
+    assert step['deadline'] == '2026-12-20' and '예산 소진 시 조기 마감' in step['reasons'][1] and '33일 남았어요' in step['reasons'][0]
+    assert out['groups'] == [] and out['amounts']['one_per_group'] == {'monthly_krw': [0, 0], 'other_krw': [0, 0]}
+
+
+def test_planner_endpoint_returns_the_small_result_for_tools(ctx):
+    import planner
+    seed([good('X1', plcyNm='중랑구 미취업청년 자격증 응시료 지원사업', ptcpPrpTrgtCn='2026년 서울 청년수당, 국민취업지원제도 참여자는 지원 제외'),
+          good('X2', plcyNm='2026 서울시 청년수당', aplyYmd='20261101 ~ 20261120')])
+    wid, full = plan_of(ctx, ['X1', 'X2'])
+    small = ctx.post(f'/api/desk/workspaces/{wid}/planner', json={'external_ids': ['X1', 'X2'], 'profile': PROFILE, 'on': '2026-11-17'}).json()
+    assert small == full.json()['planner'] and small['order'] == full.json()['order'] == ['X2', 'X1']
+    assert small['groups'][0]['policies'] == ['X1', 'X2'] and 'policies' not in small and small['notice']
+    assert planner.TOOL['parameters']['required'] == ['external_ids']
+
+
+def _papers(eid, text, status='open', label='D-13', deadline='2026-11-30', note=''):
+    return {'external_id': eid, 'name': '정책 ' + eid, 'documents_text': text, 'documents_note': note,
+            'period_status': status, 'period_label': label, 'deadline': deadline}
+
+
+def test_docboard_merges_splits_have_and_orders_what_to_get():
+    from datetime import date
+    from docboard import board
+    out = board([_papers('A', '① 신청서 1부 ② 재직증명서 1부(건강보험 자격득실 확인서로 대체 가능) ③ 주민등록등본(전입일, 주민등록번호 포함, 공고일 이후 발급분) 1부\n④ 통장 사본', deadline='2026-11-25', label='D-8'),
+                 _papers('B', '주민등록등본, 신분증 사본, 장애인증명서(해당자에 한함), 활동 증빙자료', status='rolling', label='상시', deadline=None),
+                 _papers('C', ''), _papers('D', '공고문 참조')], ['resident_register', 'id_card', 'nope'], date(2026, 11, 17))
+    assert out['counts'] == {'documents': 7, 'ready': 2, 'to_get': 5} and out['saved'] is False
+    # 남에게 요청(재직증명서) → 직접 작성(신청서) → 온라인·앱 발급. 가진 것은 따로.
+    assert [d['key'] for d in out['to_get']] == ['employment_cert', 'application', 'insurance_status', 'bankbook', 'disability']
+    assert [d['key'] for d in out['ready']] == ['resident_register', 'id_card']
+    by = {d['key']: d for d in out['to_get'] + out['ready']}
+    reg = by['resident_register']
+    # 정책마다 다른 조건은 그 정책의 문장으로 보여 준다. 괄호 안의 쉼표에서 자르지 않는다.
+    assert reg['policies'][0]['quote'] == '주민등록등본(전입일, 주민등록번호 포함, 공고일 이후 발급분) 1부' and reg['policies'][0]['issue_rule'] == '공고일 이후 발급분'
+    assert [x['external_id'] for x in reg['policies']] == ['A', 'B'] and reg['need_by'] == '2026-11-25' and reg['sites'] == [{'name': '정부24', 'url': 'https://www.gov.kr'}]
+    assert any('신청 직전' in r for r in reg['reasons']) and any('8일 남음' in r for r in reg['reasons'])
+    # '또는·대체'로 함께 적힌 서류는 그중 하나만 내는 것일 수 있다고 알린다. 닫는 괄호가 빠진 글에서도 문장을 놓치지 않는다.
+    assert by['employment_cert']['policies'][0]['one_of'] == ['건강보험 자격득실확인서'] and by['insurance_status']['policies'][0]['one_of'] == ['재직증명서']
+    assert board([_papers('E', '② 재직증명서 1부(자격득실 확인서 대체 가능 ③ 혼인관계 증명서(상세)')])['to_get'][0]['policies'][0]['quote'].startswith('재직증명서 1부')
+    assert made(sbmsnDcmntCn='혼인관계 증명서, 최초 본인 확인')['documents']['known'] == ['marriage']   # 띄어 쓴 이름은 찾고, '최초 본인'을 초본으로 읽지 않는다
+    assert by['disability']['only_if'] is True and by['disability']['need_by'] is None and by['employment_cert']['lead'] == 'request'
+    pol = {p['external_id']: p for p in out['policies']}
+    assert pol['A']['missing'] == ['employment_cert', 'application', 'insurance_status', 'bankbook'] and pol['A']['status'] == 'missing'
+    assert pol['B']['missing'] == ['disability'] and pol['B']['other_lines'] == ['활동 증빙자료'] and pol['B']['deadline'] is None
+    # 빈 글은 '서류 없음'이 아니라 '안내 없음', 이름을 못 찾은 글은 '읽지 못함'이다. 어느 쪽도 준비 끝이 아니다.
+    assert (pol['C']['status'], pol['D']['status']) == ('unlisted', 'unread')
+    done = board([_papers('B', '주민등록등본, 신분증 사본')], ['resident_register', 'id_card'])
+    assert done['policies'][0]['status'] == 'found_all' and '전체 목록은 공고에서 확인' in done['brief'][-1] and done['as_of'] is None
+
+
+def test_docboard_endpoint_takes_have_and_writes_nothing(ctx):
+    import docboard
+    seed([good('D1', sbmsnDcmntCn='신청서, 주민등록초본, 성적증명서, 통장사본'), good('D2', sbmsnDcmntCn='')])
+    wid = ctx.post('/api/desk/workspaces').json()['id']
+    before = snapshot()
+    body = {'external_ids': ['D1', 'D2'], 'profile': PROFILE, 'on': '2026-11-17', 'have': ['bankbook']}
+    small = ctx.post(f'/api/desk/workspaces/{wid}/docboard', json=body).json()
+    full = ctx.post(f'/api/desk/workspaces/{wid}/plan', json=body).json()
+    assert snapshot() == before and small == full['docboard']
+    assert [d['key'] for d in small['to_get']] == ['application', 'resident_abstract', 'transcript'] and [d['key'] for d in small['ready']] == ['bankbook']
+    assert [p['status'] for p in small['policies']] == ['missing', 'unlisted'] and small['to_get'][0]['need_by'] == '2026-11-30'
+    # 기존 칸은 그대로다(화면이 쓰는 값).
+    assert {d['key'] for d in full['documents']} == {'application', 'resident_abstract', 'transcript', 'bankbook'} and full['documents_unlisted'] == ['D2']
+    assert set(docboard.TOOL['parameters']['properties']) == {'external_ids', 'have'}
+
+
+def test_planner_skips_other_regions_narrower_names_and_status_sentences():
+    from planner import relations
+    rent = lambda eid, name, codes, *lines: {**_chosen(eid, name, lines), 'region_codes': codes, 'category': '주거'}
+    found, _ = relations([
+        rent('A', '(남동구) 인천시 청년월세 지원사업', ['28200'], '국토부 또는 지자체에서 시행하는 청년월세 지원사업 중복 수혜중인 자',
+             '과거 국토부 청년월세 한시 특별지원을 받은 자', '공공임대주택 거주자'),
+        rent('B', '(부평구) 인천시 청년월세 지원사업', ['28237']),          # 지역이 겹치지 않는다
+        rent('C', '인천 청년월세 지원', ['28200', '28237']),               # 지역이 겹친다
+        rent('D', '청년월세 한시 특별지원', []),                           # 지역을 모른다 → 겹치는 것으로 본다
+        rent('E', '공공임대주택 청년 입주자 모집', ['28200'])])
+    hits = {(c['from'], c['to']): c['quote'] for c in found}
+    # 등록된 지역이 겹치지 않는 정책끼리는 적지 않는다. 지역을 모르는 정책은 빼지 않는다.
+    assert ('A', 'B') not in hits and ('A', 'C') in hits and ('A', 'D') in hits
+    # '청년월세 한시 특별지원'은 그 이름의 정책만 가리킨다. 이름에 '청년월세'만 있는 정책은 '청년월세 지원사업' 문장으로만 걸린다.
+    assert '한시' not in hits[('A', 'C')] and '중복 수혜중' in hits[('A', 'C')]
+    # '공공임대주택 거주자'는 신분이다. 임대주택 정책을 가리키지 않는다.
+    assert ('A', 'E') not in hits
+    alike = lambda category: relations([{**_chosen('H', '청년 주택임차보증금 이자 지원', ['유사한 사업(대출이자 사업 등)으로 지원받고 있는 경우 지원 불가']), 'category': '주거'},
+                                         {**_chosen('S', '학자금 대출이자 지원'), 'category': category}])[0]
+    # '유사한 사업'을 말하는 문장은 분야가 같은 정책만 가리킨다.
+    assert alike('교육') == [] and [(c['from'], c['to']) for c in alike('주거')] == [('H', 'S')]
+
+
+def test_docboard_reads_issue_date_only_when_it_says_issued_and_rejects_unknown_have(ctx):
+    from docboard import board
+    out = board([_papers('A', '월세이체 증빙서류(최근 3개월 이내), 주민등록초본(최근 2년이내 주소변동사항 포함), 재학증명서(최근 2개월 이내 발급)\n'
+                              '대학합격증명서, 지방세 미과세 증명서, 지방세 세목별 과세증명서')])
+    by = {d['key']: d for d in out['to_get']}
+    # '발급·발행'이라는 말이 있을 때만 발급일 조건으로 읽는다.
+    assert by['transfer']['issue_rules'] == [] and by['resident_abstract']['issue_rules'] == [] and by['enrollment']['issue_rules'] == ['최근 2개월 이내 발급']
+    assert not any('신청 직전' in r for r in by['transfer']['reasons'] + by['resident_abstract']['reasons'])
+    # 대학합격증명서는 자격증 사본이 아니고, 미과세 증명서는 과세증명서가 아니다.
+    assert 'license' not in by and by['local_tax']['policies'][0]['quote'] == '지방세 세목별 과세증명서'
+    assert '대학합격증명서' in out['policies'][0]['other_lines'] and '지방세 미과세 증명서' in out['policies'][0]['other_lines']
+    seed([good('H1', sbmsnDcmntCn='신청서')])
+    wid = ctx.post('/api/desk/workspaces').json()['id']
+    for path in ('plan', 'docboard'):
+        bad = ctx.post(f'/api/desk/workspaces/{wid}/{path}', json={'external_ids': ['H1'], 'profile': PROFILE, 'on': '2026-11-17', 'have': ['application', 'nope']})
+        assert bad.status_code == 422 and 'nope' in bad.text
