@@ -143,6 +143,8 @@ ${!compared()?`<button class="next-row" style="margin-top:22px" data-a="tab" dat
 <button class="help-line" data-a="openchat">${ms('auto_awesome')} 복잡한 공고, 비서에게 물어보세요 ${chev}</button>
 <p class="demo-note">가상 정보로 체험하는 화면이에요 · 정책 정보는 온통청년에서 가져왔어요</p></main>`+dock('home');},
 
+chats:()=>{const list=store.get(CHATS,[]);
+ return bar('이전 대화','b')+`<main class="pad">${list.length?list.map(x=>`<div class="card hist"><button class="cardbtn" data-a="oldchat" data-id="${esc(x.id)}"><span class="h16">${esc(x.title)}</span><span class="sub s13">${esc(x.on)} · 주고받은 말 ${x.chat.length}개${x.id===S.chatId?' · 지금 대화':''}</span></button><button class="link" data-a="delchat" data-id="${esc(x.id)}" aria-label="${esc(x.title)} 대화 지우기">지우기</button></div>`).join('')+'<p class="tiny mt">이 브라우저에만 남아요(최근 10개). 내 정보를 지우면 함께 지워져요.</p>':'<div class="card"><h3>이전 대화가 없어요</h3><p class="sub">챗봇에게 물어본 대화가 여기에 남아요.</p></div>'}</main>`},
 chat:()=>{const bot=inner=>`<div class="m bot"><img class="av" src="/static/quokka.png" alt=""><div><p class="who">청년비서</p>${inner}</div></div>`;
  const msgs=S.chat.map((m,i)=>m.who!=='bot'?`<div class="m user"><div><p class="who r">${esc(S.profile?.name||'나')}</p><div class="bub">${esc(m.t)}</div></div>${ME}</div>`
   :m.pending?bot('<div class="bub"><span class="typing" role="status" aria-label="답변을 쓰고 있어요"><i></i><i></i><i></i></span></div>')
@@ -150,7 +152,7 @@ chat:()=>{const bot=inner=>`<div class="m bot"><img class="av" src="/static/quok
 ${esc(m.compare?m.compare.text:m.cnote)}</div>`:''}${m.papers||m.pnote?`<div class="bub" style="margin-top:8px;white-space:pre-line"><strong>준비할 서류</strong>
 ${esc(m.papers?m.papers.text:m.pnote)}</div>`:''}${m.cta&&!m.topics?.length?`<button class="btn sm" data-a="results" data-i="${i}">결과 보기</button>`:''}${m.suggest?`<button class="btn line sm wrap" data-a="apply" data-i="${i}">내 정보에 반영하고 다시 찾기 · ${esc(chips(m.suggest).join(' · '))}</button>`:''}${m.ask?`<div class="bub" style="margin-top:8px"><strong>${esc(m.ask.text)}</strong></div><div class="opts">${m.ask.options.map(o=>`<button class="btn line" data-a="answer" data-i="${i}" data-v="${esc(o.value)}">${esc(o.label)}</button>`).join('')}<button class="btn line" data-a="skipask" data-i="${i}">잘 모르겠어요</button></div>`:''}${m.tools?`<p class="tiny" style="margin-top:6px">실행한 도구: ${m.tools.filter(t=>t.status==='ok').map(t=>TOOLS[t.tool]+(t.tool==='search_policies'&&m.topics?.length?`(주제 ${m.topics.length}개)`:'')).join(' → ')} · ${m.ai==='used'?'로컬 AI가 검색어를 고르고, 건수와 문장은 코드가 만들었어요.':'AI 없이 정해 둔 낱말로 찾았어요. 건수와 문장은 코드가 만들었어요.'}</p>`:''}${m.steps?`<details class="tiny" style="margin-top:6px"><summary>이번 답을 만든 순서</summary><ol style="margin:6px 0 0;padding-left:18px">${m.steps.map(x=>`<li><b>${WHO[x.who]}${x.who==='orchestrator'?(x.by==='ai'?' (로컬 AI)':' (AI 없이 코드)'):''}</b> ${esc(x.did)}</li>`).join('')}</ol></details>`:''}`)).join('');
  const opts=S.chat.length<=1&&!S.busy?[S.profile?.exams?.[0]?`${S.profile.exams[0].name} 봤는데 응시료 지원돼?`:TOPICS['자격증 응시료'],TOPICS['월세 지원'],'나에게 맞는 정책 찾아줘']:[];
- return bar('챗봇 상담','x','<button class="new-chat" data-a="newchat">새 대화</button>')+`<main class="pad chat" aria-live="polite">${msgs}</main>
+ return bar('챗봇 상담','x','<span class="chat-tools"><button class="new-chat" data-a="history">이전 대화</button><button class="new-chat" data-a="newchat">새 대화</button></span>')+`<main class="pad chat" aria-live="polite">${S.chatOn&&S.chatOn!==today()?`<p class="tiny" style="text-align:center;margin:0 0 12px">${esc(S.chatOn)}에 나눈 대화예요. 건수와 마감은 그날 기준이니 다시 물어봐 주세요.</p>`:''}${msgs}</main>
 ${opts.length?`<div class="chat-suggestions"><div class="opts one">${opts.map(o=>`<button class="btn line" data-a="say" data-t="${esc(o)}">${esc(o)}</button>`).join('')}</div></div>`:''}
 <form class="act chat-input" data-f="chat"><button type="button" class="rb" data-a="attach" aria-label="파일 첨부">${ms('attach_file')}</button><label class="sr" for="m">메시지</label><input id="m" class="round" type="text" maxlength="600" placeholder="청년비서한테 물어보세요" autocomplete="off"><button class="rb fill" aria-label="보내기">${ms('arrow_upward')}</button></form>`;},
 
@@ -308,6 +310,11 @@ async function loadPlan(){S.plan=null;const ids=planIds();if(!ids.length)return;
 function select(id,name,on){if(on)S.selected[id]=name;else delete S.selected[id];store.set('youth-desk-selected',S.selected);S.plan=null;S.homePlan=null}
 function showPlan(tab,only){S.only=only||null;S.planTab=tab;if(tab){S.back=[];S.screen='plan';S.sheet=null;render(true)}else go('plan');return (tab?refreshSpace().then(()=>{if(S.screen==='plan')render()}):Promise.resolve()).then(loadPlan)}
 function openChat(first){if(!S.chat.length)S.chat.push({who:'bot',t:`안녕하세요${S.profile?.name?', '+S.profile.name+' 님':''}. 무엇을 받고 싶으세요?`});if(S.screen!=='chat')go('chat');if(first)say(first)}
+// 이전 대화: 이 브라우저에만 남긴다(최근 10개, 가상 프로필로 나눈 대화). 서버에는 보내지 않고, 내 정보를 지우면 함께 지운다.
+const CHATS='youth-desk-chats';
+function keepChat(){const first=S.chat.find(m=>m.who==='user');if(!first)return;S.chatId=S.chatId||Date.now().toString(36);S.chatOn=today();
+ const list=[{id:S.chatId,on:S.chatOn,title:first.t.slice(0,40),chat:S.chat.filter(m=>!m.pending),skip:S.skip||[]},...store.get(CHATS,[]).filter(x=>x.id!==S.chatId)].slice(0,10);
+ while(list.length){try{localStorage.setItem(CHATS,JSON.stringify(list));return}catch{list.pop()}}}   // 자리가 모자라면 오래된 대화부터 뺀다
 async function say(text,quiet){if(S.busy||!text)return;
  // 나이를 물은 직후 숫자만 답하면 내 정보에 넣고 같은 질문으로 다시 찾는다.
  const last=S.chat[S.chat.length-1],age=/^(\d{1,3})\s*(살|세)?$/.exec(text);
@@ -319,6 +326,7 @@ async function say(text,quiet){if(S.busy||!text)return;
   const p=mine(),known=S.chat.some(m=>m.known)?[]:[area(p),p.age!=null?p.age+'세':'',S.names.job_code[p.job_code],...(p.exams||[])].filter(Boolean);
   S.chat[S.chat.length-1]={who:'bot',known:known.length?known:null,t:r.answer,cta:r.total>0,keywords:r.keywords,suggest:Object.keys(r.profile_suggestion).length?r.profile_suggestion:null,ask:r.question,tools:r.tools,ai:r.ai,asked:text,steps:r.steps,compare:r.compare,cnote:r.compare_note,papers:r.documents,pnote:r.documents_note,topics:r.topics,cmp:r.compared};
  }catch(e){S.chat[S.chat.length-1]={who:'bot',t:e.message}}
+ keepChat();
  S.busy=false;if(S.screen==='chat')render()}
 function saveProfile(next){S.profile=next;store.set('youth-desk-profile',next);S.draft=null;S.counts=null;S.list=null;S.plan=null}
 async function approve(){const P=S.plan;
@@ -333,7 +341,10 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!
  else if(a==='tab'){S.draft=null;if(d.s==='plan')run(()=>showPlan(true));else if(d.s==='browse')run(()=>showResults([],true));else{S.back=[];S.screen=d.s;S.sheet=null;render(true);if(d.s==='home')run(async()=>{if(!S.counts||!S.homePlan)await loadCounts()})}}
  else if(a==='openchat')openChat();else if(a==='topic')openChat(TOPICS[d.t]);else if(a==='say')say(d.t);
  else if(a==='results')run(()=>showResults(S.chat[d.i].keywords,false,S.chat[d.i].topics,d.t!=null?+d.t:null));else if(a==='browse')run(()=>showResults([],true));
- else if(a==='newchat'){if(!S.busy){S.chat=[];S.skip=[];openChat()}}else if(a==='attach')toast('체험판에서는 파일을 첨부할 수 없어요');else if(a==='notice')toast('새로운 알림이 없어요');
+ else if(a==='newchat'){if(!S.busy){S.chat=[];S.skip=[];S.chatId=null;S.chatOn=null;openChat();render(true)}}
+ else if(a==='history'){if(!S.busy)go('chats')}
+ else if(a==='oldchat'){const x=store.get(CHATS,[]).find(c=>c.id===d.id);if(x){S.chat=x.chat;S.chatId=x.id;S.skip=x.skip||[];S.chatOn=x.on;back()}}
+ else if(a==='delchat'){store.set(CHATS,store.get(CHATS,[]).filter(c=>c.id!==d.id));if(S.chatId===d.id)S.chatId=null;render()}else if(a==='attach')toast('체험판에서는 파일을 첨부할 수 없어요');else if(a==='notice')toast('새로운 알림이 없어요');
  else if(a==='apply'){const m=S.chat[d.i];saveProfile({...(S.profile||{}),...m.suggest});m.suggest=null;m.ask=null;say(m.asked,true)}
  else if(a==='skipask'){const m=S.chat[d.i];S.skip=[...(S.skip||[]),m.ask.key];S.chat.push({who:'user',t:'잘 모르겠어요'});m.ask=null;say(m.asked,true)}
  else if(a==='answer'){const m=S.chat[d.i];saveProfile({...(S.profile||{}),[m.ask.key]:m.ask.key==='benefits'?(d.v?[d.v]:[]):d.v});S.chat.push({who:'user',t:el.textContent});m.ask=null;say(m.asked,true)}
@@ -364,7 +375,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!
  else if(a==='addexam'){const f=S.draft,name=(f.exam_name||'').trim();if(!name){toast('자격증이나 시험 이름을 적어 주세요.');return}f.exams=[...(f.exams||[]),{name,month:f.exam_month||''}].slice(0,5);f.exam_name='';f.exam_month='';f._exam=false;render()}
  else if(a==='delexam'){S.draft.exams=(S.draft.exams||[]).filter((_,i)=>i!==+d.i);render()}
  else if(a==='delbenefit'){S.draft.benefits=(S.draft.benefits||[]).filter(x=>x!==d.v);render()}
- else if(a==='logout'){localStorage.removeItem('youth-desk-profile');S.profile=null;S.draft=null;S.counts=null;S.list=null;S.chat=[];S.back=[];S.screen='login';render(true);toast('내 정보를 지웠어요.')}
+ else if(a==='logout'){localStorage.removeItem('youth-desk-profile');localStorage.removeItem(CHATS);S.chatId=null;S.chatOn=null;S.profile=null;S.draft=null;S.counts=null;S.list=null;S.chat=[];S.back=[];S.screen='login';render(true);toast('내 정보를 지웠어요.')}
 });
 document.addEventListener('change',e=>{const t=e.target,d=t.dataset;
  if(d.q){S.query[d.q]=t.value;run(()=>loadList());return}
