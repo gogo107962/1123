@@ -14,6 +14,9 @@ from playwright.sync_api import sync_playwright, expect
 BASE = Path(__file__).resolve().parents[1]
 URL = os.environ.get('APP_URL', 'http://127.0.0.1:8000')
 FITS = 'document.documentElement.scrollWidth<=window.innerWidth+1'
+LAST_MONTH = time.strftime('%Y-%m', time.localtime(time.mktime(time.localtime()[:1] + (time.localtime()[1] - 1, 1, 0, 0, 0, 0, 0, -1))))
+PROFILE = {'name': '민지', 'birth': '2000-03', 'moved': '2024-02', 'age': 26, 'sido': '28', 'region_code': '28177', 'job_code': '0013003',
+           'school_code': '', 'household': 1, 'housing': '월세', 'exams': [{'name': '정보처리기사', 'month': LAST_MONTH}]}     # 가상 인물
 
 with sync_playwright() as p:
     browser = p.chromium.launch(channel='msedge', headless=True)
@@ -22,9 +25,22 @@ with sync_playwright() as p:
     page.on('pageerror', lambda error: errors.append(str(error)))
     page.goto(URL, wait_until='networkidle')
 
-    # 시작 → 데모 계정 → 홈
+    # 시작 화면에는 '새 정보 입력'만 있고 '체험'·'데모'라는 말이 없다
     expect(page.locator('h1.hero')).to_contain_text('공고는 저희가 읽을게요')
-    page.locator('[data-a=demo]').click()
+    first = page.locator('main').inner_text()
+    assert '체험' not in first and '데모' not in first and page.locator('main button').count() == 1
+    # 새 정보 입력에서 이름을 적고 저장하면 홈에 그 이름이 나온다
+    page.locator('[data-a=start]').click()
+    assert '체험' not in page.locator('main').inner_text()
+    page.locator('#name').fill('민지')
+    expect(page.locator('.pick > span').first).to_have_text('선택')             # 비어 있는 달 칸은 '선택'이라고 보인다
+    page.locator('[data-a=save]').click()
+    expect(page.locator('.greeting')).to_contain_text('민지 님')
+    # 나머지 흐름은 가상 인물의 정보를 넣어 두고 '기존 정보로 계속 이용'으로 이어 간다
+    page.evaluate('p=>localStorage.setItem("youth-desk-profile",JSON.stringify(p))', PROFILE)
+    page.reload(wait_until='networkidle')
+    expect(page.locator('.or')).to_be_visible()                                   # 계속 이용 · 또는 · 새 정보 입력
+    page.locator('[data-a=continue]').click()
     expect(page.locator('.greeting')).to_contain_text('민지 님')
     expect(page.locator('main')).to_contain_text('지금 할 일')
     expect(page.locator('[data-a=openchat].btn')).to_have_text('받고 싶은 지원 찾기')   # 처음: 1단계
