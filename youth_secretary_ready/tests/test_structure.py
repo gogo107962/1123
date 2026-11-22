@@ -175,10 +175,13 @@ def test_income_amount_is_compared_only_for_annual_income_code():
 def test_outcome_and_it_is_never_a_qualification():
     out, results = verdict(made(), PROFILE)
     assert out['outcome'] == 'api_match' and out['to_confirm'] == [] and 'mismatch' not in results.values()
-    out, _ = verdict(made(), PROFILE, 'rolling')
-    assert out['outcome'] == 'needs_check' and out['to_confirm'] == ['period']
+    # 신청기간은 판정에 넣지 않는다(v0.56): '상시'여도 다른 조건이 맞으면 '맞아요'. 기간 줄은 근거와 함께 남되 counted가 False다.
+    out, results = verdict(made(), PROFILE, 'rolling')
+    assert out['outcome'] == 'api_match' and out['to_confirm'] == [] and results['period'] == 'unknown'
+    assert next(c for c in out['criteria'] if c['key'] == 'period')['counted'] is False and all(c['counted'] for c in out['criteria'] if c['key'] != 'period')
+    assert verdict(made(), PROFILE, 'ended')[0]['outcome'] == 'api_match'                     # 지난 기간도 판정을 바꾸지 않는다(목록에서는 '원문 링크만'으로 나뉜다)
     out, _ = verdict(made(zipCd=''), {**PROFILE, 'age': 40}, 'rolling')
-    assert out['outcome'] == 'api_mismatch' and set(out['to_confirm']) == {'period', 'age', 'region'}
+    assert out['outcome'] == 'api_mismatch' and set(out['to_confirm']) == {'age', 'region'}
     assert all(verdict(made(), p, s)[0]['qualification_determined'] is False
                for p in (PROFILE, {}) for s in ('open', 'ended'))
 
@@ -242,11 +245,11 @@ def test_screen_catalog_counts_order_and_link_only(ctx):
     body = post(ctx).json()
     assert body['as_of'] == '2026-11-17' and body['total'] == 5 and body['pages'] == 1 and body['notice']
     assert body['tiers'] == {'reviewed': 0, 'screenable': 3, 'link_only': 2}
-    assert body['outcomes'] == {'api_match': 1, 'needs_check': 1, 'api_mismatch': 1}
+    assert body['outcomes'] == {'api_match': 2, 'needs_check': 0, 'api_mismatch': 1}            # 상시인 SR도 기간 때문에 '확인 필요'가 되지 않는다(v0.56)
     # 원문 링크만인 정책끼리도 접수 중(SL1)이 기간이 지난 것(SL2)보다 먼저다.
     assert [x['external_id'] for x in body['items']] == ['SM', 'SR', 'SX', 'SL1', 'SL2']
     by_id = {x['external_id']: x for x in body['items']}
-    assert [by_id[k]['screen']['outcome'] for k in ('SM', 'SR', 'SX')] == ['api_match', 'needs_check', 'api_mismatch']
+    assert [by_id[k]['screen']['outcome'] for k in ('SM', 'SR', 'SX')] == ['api_match', 'api_match', 'api_mismatch']
     # 원문 링크만 보여줄 정책에는 걸러보기 결과를 만들지 않는다.
     assert by_id['SL1']['screen'] is None and by_id['SL1']['reasons'] == ['no_region_code']
     assert by_id['SL2']['screen'] is None and by_id['SL2']['period_status'] == 'ended'
@@ -255,9 +258,10 @@ def test_screen_catalog_counts_order_and_link_only(ctx):
 
 def test_screen_catalog_filters_paging_and_reference_date(ctx):
     catalog(ctx)
-    only = post(ctx, outcome='needs_check').json()
-    assert [x['external_id'] for x in only['items']] == ['SR'] and only['total'] == 1
-    assert only['outcomes'] == {'api_match': 1, 'needs_check': 1, 'api_mismatch': 1}
+    only = post(ctx, outcome='api_match').json()
+    assert [x['external_id'] for x in only['items']] == ['SM', 'SR'] and only['total'] == 2
+    assert only['outcomes'] == {'api_match': 2, 'needs_check': 0, 'api_mismatch': 1}
+    assert post(ctx, outcome='needs_check').json()['total'] == 0
     assert {x['external_id'] for x in post(ctx, tier='link_only').json()['items']} == {'SL1', 'SL2'}
     assert [x['external_id'] for x in post(ctx, q='sr').json()['items']] == ['SR']
     pages = [post(ctx, page=p, page_size=2).json() for p in (1, 2, 3)]
@@ -282,7 +286,8 @@ def test_catalog_uses_source_check_only_for_unchanged_api_content(ctx, tmp_path,
     assert (one()['period_status'], one()['tier'], one()['screen']) == ('closed_official', 'link_only', None)
     # 승인된 정책과 연결된 수집 정책만 '검수 통과' 갈래가 된다(여기서는 가상 정책).
     write('demo_rent')
-    assert one()['tier'] == 'reviewed' and one()['screen']['outcome'] == 'api_mismatch'
+    period = next(c for c in one()['screen']['criteria'] if c['key'] == 'period')
+    assert one()['tier'] == 'reviewed' and period['result'] == 'mismatch' and period['counted'] is False and one()['screen']['outcome'] == 'api_match'   # 종료 기록은 표시만
     # 등록된 내용이 바뀌면 예전 공식 종료 기록을 계속 쓰지 않는다.
     seed([good('C1', plcyExplnCn='내용 변경')])
     assert (one()['period_status'], one()['tier']) == ('open', 'reviewed')
@@ -914,7 +919,7 @@ def test_year_long_window_is_not_treated_as_currently_recruiting(ctx):
     assert made(aplyYmd=r'20260101 ~ 20261231\N20261101 ~ 20261115')['application']['long_window'] is False   # 짧은 회차가 함께 있으면 그대로 본다
     assert period_status(year['application'], DAY) == 'open'                    # 날짜로는 기간 안이지만
     out, results = verdict(year, PROFILE)
-    assert results['period'] == 'unknown' and out['outcome'] == 'needs_check'   # 접수 중이라고 하지 않는다
+    assert results['period'] == 'unknown' and 'period' not in out['to_confirm']   # 접수 중이라고 하지 않는다(기간은 표시만, 판정에는 넣지 않음)
     assert '사업기간' in next(c['basis'] for c in out['criteria'] if c['key'] == 'period')
     assert verdict(short, PROFILE)[0]['outcome'] == 'api_match'
     seed([good('LW1', aplyYmd='20260101 ~ 20261231'), good('LW2', aplyYmd='20261101 ~ 20261225'), good('LW3')])
@@ -1094,7 +1099,7 @@ def test_scale_and_first_come_follow_operator_site_and_first_come_is_not_open():
     assert made(sprtSclLmtYn='N', sprtSclCnt='0', sprtArvlSeqYn='')['scale'] == {
         'count': None, 'no_limit': False, 'first_come': None, 'limit_flag_raw': 'N', 'arrival_flag_raw': ''}   # 0명은 미기재, 빈 선착순은 모름
     out, results = verdict(limited, PROFILE)
-    assert results['period'] == 'unknown' and '선착순 30명' in out['criteria'][0]['basis'] and out['outcome'] == 'needs_check'
+    assert results['period'] == 'unknown' and '선착순 30명' in out['criteria'][0]['basis'] and 'period' not in out['to_confirm']
     assert verdict(made(sprtSclLmtYn='N', sprtSclCnt='30', sprtArvlSeqYn='N'), PROFILE)[1]['period'] == 'match'
     assert verdict(limited, PROFILE, 'ended')[1]['period'] == 'mismatch'      # 지난 기간은 그대로 지난 것
 

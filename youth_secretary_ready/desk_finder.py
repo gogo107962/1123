@@ -213,7 +213,7 @@ def why_missing(word, page, profile, on):
     if not wrong:
         return f"'{word}' 정책 {page['total']:,}건은 마감됐거나 정보가 부족해 내 정보와 비교하지 못했어요."
     near = screen_catalog(profile, on, keywords=[word], page_size=1, outcome='api_mismatch')['items']
-    bad = [LABEL.get(c['key'], c['key']) for c in near[0]['screen']['criteria'] if c['result'] == 'mismatch'] if near and near[0].get('screen') else []
+    bad = [LABEL.get(c['key'], c['key']) for c in near[0]['screen']['criteria'] if c['result'] == 'mismatch' and c.get('counted', True)] if near and near[0].get('screen') else []
     return (f"'{word}' 정책은 {page['total']:,}건 있지만 내게 해당할 수 있는 것이 없어요. 등록된 조건이 내 정보와 다른 정책이 {wrong:,}건이에요"
             + (f"(예: 「{near[0]['name']}」은 {'·'.join(bad)} 조건이 달라요)" if bad else '') + '.')
 

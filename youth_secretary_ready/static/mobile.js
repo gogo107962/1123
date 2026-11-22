@@ -106,7 +106,7 @@ function cond(key,d){const st=d.bundle.structured,p=d.bundle.public_fields,a=st.
  if(key==='income')return st.income.labels.concat(st.income.annual?[`${st.income.annual.max.toLocaleString()}만원 이하`]:[],st.income.median_pct.map(x=>`중위소득 ${x}%`)).join(', ')||'정보 없음';
  return st[key].labels.join(', ')||'정보 없음';}
 function myValue(key){const p=mine();return {period:'오늘 기준',apply:'공고에서 확인',age:p.age!=null?p.age+'세':'',region:area(p),target:p.groups?.length?p.groups.join(', '):'해당 항목 선택 안 함',income:p.income_monthly!=null&&p.household?`월 ${p.income_monthly}만원 · ${p.household}인 가구`:'소득 입력 안 함',exclusion:p.benefits?.length?'받는 지원: '+p.benefits.join(', '):p.benefits?'받는 지원 없음':'받는 지원 입력 안 함',job:S.names.job_code[p.job_code],school:S.names.school_code[p.school_code],exam:p.exams?.join(', '),housing:p.housing}[key]||'입력 안 함'}
-const rows=d=>d.cmp?.screen?d.cmp.screen.criteria.filter(c=>c.result!=='skipped'):[];
+const rows=d=>d.cmp?.screen?d.cmp.screen.criteria.filter(c=>c.result!=='skipped'&&c.counted!==false):[];   // 신청기간은 위쪽 표시로만 보여 준다
 
 // 달을 고르는 칸: 비어 있으면 '선택'이라고 보여 준다(휴대폰에서는 빈 칸이 아무것도 없는 것처럼 보인다). 보이는 글 위에 투명한 입력 칸을 덮어, 누르면 기기의 달 고르기가 열린다.
 const pick=(k,v)=>`<span class="pick"><span>${ym(v)||'선택'}</span><input id="${k}" class="mon" data-k="${k}" type="month" min="1930-01" max="2099-12" value="${esc(v||'')}"></span>`;
@@ -164,8 +164,8 @@ results:()=>{const L=S.list,q=S.query,cmp=compared(),tab=S.listTab,myAge=mine().
  const o=L?L.outcomes:{api_match:0,needs_check:0,api_mismatch:0},all=L?o.api_match+o.needs_check+o.api_mismatch+L.tiers.link_only:0,sel=selIds().length;
  const card=x=>{const link=cmp&&x.tier==='link_only',bad=x.screen?.outcome==='api_mismatch',st=!cmp?null:x.screen?OUT[x.screen.outcome]:['원문 링크만','gray'];
   const line=!cmp?esc(x.category||'분야 확인 필요'):link?x.reasons.map(r=>REASON[r]).join(' · ')+' · 원문에서 확인해 주세요'
-   :bad?x.screen.criteria.filter(c=>c.result==='mismatch').map(c=>CRIT[c.key]).join(', ')+' 조건이 등록 정보와 달라요'
-   :`맞아요 ${x.screen.criteria.filter(k=>k.result==='match').length} · 확인 필요 ${x.screen.to_confirm.length}${x.screen.to_confirm.length?` (${x.screen.to_confirm.map(k=>CRIT[k]).join(', ')})`:''}`+(x.summary?' · '+esc(x.summary):'');
+   :bad?x.screen.criteria.filter(c=>c.result==='mismatch'&&c.counted!==false).map(c=>CRIT[c.key]).join(', ')+' 조건이 등록 정보와 달라요'
+   :`맞아요 ${x.screen.criteria.filter(k=>k.result==='match'&&k.counted!==false).length} · 확인 필요 ${x.screen.to_confirm.length}${x.screen.to_confirm.length?` (${x.screen.to_confirm.map(k=>CRIT[k]).join(', ')})`:''}`+(x.summary?' · '+esc(x.summary):'');
   return `<div class="card ${bad||link?'dim':''}"><div class="rowt"><input type="checkbox" class="cb" data-a="sel" data-id="${esc(x.external_id)}" data-n="${esc(x.name)}" ${S.selected[x.external_id]?'checked':''} aria-label="${esc(x.name)} 함께 준비"><button class="cardbtn" data-a="detail" data-id="${esc(x.external_id)}"><span class="tiny">${esc(x.agency||'기관 확인 필요')}</span><span class="h16">${esc(x.name)}</span><span class="pills">${x.engine?pill('검수 완료','ok')+pill(...ENGINE[x.engine.status]):st?pill(...st):''}${pill(x.period_status==='open'?esc(short(x.period_label)):PERIOD[x.period_status])}${x.same_policy_count>1?pill('같은 정책 '+x.same_policy_count+'건 등록'):''}</span><span class="${bad?'red':'sub'} s13">${line}</span>${money(x)&&(bad||link||!x.summary)?`<span class="tiny">${esc(money(x))}</span>`:''}</button></div></div>`};
  const item=x=>{const closed=x.reasons.includes('closed'),st=closed?['마감','gray']:!cmp?null:x.screen?OUT[x.screen.outcome]:['원문 링크만','gray'],where=x.nationwide?'전국':(x.sido_names[0]||x.agency||'지역 확인 필요')+(x.sido_names.length>1?' 외':'');
   return `<button class="feed-card browse-item" data-a="detail" data-id="${esc(x.external_id)}"><span class="tiny">${esc(where)} · ${esc(x.period_label.replace(/\s*\(.*?\)/g,''))}</span><strong>${esc(x.name)}</strong><span class="sub">${esc(x.summary||x.category||'지원 내용은 공고에서 확인')}</span><span class="pills">${x.engine?pill('검수 완료','ok')+pill(...ENGINE[x.engine.status]):st?pill(...st):''}</span></button>`};
@@ -237,7 +237,7 @@ ${P.must.some(d=>!S.docs[d.key])?'<p class="tiny" style="margin-top:8px">지금 
 
 check:()=>{const P=S.plan;if(!P)return wait('신청 전 점검');
  const by=Object.fromEntries(P.policies.map(x=>[x.external_id,x])),ps=P.order.map(id=>by[id]),nd=P.must,have=nd.filter(d=>S.docs[d.key]).length,left=nd.filter(d=>!S.docs[d.key]).map(d=>d.name);
- const row=x=>{const c=x.criteria?.filter(k=>k.result!=='skipped')||[],ok=c.filter(k=>k.result==='match'),bad=c.filter(k=>k.result==='mismatch').length,unk=c.filter(k=>k.result==='unknown').length;
+ const row=x=>{const c=x.criteria?.filter(k=>k.result!=='skipped'&&k.counted!==false)||[],ok=c.filter(k=>k.result==='match'),bad=c.filter(k=>k.result==='mismatch').length,unk=c.filter(k=>k.result==='unknown').length;
   return `<li class="rowbtn"><span><span class="b">${ps.length>1?P.order.indexOf(x.external_id)+1+'. ':''}${esc(x.name)}</span><span class="sub s13 blk">${x.criteria?`등록된 조건 ${ok.length}개 맞아요${ok.length?' · '+ok.map(k=>CRIT[k.key]).join(', '):''}`:'내 정보가 없어 조건을 비교하지 않았어요'}</span></span>${!x.criteria?pill('비교 안 함'):bad?pill('달라요 '+bad,'bad'):unk?pill('확인 필요 '+unk,'warn'):pill('맞아요','ok')}</li>`};
  return bar('신청 전 점검','b')+`<main class="pad"><div><h2 class="h20">${ps.length>1?`정책 ${ps.length}개 신청 준비`:esc(ps[0].name)}</h2><p class="sub">${ps.map(x=>esc(x.period_label)).join(' · ')} · 기준일 ${esc(P.as_of)}</p></div>
 <div class="card"><h3>점검 목록</h3><ul class="list">${ps.map(row).join('')}
