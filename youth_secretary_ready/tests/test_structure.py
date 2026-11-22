@@ -2121,3 +2121,32 @@ def test_ask_splits_results_by_topic_when_two_topics_are_asked(ctx, monkeypatch)
     monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['응시료', '면접']))
     assert all(x['screen'] is None for t in ask('응시료랑 면접', {})['topics'] for x in t['items'])    # 내 정보가 없으면 판정을 싣지 않는다
 
+
+
+# ── v0.57: 공식 공고 주소가 그 정책의 글인지 ───────────────────
+def test_notice_check_tells_first_screens_and_policy_names():
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
+    from check_notice import first_screen, mentions, verdict
+    assert all(first_screen(u) for u in ['https://www.gumi.go.kr/', 'https://www.jeongeup.go.kr', 'https://www.saha.go.kr/main.do',
+                                         'https://www.seogu.gwangju.kr/kor/', 'https://www.yangsan.go.kr/youth/main.do', 'https://a.go.kr/index.jeongeup'])
+    assert not any(first_screen(u) for u in ['https://www.sangju.go.kr/gosi/detail.tc?mn=10297&mgtNo=28980', 'https://jejuyouthdream.com/policy/detail/94',
+                                             'https://www.gongju.go.kr/kr/sub06_01_06_09.do', 'https://a.go.kr/main.do?menu=12'])
+    assert mentions('2026년 청년 월세 지원 사업(추가 모집)', '공고 ｜ 청년월세 지원 신청 안내') and mentions('청년농촌보금자리 운영', '청년 농촌 보금자리 입주자 모집')
+    assert not mentions('청년 월세 지원 사업', '시정 소식 · 청년 일자리 박람회') and not mentions('행사', '행사 안내')        # 너무 짧은 이름은 믿지 않는다
+    names = [('A', '청년 월세 지원 사업'), ('B', '청년 면접정장 대여')]
+    assert verdict(names, 'u', ('ok', 'https://a.go.kr/board/view?no=3', '청년 월세 지원 안내 ' + '가' * 400)) == ('named', ['A'])
+    assert verdict(names, 'u', ('ok', 'https://a.go.kr/main.do', '청년 월세 지원 안내'))[0] == 'moved_to_first_screen'  # 없는 글이라 첫 화면으로 넘겨진 주소
+    assert verdict(names, 'u', ('ok', 'https://a.go.kr/board/view?no=3', '로딩 중'))[0] == 'unreadable' and verdict(names, 'u', ('dead', 'u', '')) == ('dead', [])
+
+
+def test_only_links_that_name_the_policy_are_marked_as_its_notice(ctx, monkeypatch, tmp_path):
+    import desk_service
+    seed([good('NT1', refUrlAddr1='https://example.go.kr/', refUrlAddr2='https://example.go.kr/board/view?no=7', aplyUrlAddr='https://example.go.kr/apply')])
+    marks = lambda: {x['url']: x['named'] for x in desk_service.evidence('NT1')[1]}
+    monkeypatch.setattr(desk_service, 'NOTICE_CHECKS', tmp_path / 'missing.json')     # 점검 파일이 없으면 가리지 않는다
+    assert all(marks().values())
+    checks = tmp_path / 'notice_checks.json'
+    checks.write_text(json.dumps({'named': {'NT1': ['https://example.go.kr/board/view?no=7']}}), encoding='utf-8')
+    monkeypatch.setattr(desk_service, 'NOTICE_CHECKS', checks)
+    assert marks() == {'https://example.go.kr/': False, 'https://example.go.kr/board/view?no=7': True, 'https://example.go.kr/apply': False}

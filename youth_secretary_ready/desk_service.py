@@ -28,6 +28,17 @@ def gone_links():
     연결 실패나 접속 차단(error·unreachable)은 사람이 열면 열릴 수 있어 빼지 않는다."""
     return _gone(LINK_CHECKS.stat().st_mtime_ns) if LINK_CHECKS.exists() else frozenset()
 
+NOTICE_CHECKS=BASE/'data'/'notice_checks.json'
+
+@lru_cache(maxsize=1)
+def _named(stamp):
+    return json.loads(NOTICE_CHECKS.read_text(encoding='utf-8'))['named']
+
+def named_links(external_id):
+    """공고 주소 점검(tools/check_notice.py)에서 그 정책의 이름이 페이지에 나온 주소들. 점검 파일이 없으면 None(가리지 않는다).
+    여기에 없는 주소는 누리집 첫 화면이거나 다른 글이거나 읽지 못한 것이라, 화면이 '공식 공고'로 쓰지 않고 온통청년 정책 페이지로 보낸다."""
+    return set(_named(NOTICE_CHECKS.stat().st_mtime_ns).get(external_id,())) if NOTICE_CHECKS.exists() else None
+
 
 # 준비 작업(공고에서 확인할 일)과 관계없는 칸. 이 칸만 바뀌었을 때는 저장한 작업을 '자료가 바뀌었어요'로 만들지 않는다.
 # (2026-11-19 재수집에서 코드 칸 4개가 더해지고 키워드 칸만 바뀌었는데 저장된 작업 전부가 다시 승인하라고 나왔다.)
@@ -54,14 +65,16 @@ def evidence(external_id):
     bundle=review_bundle(external_id)
     if not bundle:raise HTTPException(404,'정책을 찾을 수 없습니다.')
     p=bundle['public_fields'];check=bundle['source_check']
-    links=[]
+    links=[];named=named_links(external_id)
     for title,value in [('공식 대조 출처',check.get('source_url','') if check else ''),
                         ('참고 안내',p.get('refUrlAddr1','')),('추가 안내',p.get('refUrlAddr2','')),
                         # 온통청년 정보에 공고 주소가 없을 때를 위해, 따로 찾아 문장까지 확인한 공식 페이지도 넣는다(사람 검수 전)
                         *(('공식 안내(따로 확인)',x['source_url']) for x in bundle['supplements'] if x.get('auto_check','found')=='found'),
                         ('신청 안내 사이트',p.get('aplyUrlAddr',''))]:
         url=safe_url(value)
-        if url and url not in gone_links() and not any(x['url']==url for x in links):links.append({'title':title,'url':url})
+        if url and url not in gone_links() and not any(x['url']==url for x in links):links.append({'title':title,'url':url,
+            # 따로 문장까지 확인한 출처는 그대로 믿고, 수집 자료의 참고 주소는 점검에서 정책 이름이 나온 것만 '그 정책의 공고'로 표시한다
+            'named':title in ('공식 대조 출처','공식 안내(따로 확인)') or named is None or url in named})
     # Include review evidence in the fingerprint: API data may be unchanged when a notice is corrected.
     # 수집 해시 전체가 아니라 작업에 영향을 주는 칸으로 만든다. 대조 기록에서는 수집 해시와 그 메모를 뺀다(내용이 같으면 같은 지문).
     seen={k:v for k,v in check.items() if k not in ('api_sha256','api_sha256_note')} if check else None
