@@ -125,3 +125,18 @@ def test_model_cannot_add_unvalidated_action_or_free_claim(monkeypatch,output):
     transport=httpx.MockTransport(lambda request:httpx.Response(200,json={'message':{'content':json.dumps(output)}}))
     monkeypatch.setattr(desk_agent.httpx,'Client',lambda **kwargs:original(transport=transport))
     with pytest.raises(ValueError):desk_agent.generate([{'role':'user','content':'test'}])
+
+
+def test_workspace_lists_the_plans_i_saved_with_progress_and_links(ctx):
+    base=setup(ctx)
+    assert ctx.get(base).json()['plans']==[]                                  # 승인 전에는 세워 둔 계획이 없다
+    saved=approve(ctx,base).json()
+    one=saved['plans'][0]
+    assert len(saved['plans'])==1 and one['external_id']=='0001' and one['total']==len(saved['tasks']) and one['done']==0 and one['outdated'] is False
+    assert len(one['saved_on'])==10 and one['name']==saved['tasks'][0]['policy_name'] and {'period_status','period_label','deadline','links','agency'}<=set(one)
+    first=saved['tasks'][0]['id']
+    assert ctx.patch(base+'/tasks/'+first,json={'status':'done'}).status_code==200
+    assert ctx.get(base).json()['plans'][0]['done']==1                        # 준비 작업을 끝내면 진행이 오른다
+    other='/api/desk/workspaces/'+ctx.post('/api/desk/workspaces').json()['id']
+    assert ctx.get(other).json()['plans']==[]                                 # 다른 준비 공간에는 보이지 않는다
+
