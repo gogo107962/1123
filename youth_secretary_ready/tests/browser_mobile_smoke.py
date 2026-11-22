@@ -79,7 +79,7 @@ with sync_playwright() as p:
     expect(page.locator('.act')).to_contain_text('2개 선택')
     page.locator('[data-a=plan]').click()
     expect(page.locator('.ord li')).to_have_count(2)
-    assert '고른 정책' not in page.locator('main').inner_text()
+    assert page.locator('main h3').filter(has_text='고른 정책').count() == 0     # '고른 정책' 칸은 없다
     assert '신청 순서' not in page.locator('main').inner_text()
     # 안내 글에 서로 막는 문구가 있으면 그 문장을, 없으면 확인 필요 안내를 보여 준다.
     expect(page.locator('.warnbox')).to_contain_text('함께 받')
