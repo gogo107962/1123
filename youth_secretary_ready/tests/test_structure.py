@@ -1939,3 +1939,40 @@ def test_orchestrator_calls_the_planner_only_when_asked_and_reports_each_step(ct
     with pytest.raises(ValueError):
         desk_finder.check(picked(tools=['save']))
 
+
+# ── v0.49: 오케스트레이터 점검에서 나온 것 ────────────────────────────────────
+@pytest.mark.parametrize('message,plan', [
+    ('월세 지원이랑 청년수당 둘 다 받을 수 있어?', True), ('A 받으면서 B도 돼?', True), ('취업 지원 뭐부터 신청해야 돼?', True), ('응시료랑 면접비 합치면 얼마야', True),
+    ('면접 정장 대여랑 면접수당 다 받고 싶어', True), ('적금 두 개 가입할 수 있어?', True), ('자격증 응시료 지원 신청 순서 알려줘', True),
+    ('부모님이랑 같이 사는데 월세 지원 받을 수 있어?', False), ('먼저 월세 지원부터 알려줘', False), ('친구랑 함께 창업하려는데 지원 있어?', False),
+    ('취업 준비하는데 뭐부터 해야 할지 모르겠어', False), ('동생이랑 같이 살 집 구하는데 보증금 지원 있어?', False), ('다 필요 없고 창업 지원만 알려줘', False)])
+def test_plan_words_need_receiving_or_applying_right_after(message, plan):
+    assert bool(desk_finder.PLAN_WORDS.search(message)) is plan
+
+
+def test_orchestrator_hands_the_planner_one_policy_per_topic_and_no_duplicate_registrations(ctx, monkeypatch):
+    money = dict(plcyPvsnMthdCd='0042006')
+    seed([good('PT1', plcyNm='(미추홀구) 청년 자격증 응시료 지원', plcySprtCn='최대 10만원', **money), good('PT2', plcyNm='청년 자격증 응시료 지원', plcySprtCn='최대 10만원', **money),
+          good('PT3', plcyNm='청년 면접수당 지원', plcySprtCn='회당 5만원', **money), good('PT4', plcyNm='청년 교통비 지원', plcySprtCn='최대 3만원', zipCd='26110', **money)])
+    monkeypatch.setattr(desk_finder, 'model_status', lambda: {'ready': True})
+    ask = lambda message, profile=PROFILE: ctx.post(ASK, json={'message': message, 'profile': profile, 'on': '2026-11-17'}).json()
+    monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['응시료', '면접']))
+    both = ask('응시료 지원이랑 면접 지원 둘 다 받을 수 있어?')
+    names = [p['name'] for p in both['compare']['policies']]
+    assert len(names) == 2 and sum('응시료' in n for n in names) == 1 and sum('면접' in n for n in names) == 1      # 주제마다 하나, 같은 사업은 한 번
+    assert both['compare']['amounts']['all']['other_krw'] == 150000 and both['compare']['missing'] == []
+    assert both['steps'][0]['plan_by'] == 'words' and '코드 규칙이 불렀어요' in both['steps'][0]['did']               # 모델이 고르지 않았으면 그렇게 적는다
+    assert [t['tool'] for t in both['tools']][-1] == 'plan_applications'
+    monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['자격증', '응시료']))                    # 한 주제를 검색어 둘로 나눈 경우: 주제 하나로 본다
+    same = ask('자격증 응시료 지원 여러 개 신청해도 돼?')
+    assert same['compare'] is None and '1건뿐이라' in [x['did'] for x in same['steps'] if x['who'] == 'planner'][0]   # 같은 사업 두 건은 한 건이다
+    monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['응시료'], tools=['find', 'plan']))
+    one = ask('응시료 지원 알려줘')
+    assert one['steps'][0]['plan_by'] == 'ai' and one['compare'] is None and '1건뿐이라' in [x['did'] for x in one['steps'] if x['who'] == 'planner'][0]
+    monkeypatch.setattr(desk_finder, 'generate', lambda m: picked(keywords=['응시료', '교통비']))
+    gap = ask('응시료 지원이랑 교통비 지원 둘 다 받을 수 있어?')                                                     # 교통비는 내 지역에 없다
+    assert gap['compare'] is None and "'교통비'" in [x['did'] for x in gap['steps'] if x['who'] == 'planner'][0]
+    assert "'교통비'" in gap['compare_note'] and both['compare_note'] == ''                                      # 못 돌린 이유는 답으로 보여 준다
+    blank = ask('응시료 지원이랑 면접 지원 둘 다 받을 수 있어?', {})
+    assert blank['compare'] is None and '내 정보가 없어' in [x['did'] for x in blank['steps'] if x['who'] == 'planner'][0]
+
