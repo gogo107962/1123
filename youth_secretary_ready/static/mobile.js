@@ -57,11 +57,6 @@ const PORTAL=id=>'https://www.youthcenter.go.kr/youthPolicy/ythPlcyTotalSearch/y
 const official=(links,id)=>{const apply=links.find(x=>x.title==='신청 안내 사이트'),notice=links.find(x=>x!==apply);return {apply,notice,all:[notice&&['공식 공고',notice.url],apply&&['신청 페이지',apply.url],['온통청년 정책 페이지',PORTAL(id)]].filter(Boolean)}};
 const sites=(links,id)=>`<div class="pills">${official(links,id).all.map(([t,u])=>`<a class="btn line sm" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${t}</a>`).join('')}</div>`;
 // 예상 지원 금액: 제공 방법이 보조금 · 바우처인 정책의 글에 적힌 금액만 더한 값(서버 계산). 대출 · 보증은 한도라 따로 적는다.
-const won=k=>k>=1e8?`${+(k/1e8).toFixed(2)}억 원`:`${Math.round(k/1e4).toLocaleString()}만 원`;
-const est=P=>{const e=P.estimate,by=Object.fromEntries(P.policies.map(x=>[x.external_id,x])),parts=[e.monthly_krw?`매달 ${won(e.monthly_krw)}`:'',e.other_krw?(e.monthly_krw?'그 밖에 ':'')+won(e.other_krw):''].filter(Boolean);
- return (parts.length?`<p class="s14" style="margin:8px 0 0">예상 지원 금액 <strong class="h18">${parts.join(' + ')}</strong></p><p class="tiny">글에 적힌 금액 기준 · ${e.used.map(x=>esc(by[x.external_id].name)+' '+esc(x.text)).join(' · ')}</p>`:'')
-  +(e.loans.length?`<p class="tiny">대출 · 보증 ${e.loans.length}건은 한도라서 더하지 않았어요: ${e.loans.map(id=>esc(by[id].name)+(by[id].amounts[0]?' '+esc(by[id].amounts[0].text):'')).join(', ')}</p>`:'')
-  +(e.unsure.length?`<p class="tiny">${e.unsure.length}건은 지원금으로 등록돼 있지 않거나 금액 표현이 분명하지 않아 더하지 않았어요: ${e.unsure.map(id=>esc(by[id].name)).join(', ')}</p>`:'')};
 const area=p=>[S.names.sido[p?.sido||p?.region_code?.slice(0,2)],S.names.sigungu[p?.region_code]].filter(Boolean).join(' ');
 const chips=(p=mine())=>[p.age!=null?p.age+'세':'',area(p),S.names.job_code[p.job_code],S.names.school_code[p.school_code],p.income_monthly!=null?`월 ${p.income_monthly}만원`:'',p.household?`${p.household}인 가구`:'',...(p.groups||[]),...(p.benefits||[])].filter(Boolean);
 const tasks=()=>(S.space?.tasks||[]).filter(t=>!t.outdated);
@@ -115,8 +110,8 @@ const rows=d=>d.cmp?.screen?d.cmp.screen.criteria.filter(c=>c.result!=='skipped'
 
 const V={
 login:()=>`<main class="pad"><div class="login-intro"><h1 class="hero">공고는 저희가 읽을게요.<br>신청 준비만 하세요.</h1><p class="sub">청년비서 · 청년 지원 신청 준비 도우미</p></div>
-<div class="col"><button class="btn" data-a="demo">데모 계정으로 시작</button><p class="sub c">가상 인물 '민지'의 정보로 바로 체험해요</p></div>
-<div class="or"><span></span>또는<span></span></div><button class="btn line" data-a="start">내 정보 입력하고 시작</button>
+<div class="col">${S.profile?`<button class="btn" data-a="continue">기존 정보로 계속 이용</button><p class="sub c">${esc(S.profile.name||'체험 사용자')} 님이 입력한 정보로 이어서 해요</p>`:''}<button class="btn ${S.profile?'line':''}" data-a="start">새 정보 입력</button></div>
+<div class="or"><span></span>또는<span></span></div><button class="btn line" data-a="demo">데모 계정으로 체험</button><p class="sub c">가상 인물 '민지'의 정보로 바로 체험해요</p>
 <p class="tiny c mt">체험용 서비스예요. 실제 개인정보를 입력하지 마세요. 로그인 기능은 아직 없어요.</p></main>`,
 
 home:()=>{const p=S.profile||{},t=tasks(),done=t.filter(x=>x.status==='done').length,c=S.counts,groups=new Set(t.map(x=>x.external_id)).size,next=t.find(x=>x.status!=='done'),top=c?.items[0],chev=ms('chevron_right'),hp=S.homePlan?.policies.length?S.homePlan:null,have=hp?hp.must.filter(d=>S.docs[d.key]).length:0,lack=hp?.must.find(d=>!S.docs[d.key]);
@@ -213,11 +208,8 @@ plan:()=>{const picked=selIds(),ids=planIds(),P=S.plan,saved=S.space?.tasks||[],
 <div class="card"><div class="row"><h3>${many?'통합 서류':'필요한 서류'}</h3><span class="tiny">${P.must.length}종 중 ${have}종 준비</span></div>
 ${P.documents.length?`<ul class="list">${P.documents.map(d=>{const tag=!many?'':d.policies.length===P.policies.length?'공통':d.policies.map(num).sort().join('·')+'번만';return `<li class="doc"><input type="checkbox" class="cb" data-a="doc" data-k="${esc(d.key)}" ${S.docs[d.key]?'checked':''} aria-label="${esc(d.name)} 보유"><div><div class="pills"><span class="b">${esc(d.name)}</span>${tag?pill(tag):''}${S.docs[d.key]?pill('보유','ok'):d.optional?pill('해당하는 경우만'):pill('부족','bad')}</div><p class="sub s13">${esc(d.kind)} · ${esc(d.how)}</p></div></li>`}).join('')}</ul>`:'<p class="sub">필요한 서류는 공고에서 확인해 주세요.</p>'}
 <details><summary>서류 안내 원문 · 주의할 점</summary>${P.documents_unlisted.length?`<p class="tiny" style="margin-top:8px">${P.documents_unlisted.map(num).sort().map(i=>i+'번').join(', ')} 정책은 서류 안내가 없어요. 서류가 필요 없다는 뜻이 아니에요.</p>`:''}<p class="tiny" style="margin-top:6px">서류 안내 글에서 이름을 찾은 서류예요. 발급일 · 포함 항목 · 대체서류는 공고에서 확인하세요.</p>${P.policies.map(x=>`<p class="b" style="margin:8px 0 0">${num(x.external_id)}. ${esc(x.name)}</p><p class="pre">${({api_other:'(신청 방법·기타 안내 글에서 읽음) ',web_check:'(공식 페이지에서 보완 · 사람 검수 전) ',attachment_pdf:'(공고 첨부파일에서 읽음 · 자동 대조 안 됨 · 사람 검수 전) ',attachment_hwpx:'(공고 첨부파일에서 읽음 · 자동 대조 안 됨 · 사람 검수 전) ',image:'(공고 이미지에서 읽음 · 자동 대조 안 됨 · 사람 검수 전) '})[x.documents_source]||''}${esc(x.documents_text||'정보 없음')}</p>`).join('')}</details></div>
-<div class="card"><h3>신청 순서</h3><ol class="ord">${P.order.map(id=>`<li><strong>${esc(by[id].name)}</strong> · ${esc(by[id].period_label)}${picked.length?` <button class="link" data-a="unsel" data-id="${esc(id)}">빼기</button>`:''}${by[id].channels.length||by[id].amounts.length?`<span class="tiny blk">${esc([by[id].channels.length?'신청: '+by[id].channels.join(' · '):'',money(by[id])].filter(Boolean).join(' · '))}</span>`:''}</li>`).join('')}</ol>${est(P)}<details><summary>순서 · 금액 안내</summary><p class="tiny">온통청년에 등록된 날짜 순서예요. 실제 접수 여부와 마감 시각은 공고에서 확인하세요. 예상 지원 금액은 제공 방법이 보조금 · 바우처로 등록된 정책의 글에 적힌 금액을 하나씩 더한 참고 값이에요. 대출 · 보증은 한도라서 더하지 않았고, 실제 금액은 심사와 지원 기간에 따라 달라요.</p></details></div>`;}
- const groups=new Map();for(const t of saved)groups.has(t.external_id)?groups.get(t.external_id).push(t):groups.set(t.external_id,[t]);
- const done=saved.filter(t=>t.status==='done').length;
- const savedHtml=saved.length?`<div class="row" style="margin-top:6px"><h3>저장한 준비 작업</h3><span class="tiny">${saved.length}개 중 ${done}개 완료</span></div>${[...groups].map(([id,list])=>`<div class="card"><div class="row"><h3>${esc(list[0].policy_name)}</h3><button class="link" data-a="detail" data-id="${esc(id)}">정책 보기</button></div><ul class="list">${list.map(t=>`<li class="doc"><input type="checkbox" class="cb" data-a="task" data-id="${esc(t.id)}" ${t.status==='done'?'checked':''} ${t.outdated?'disabled':''} aria-label="${esc(t.title)} 완료"><div><span class="b">${esc(t.title)}</span><p class="sub s13">${esc(t.instructions)}</p>${t.outdated?'<p class="red s13">자료가 바뀌었어요. 정책을 다시 골라 계획을 승인해 주세요.</p>':''}</div></li>`).join('')}</ul></div>`).join('')}`:'';
- return head+`<main class="pad">${draft}${savedHtml}</main>${picked.length&&P?(left=>`<div class="act ${tab?'floating':''}">${left?`<button class="btn f1" disabled>서류 ${left}종이 남았어요</button>`:`<button class="btn f1" data-a="check">신청 전 점검으로</button>`}</div>`)(P.must.filter(d=>!S.docs[d.key]).length):''}`+foot;},
+<div class="card"><h3>고른 정책</h3><ol class="ord">${P.order.map(id=>`<li><strong>${esc(by[id].name)}</strong>${picked.length?` <button class="link" data-a="unsel" data-id="${esc(id)}">빼기</button>`:''}</li>`).join('')}</ol></div>`;}
+ return head+`<main class="pad">${draft}</main>${picked.length&&P?(left=>`<div class="act ${tab?'floating':''}">${left?`<button class="btn f1" disabled>서류 ${left}종이 남았어요</button>`:`<button class="btn f1" data-a="check">신청 전 점검으로</button>`}</div>`)(P.must.filter(d=>!S.docs[d.key]).length):''}`+foot;},
 
 check:()=>{const P=S.plan;if(!P)return wait('신청 전 점검');
  const by=Object.fromEntries(P.policies.map(x=>[x.external_id,x])),ps=P.order.map(id=>by[id]),nd=P.must,have=nd.filter(d=>S.docs[d.key]).length,left=nd.filter(d=>!S.docs[d.key]).map(d=>d.name);
@@ -244,7 +236,8 @@ profile:()=>{const d=S.draft||(S.draft={name:'',sido:'',job_code:'',school_code:
  // 취업 상태는 팀 화면의 세 가지를 앞에 두고, 코드표의 나머지를 뒤에 붙인다. '학생'은 대상 집단(대학(원)생)으로 저장한다.
  const jobs=[['0013003','취업 준비 중'],['0013001','재직 중'],['student','학생'],...Object.entries(S.names.job_code).filter(([c])=>!['0013003','0013001'].includes(c))];
  const month=(k,label,value)=>`<div class="prow"><label class="sub" for="${k}" style="margin:0;font-weight:400">${label}</label><span class="b"><input id="${k}" class="mon" data-k="${k}" type="month" min="1930-01" max="2099-12" value="${esc(value||'')}"></span></div>`;
- return bar('내 정보',S.profile?null:'b')+`<main class="pad"><div class="card"><div class="row" style="justify-content:flex-start;gap:14px"><span class="avl">${ME}</span><div class="f1"><p class="h20" style="margin:0">${esc(d.name||'체험 사용자')}</p><p class="tiny">챗봇 대화에 이 사진과 이름이 보여요</p></div>${pill(d.name==='민지'?'데모 계정':'체험')}</div></div>
+ const old=S.profile&&S.back[S.back.length-1]!=='login';
+ return bar('내 정보',old?null:'b')+`<main class="pad"><div class="card"><div class="row" style="justify-content:flex-start;gap:14px"><span class="avl">${ME}</span><div class="f1"><p class="h20" style="margin:0">${esc(d.name||'체험 사용자')}</p><p class="tiny">챗봇 대화에 이 사진과 이름이 보여요</p></div>${pill(d.name==='민지'?'데모 계정':'체험')}</div></div>
 <div class="card"><h3>기본 정보</h3><p class="tiny">나이와 거주 조건을 확인하는 데 써요</p>
 <div class="prow"><label class="sub" for="birth" style="margin:0;font-weight:400">출생 연월</label><span class="b"><input id="birth" class="mon" data-k="birth" type="month" min="1930-01" max="2099-12" value="${esc(d.birth||'')}">${age!=null?` · ${age}세`:''}</span></div>
 <div class="addr"><label for="sido">주소</label><div class="pair">${sel('sido','거주 시도',Object.entries(S.names.sido).sort(ko),'시 · 도').replace('<select ','<select id="sido" ')}${sel('region_code','시군구',Object.entries(S.names.sigungu).filter(([c])=>c.startsWith(d.sido||'-')).sort(ko),'시 · 군 · 구')}</div><p class="tiny">지원 조건 확인에는 <strong>${esc(place||'시 · 군 · 구')}</strong>까지만 써요</p></div>
@@ -262,7 +255,7 @@ ${d._ben?`<ul class="list">${S.benefits.map(b=>`<li class="doc"><input type="che
 <div class="card"><h3>소득을 금액으로</h3><p class="tiny">금액을 넣으면 구간 대신 금액으로 비교해요. 학자금 지원구간은 한국장학재단에서 확인할 수 있어요.</p><div class="prow"><label class="sub" for="pay" style="margin:0;font-weight:400">월 소득(만원)</label><input id="pay" class="num" data-k="income_monthly" type="number" min="0" max="10000" inputmode="numeric" value="${esc(d.income_monthly??'')}" placeholder="예: 180"></div><div class="prow"><span class="sub">학자금 지원구간(소득분위)</span>${sel('income_bracket','학자금 지원구간',[[0,'기초·차상위'],...[1,2,3,4,5,6,7,8,9,10].map(i=>[i,i+'구간'])],'모름 · 선택 안 함')}</div></div>
 <div class="card"><h3>해당하는 것</h3><p class="tiny">이름에 특정 대상이 적힌 정책(예: 대학생, 예술인)과 비교해요. 고르지 않으면 그런 정책은 ‘확인 필요’로 나와요.</p><ul class="list">${S.groups.map(g=>`<li class="doc"><input type="checkbox" class="cb" data-a="group" data-v="${esc(g)}" id="g-${esc(g)}" ${(d.groups||[]).includes(g)?'checked':''}><label for="g-${esc(g)}" style="margin:0;font-weight:500">${esc(g)}</label></li>`).join('')}</ul></div></details>
 <p class="tiny">저장하면 찾아둔 지원 결과를 바뀐 정보로 다시 계산해요. 입력값은 이 브라우저에만 저장해요. 실제 개인정보를 입력하지 마세요.</p>
-<button class="btn w" data-a="save">${S.profile?'저장하기':'저장하고 시작하기'}</button>${S.profile?'<button class="btn line w" data-a="logout">로그아웃</button>':''}</main>`+(S.profile?dock('profile'):'');}
+<button class="btn w" data-a="save">${old?'저장하기':'저장하고 시작하기'}</button>${old?'<button class="btn line w" data-a="logout">로그아웃</button>':''}</main>`+(old?dock('profile'):'');}
 };
 
 function sheet(){if(S.sheet===null||S.screen!=='detail'||!S.detail)return'';const d=S.detail,c=rows(d)[S.sheet],link={url:official(d.sources,d.id).notice?.url||PORTAL(d.id)};
@@ -308,12 +301,13 @@ function saveProfile(next){S.profile=next;store.set('youth-desk-profile',next);S
 async function approve(){const P=S.plan;
  try{for(const x of P.policies)S.space=await api(space('/policies/'+encodeURIComponent(x.external_id)+'/confirm'),'POST',{approved:true,preview_token:x.preview_token})}
  catch(e){if(e.status===409){await loadPlan()}throw e}
- S.selected={};store.set('youth-desk-selected',{});S.plan=null;S.planTab=true;S.back=[];S.screen='plan';render(true);toast('확인할 일을 내 신청에 저장했어요.')}
+ S.selected={};store.set('youth-desk-selected',{});S.plan=null;S.planTab=true;S.back=[];S.screen='plan';render(true);toast('확인할 일을 내 신청에 저장했어요.');run(loadPlan)}
 
 document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!el||el.tagName==='INPUT')return;const a=el.dataset.a,d=el.dataset;
  if(a==='back')back();
  else if(a==='demo'){saveProfile(DEMO);go('home',true);run(loadCounts)}
- else if(a==='start')go('profile');
+ else if(a==='continue'){go('home',true);run(loadCounts)}
+ else if(a==='start'){S.draft={name:'',sido:'',job_code:'',school_code:''};go('profile')}
  else if(a==='tab'){S.draft=null;if(d.s==='plan')run(()=>showPlan(true));else if(d.s==='browse')run(()=>showResults([],true));else{S.back=[];S.screen=d.s;S.sheet=null;render(true);if(d.s==='home')run(async()=>{if(!S.counts||!S.homePlan)await loadCounts()})}}
  else if(a==='openchat')openChat();else if(a==='topic')openChat(TOPICS[d.t]);else if(a==='say')say(d.t);
  else if(a==='results')run(()=>showResults(S.chat[d.i].keywords));else if(a==='browse')run(()=>showResults([],true));
@@ -339,7 +333,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!
   if(f.birth&&(ageOf(f.birth)==null||ageOf(f.birth)>120)){toast('출생 연월을 확인해 주세요.');return}
   if(f.moved&&monthsSince(f.moved)<0){toast('전입한 달을 확인해 주세요.');return}
   const student=f.job_pick==='student',groups=new Set(f.groups||[]);if(student)groups.add('대학(원)생');
-  const first=!S.profile;saveProfile({name:f.name||'',birth:f.birth||'',age:f.birth?ageOf(f.birth):num(f.age),moved:f.moved||'',residence_months:f.moved?null:num(f.residence_months),sido:f.sido,region_code:f.region_code||'',
+  const first=!S.profile||S.back[S.back.length-1]==='login';saveProfile({name:f.name||'',birth:f.birth||'',age:f.birth?ageOf(f.birth):num(f.age),moved:f.moved||'',residence_months:f.moved?null:num(f.residence_months),sido:f.sido,region_code:f.region_code||'',
    job_code:student?'':f.job_pick||'',school_code:f.school_code,income_band:num(f.income_band),income_monthly:money,household:num(f.household),income_bracket:num(f.income_bracket),housing:f.housing||'',exams:f.exams||[],business:f.business||'',biz_opened:f.business==='yes'?f.biz_opened||'':'',biz_type:f.business==='yes'?(f.biz_type||'').trim():'',
    benefits:f.benefits??null,groups:f.groups||student?[...groups]:null});
   if(first){S.back=[];go('home',true)}else render();run(loadCounts);toast(compared()?'저장했어요. 내 정보 기준으로 다시 찾아요.':'저장했어요. 정보 없이 전체 정책을 보여드려요.')}
@@ -355,7 +349,6 @@ document.addEventListener('change',e=>{const t=e.target,d=t.dataset;
  else if(d.a==='doc'){S.docs[d.k]=t.checked;store.set('youth-desk-docs',S.docs);render()}
  else if(d.a==='group'&&S.draft){const now=new Set(S.draft.groups||[]);t.checked?now.add(d.v):now.delete(d.v);S.draft.groups=[...now]}
  else if(d.a==='benefit'&&S.draft){const now=new Set(S.draft.benefits||[]);t.checked?now.add(d.v):now.delete(d.v);S.draft.benefits=[...now];render()}
- else if(d.a==='task')run(async()=>{try{await api(space('/tasks/'+encodeURIComponent(d.id)),'PATCH',{status:t.checked?'done':'todo'});await refreshSpace();render()}catch(error){t.checked=!t.checked;throw error}});
  else if(d.k&&S.draft){S.draft[d.k]=t.value;if(d.k==='sido'){S.draft.region_code='';render()}else if(d.k==='birth'||d.k==='region_code'||d.k==='business')render()}});
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset.k&&S.draft)S.draft[t.dataset.k]=t.value});
 // 접어 둔 부분은 다시 그려도 펼친 상태를 기억한다.
@@ -379,6 +372,6 @@ document.addEventListener('visibilitychange',freshen);setInterval(freshen,60000)
   for(const [key,field,skip] of [['job_code','jobCd','0013010'],['school_code','schoolCd','0049010']])S.names[key]=Object.fromEntries(Object.entries(codebook.groups[field].codes).filter(([code])=>code!==skip).map(([code,item])=>[code,item.label]));
   S.benefits=regions.benefits;S.groups=regions.groups;
   api('/api/integrations/ontong').then(r=>{S.collected=(r.last_run?.finished_at||'').slice(0,10)},()=>{});
-  if(S.profile){S.screen='home';render();await loadCounts()}else render();
+  render();
  }catch(e){toast(e.message+' 새로고침해 주세요.')}
 })();
