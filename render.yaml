@@ -1,0 +1,32 @@
+# Render 배포 설정(Blueprint). 연결 순서와 주의할 점은 youth_secretary_ready/OPERATIONS.md 의 "Render에 올리기"에 있다.
+# 무료 서버는 15분 동안 접속이 없으면 잠들고, 깨어날 때마다 디스크가 비워진다. 그래서 켜질 때 data/seed 의 고정 자료로 DB를 다시 채운다.
+services:
+  - type: web
+    name: youth-secretary
+    runtime: python
+    plan: free
+    region: singapore
+    rootDir: youth_secretary_ready
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -X utf8 start.py
+    healthCheckPath: /api/health
+    # 저장소에 올린다고 바로 다시 배포되지 않게 한다(제출 마감 뒤 변경 금지). 다시 배포하려면 Render 화면에서 직접 누른다.
+    autoDeployTrigger: "off"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: HOST
+        value: 0.0.0.0
+      # 공개 배포 모드: 관리 기능은 ADMIN_TOKEN으로만 열고, 요청 횟수는 앞단 서버가 적어 준 사용자 주소로 센다.
+      - key: PUBLIC_DEPLOY
+        value: "1"
+      - key: ADMIN_TOKEN
+        generateValue: true
+      # 서버에 로컬 모델(Ollama)을 둘 수 없어 Gemini의 무료 구간 모델을 쓴다. 키는 Render 화면에서 직접 넣는다(저장소에 적지 않는다).
+      # 키를 넣지 않으면 AI 없이 낱말로 찾는다.
+      - key: AI_PROVIDER
+        value: gemini
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash-lite
+      - key: GEMINI_API_KEY
+        sync: false

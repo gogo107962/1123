@@ -16,7 +16,18 @@ NEW_WORKSPACES = (30, 3600)                                       # 준비 공�
 _hits, _lock = defaultdict(deque), threading.Lock()
 
 
+def public():
+    """공개 배포 서버(PUBLIC_DEPLOY=1). 앞단 서버를 거쳐 오므로 '서버 PC에서 부른 요청'이라는 구분을 믿을 수 없다."""
+    return os.environ.get('PUBLIC_DEPLOY', '') == '1'
+
+
 def client_of(request: Request):
+    if public():
+        # 앞단 서버가 적어 준 사용자 주소로 횟수를 센다. 꾸밀 수 있는 값이라 앞에 표시를 붙여 서버 PC·테스트 주소와 같아지지 않게 한다.
+        forwarded = request.headers.get('x-forwarded-for', '').split(',')[0].strip()
+        if forwarded:
+            return 'fwd:' + forwarded[:60]
+        return 'proxy:' + (request.client.host if request.client else '')
     return request.client.host if request.client else ''
 
 
@@ -25,7 +36,7 @@ def require_admin(request: Request):
     token = os.environ.get('ADMIN_TOKEN', '')
     if token and hmac.compare_digest(request.headers.get('x-admin-token', ''), token):
         return
-    if client_of(request) not in LOCAL:
+    if public() or client_of(request) not in LOCAL:   # 공개 배포에서는 토큰으로만 연다
         raise HTTPException(403, '이 기능은 서버를 실행한 PC에서만 쓸 수 있습니다.')
 
 

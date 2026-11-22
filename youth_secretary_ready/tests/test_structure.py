@@ -1914,3 +1914,33 @@ def test_docboard_reads_issue_date_only_when_it_says_issued_and_rejects_unknown_
     for path in ('plan', 'docboard'):
         bad = ctx.post(f'/api/desk/workspaces/{wid}/{path}', json={'external_ids': ['H1'], 'profile': PROFILE, 'on': '2026-11-17', 'have': ['application', 'nope']})
         assert bad.status_code == 422 and 'nope' in bad.text
+
+
+def test_public_deploy_opens_admin_only_by_token_and_counts_by_forwarded_address(ctx, monkeypatch):
+    import access
+    from fastapi import HTTPException
+    from starlette.requests import Request
+    request = lambda headers=(): Request({'type': 'http', 'client': ('127.0.0.1', 1), 'headers': [(k.encode(), v.encode()) for k, v in headers]})
+    access.require_admin(request())                       # 로컬 실행: 서버 PC에서는 열린다
+    monkeypatch.setenv('PUBLIC_DEPLOY', '1')
+    # 공개 배포: 앞단 서버를 거치므로 '서버 PC에서 부름'을 믿지 않는다. 꾸민 주소로도 열리지 않는다.
+    for headers in ((), (('x-forwarded-for', '127.0.0.1'),)):
+        with pytest.raises(HTTPException) as denied:
+            access.require_admin(request(headers))
+        assert denied.value.status_code == 403
+    monkeypatch.setenv('ADMIN_TOKEN', 'secret-token')
+    access.require_admin(request((('x-admin-token', 'secret-token'),)))
+    # 횟수 제한은 앞단 서버가 적어 준 주소로 센다. 'testclient'라고 꾸며도 세는 대상에서 빠지지 않는다.
+    assert access.client_of(request((('x-forwarded-for', '203.0.113.7, 10.0.0.1'),))) == 'fwd:203.0.113.7'
+    assert access.client_of(request((('x-forwarded-for', 'testclient'),))) == 'fwd:testclient' and access.client_of(request()) == 'proxy:127.0.0.1'
+
+
+def test_gemini_is_used_only_when_switched_on(monkeypatch):
+    import local_agent
+    monkeypatch.delenv('AI_PROVIDER', raising=False)
+    monkeypatch.setenv('GEMINI_API_KEY', 'k')
+    assert local_agent.provider() == 'ollama'             # 키가 있어도 켜지 않으면 로컬 모델만 쓴다
+    monkeypatch.setenv('AI_PROVIDER', 'gemini')
+    assert local_agent.model_status() == {'provider': 'gemini', 'model': 'gemini-3.5-flash-lite', 'ready': True, 'reason': 'ready'}
+    monkeypatch.delenv('GEMINI_API_KEY')
+    assert local_agent.model_status() == {'provider': 'gemini', 'ready': False, 'reason': 'missing_key'}
