@@ -246,7 +246,7 @@ check:()=>{const P=S.plan;if(!P)return wait('신청 전 점검');
  const row=x=>{const c=x.criteria?.filter(k=>k.result!=='skipped'&&k.counted!==false)||[],ok=c.filter(k=>k.result==='match'),bad=c.filter(k=>k.result==='mismatch').length,unk=c.filter(k=>k.result==='unknown').length;
   return `<li class="rowbtn"><span><span class="b">${ps.length>1?P.order.indexOf(x.external_id)+1+'. ':''}${esc(x.name)}</span><span class="sub s13 blk">${x.criteria?`등록된 조건 ${ok.length}개 맞아요${ok.length?' · '+ok.map(k=>CRIT[k.key]).join(', '):''}`:'내 정보가 없어 조건을 비교하지 않았어요'}</span></span>${!x.criteria?pill('비교 안 함'):bad?pill('달라요 '+bad,'bad'):unk?pill('확인 필요 '+unk,'warn'):pill('맞아요','ok')}</li>`};
  return bar('신청 전 점검','b')+`<main class="pad"><div><h2 class="h20">${ps.length>1?`정책 ${ps.length}개 신청 준비`:esc(ps[0].name)}</h2><p class="sub">${ps.map(x=>esc(x.period_label)).join(' · ')} · 기준일 ${esc(P.as_of)}</p></div>
-<div class="card"><h3>점검 목록</h3><ul class="list">${ps.map(row).join('')}
+${(no=>no.length?`<div class="card"><h3>제출서류는 공식 신청 페이지에서 확인해 주세요</h3><p class="sub s13">${no.length<ps.length?no.map(x=>'「'+esc(x.name)+'」').join(', ')+'은(는) ':''}온통청년에 서류 안내가 없거나 서류 이름을 찾지 못했어요. 서류가 필요 없다는 뜻이 아니에요. 신청 전에 공식 페이지에서 제출서류와 발급 조건을 확인하세요.</p>${no.map(x=>{const s=official(x.links,x.external_id);return `<a class="btn line w" style="margin-top:8px" href="${esc((s.apply||s.notice)?.url||PORTAL(x.external_id))}" target="_blank" rel="noopener noreferrer">${ps.length>1?esc(x.name.replace(/\s*\(.*?\)\s*/g,' ').trim())+' · ':''}${s.apply?'공식 신청 페이지 열기':s.notice?'공식 공고 열기':'온통청년 정책 페이지 열기'}</a>`}).join('')}</div>`:'')(ps.filter(x=>!P.documents.some(d=>d.policies.includes(x.external_id))))}<div class="card"><h3>점검 목록</h3><ul class="list">${ps.map(row).join('')}
 <li class="rowbtn"><span><span class="b">서류 ${nd.length}종 중 ${have}종 준비</span><span class="sub s13 blk">${nd.length?left.length?'남은 서류: '+esc(left.join(', ')):'찾은 서류는 모두 준비했어요':'서류는 공고에서 확인해 주세요'}</span></span>${!nd.length?pill('확인 필요','warn'):left.length?pill('남음','bad'):pill('완료','ok')}</li>
 <li class="rowbtn"><span><span class="b">중복 수혜 여부</span><span class="sub s13 blk">${P.conflicts.length?`안내 글에 함께 받기 어렵다는 문구가 ${P.conflicts.length}건 있어요. 기관에 문의한 뒤 신청하세요`:'검수 전이라 판단하지 않았어요. 기관에 문의한 뒤 신청하세요'}</span></span>${P.conflicts.length?pill('문구 있음','bad'):pill('확인 필요','warn')}</li></ul>
 ${left.length?`<button class="btn line w" style="margin:10px 0 6px" data-a="back">서류 체크하러 돌아가기</button>`:''}</div>
@@ -308,9 +308,13 @@ async function openDetail(id){S.detail=null;S.detailId=id;go('detail');const pat
  if(S.detailId!==id)return;S.detail={id,bundle,cmp,sources:preview.tasks[0]?.sources||[]};if(S.screen==='detail')render(true)}
 async function loadPlan(){S.plan=null;const ids=planIds();if(!ids.length)return;
  const r=await api(space('/plan'),'POST',{external_ids:ids,profile:mine()});
- if(ids.join()!==planIds().join())return;r.must=r.documents.filter(d=>!d.optional);S.plan=r;if(S.screen==='plan'||S.screen==='check')render()}
+ if(ids.join()!==planIds().join())return;r.must=r.documents.filter(d=>!d.optional);S.plan=r;
+ // 서류를 하나도 찾지 못했으면 빈 계획 화면을 건너뛰고 바로 '신청 전 점검'으로 간다(계획 화면을 쌓지 않으므로 뒤로 가면 상세).
+ const skip=S.skipEmpty&&S.screen==='plan'&&!S.planTab&&!r.documents.length;S.skipEmpty=false;
+ if(skip)go('check',true);else if(S.screen==='plan'||S.screen==='check')render()}
 function select(id,name,on){if(on)S.selected[id]=name;else delete S.selected[id];store.set('youth-desk-selected',S.selected);S.plan=null;S.homePlan=null}
-function showPlan(tab,only){S.planReturn=!tab&&S.screen==='plan'&&S.planTab;S.only=only||null;S.planTab=tab;if(tab){S.back=[];S.screen='plan';S.sheet=null;render(true)}else go('plan');return (tab?refreshSpace().then(()=>{if(S.screen==='plan')render()}):Promise.resolve()).then(loadPlan)}
+function showPlan(tab,only){S.planReturn=!tab&&S.screen==='plan'&&S.planTab;S.skipEmpty=!tab;S.only=only||null;S.planTab=tab;if(tab){S.back=[];S.screen='plan';S.sheet=null;render(true)}else go('plan');return (tab?refreshSpace().then(()=>{if(S.screen==='plan')render()}):Promise.resolve()).then(loadPlan)
+}
 function openChat(first){if(!S.chat.length)S.chat.push({who:'bot',t:`안녕하세요${S.profile?.name?', '+S.profile.name+' 님':''}. 무엇을 받고 싶으세요?`});if(S.screen!=='chat')go('chat');if(first)say(first)}
 // 이전 대화: 이 브라우저에만 남긴다(최근 10개, 가상 프로필로 나눈 대화). 서버에는 보내지 않고, 내 정보를 지우면 함께 지운다.
 const CHATS='youth-desk-chats';
