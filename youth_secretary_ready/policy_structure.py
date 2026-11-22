@@ -6,6 +6,7 @@
 """
 import json
 import re
+from functools import lru_cache
 from datetime import date
 from pathlib import Path
 from policy_codes import CODEBOOK, api_field
@@ -55,10 +56,11 @@ LIMIT_KINDS = {'다른 지원과 중복': r'중복|유사|동일|타 ?사업|다
                '건강 상태': r'질환|중독|질병', '공고에서 확인': r'공고'}
 # 서류 준비판의 칸: 공공기관이 발급 / 학교·회사·은행 등이 발행 / 내가 작성·보관. 동의로 대체되는지는 공고를 봐야 알 수 있어 나누지 않는다.
 DOC_KIND = {**dict.fromkeys(('resident_register', 'resident_abstract', 'family', 'marriage', 'insurance_status', 'insurance_premium', 'income',
-                             'business', 'employment_insurance', 'disability', 'recipient', 'military', 'tax', 'registry', 'local_tax', 'farm', 'sme'), '공공 발급'),
+                             'business', 'employment_insurance', 'disability', 'recipient', 'military', 'tax', 'registry', 'local_tax', 'farm', 'sme',
+                             'social_insurance'), '공공 발급'),
             **dict.fromkeys(('enrollment', 'graduation', 'employment_cert', 'transfer', 'bankbook', 'exam', 'receipt', 'license', 'medical', 'transcript', 'leave',
-                             'career', 'completion', 'finance', 'recommendation', 'estimate', 'payslip', 'interview'), '기관·학교·은행 발행'),
-            **dict.fromkeys(('lease', 'labor_contract', 'id_card', 'application', 'consent', 'pledge', 'business_plan', 'self_intro', 'resume', 'proxy'), '직접 작성·보관')}
+                             'career', 'completion', 'finance', 'recommendation', 'estimate', 'payslip', 'interview', 'income_proof', 'credit_report'), '기관·학교·은행 발행'),
+            **dict.fromkeys(('lease', 'labor_contract', 'id_card', 'application', 'consent', 'pledge', 'business_plan', 'self_intro', 'resume', 'proxy', 'income_report'), '직접 작성·보관')}
 # 칸에 줄표나 '없음'만 적은 자리표시. 내용이 있는 것으로 세지 않는다(신청 방법 '해당없음' 45건, 서류 124건 등).
 _PLACEHOLDER = re.compile(r'(-+|\.+|해당\s*(사항)?\s*없음|없음|제한\s*없음|무관)\.?')
 # 서류 안내가 목록 없이 다른 곳을 가리키기만 하는 표현
@@ -68,12 +70,12 @@ DOCS = [
     ('resident_register', '주민등록등본', ('주민등록등본', '주민등록표등본', '주민등록표 등본', '주민등록 등본'), '정부24에서 발급'),
     ('resident_abstract', '주민등록초본', ('초본',), '정부24에서 발급'),
     ('family', '가족관계증명서', ('가족관계증명',), '대법원 전자가족관계등록시스템 또는 정부24'),
-    ('insurance_status', '건강보험 자격득실확인서', ('자격득실',), '국민건강보험공단 누리집·앱'),
-    ('insurance_premium', '건강보험료 납부확인서', ('건강보험료',), '국민건강보험공단 누리집·앱'),
+    ('insurance_status', '건강보험 자격득실확인서', ('자격득실', r'득실확인', r'건강보험자격확인'), '국민건강보험공단 누리집·앱'),
+    ('insurance_premium', '건강보험료 납부확인서', ('건강보험료', r'건강보험납부확인'), '국민건강보험공단 누리집·앱'),
     ('income', '소득금액증명', ('소득금액증명',), '홈택스'),
     ('business', '사업자등록 관련 서류', ('사업자등록',), '홈택스 · 등록증인지 사실증명인지는 공고 확인'),
     ('employment_insurance', '고용보험 관련 서류', (r'고용보험[^,\n]{0,12}(?:이력|내역|확인서|증명|가입증명)', '피보험'), '고용24 · 서류 종류는 공고 확인'),
-    ('lease', '임대차계약서', ('임대차계약서', '임대차 계약서'), '보관 중인 계약서 사본 · 확정일자 필요 여부는 공고 확인'),
+    ('lease', '임대차계약서', ('임대차계약서', '임대차 계약서', r'(?:전|월)세\s*계약서', r'전\s*[·･‧․ㆍ]?\s*월세\s*계약서'), '보관 중인 계약서 사본 · 확정일자 필요 여부는 공고 확인'),
     ('transfer', '이체 확인 자료', ('이체',), '은행 앱·창구'),
     ('bankbook', '통장 사본', ('통장',), '은행 앱에서 저장'),
     ('id_card', '신분증 사본', ('신분증', '주민등록증', '운전면허증', '신분을 확인할 수 있는'), '본인 보관'),
@@ -81,7 +83,7 @@ DOCS = [
     ('graduation', '졸업증명서', ('졸업 ?증명', '학력 ?증명'), '학교 증명 발급 시스템'),
     ('exam', '응시 확인 자료', (r'응시 ?(?:확인|사실|증빙|증명)', '응시표', '수험표', '성적표'), '시험 주관기관 누리집'),
     ('receipt', '결제 영수증', ('영수증',), '결제처·시험 주관기관 누리집'),
-    ('application', '신청서', ('신청서(?!류)', '지원서(?!류)'), '공고의 서식을 내려받아 작성'),
+    ('application', '신청서', ('신청서(?!류)', '지원서(?!류)', r'(?:응시|입사|입학)\s*원서'), '공고의 서식을 내려받아 작성'),
     ('consent', '동의서', ('동의서',), '공고의 서식을 내려받아 작성'),
     ('marriage', '혼인관계증명서', ('혼인관계 ?증명',), '대법원 전자가족관계등록시스템 또는 정부24'),
     ('employment_cert', '재직증명서', ('재직증명',), '재직 중인 회사에서 발급'),
@@ -90,7 +92,7 @@ DOCS = [
     ('medical', '진단서·소견서', ('진단서', '소견서'), '진료받은 의료기관에서 발급'),
     ('self_intro', '자기소개서', ('자기소개서',), '공고의 서식을 내려받아 작성'),
     ('resume', '이력서', ('이력서',), '공고의 서식이 있는지 확인해 작성'),
-    ('pledge', '서약서', ('서약서', '확약서'), '공고의 서식을 내려받아 작성'),
+    ('pledge', '서약서', ('서약서', '확약서', '각서', '약정서'), '공고의 서식을 내려받아 작성'),
     ('license', '자격증 사본', ('자격증 ?사본', '(?<!대학)(?<!입학)합격증'), '자격 발급기관 누리집'),
     ('disability', '장애인 증명서', ('장애인증명', '장애인 증명', '복지카드'), '정부24 또는 주민센터'),
     ('recipient', '수급자·차상위 증명서', ('수급자증명', '수급자 증명', '차상위'), '정부24 또는 주민센터'),
@@ -112,6 +114,11 @@ DOCS = [
     ('interview', '면접 확인 자료', ('면접 ?확인',), '면접을 본 회사에 요청 · 공고의 서식 확인'),
     ('farm', '농업경영체 등록확인서', ('농업경영체',), '국립농산물품질관리원(농업e지)'),
     ('sme', '중소기업 확인서', ('중소기업 ?확인서',), '중소기업현황정보시스템'),
+    # 2026-11-23: 서류 안내 글 조각 345개를 분류해 자주 나오는데 없던 종류(정책 수: 소득·재산 신고서 38, 소득 증빙 15, 신용정보조회서 14, 4대보험 10)
+    ('income_proof', '소득 증빙 서류', (r'소득\s*(?:확인|증빙|증명)\s*(?:서류|자료|증명)', r'소득\s*관련\s*서류', r'원천징수\s*영수증'), '홈택스·회사 · 어떤 서류인지는 공고 확인'),
+    ('income_report', '소득·재산 신고서', (r'소득\s*[·･‧․ㆍ,]?\s*재산\s*신고서',), '공고의 서식을 내려받아 작성'),
+    ('credit_report', '본인신용정보조회서', (r'신용\s*정보\s*조회서', r'신용\s*정보\s*조회\s*(?:결과|내역)'), '신용평가회사 누리집(나이스지키미·올크레딧 등)'),
+    ('social_insurance', '4대 사회보험 가입 확인 서류', (r'4대\s*(?:사회)?\s*보험\s*(?:가입|사업장)',), '4대사회보험 정보연계센터 · 개인 가입내역인지 사업장 가입자 명부인지는 공고 확인'),
 ]
 _SPLIT = re.compile(r'[\r\n]+|\s/\s|(?<=[.。])\s+')
 _BULLET = re.compile(r'^(?:[\s\-–·•○□▪◦※*]+|[①-⑳]\s*|\d{1,2}[.)]\s+)+')
@@ -208,9 +215,10 @@ def _conditions(payload):
 
 
 def said(payload):
-    """조건 글에 그 말이 나오면 앞뒤 글(근거로 보여 줄 인용), 없으면 None. 조기 마감 표현은 신청 방법·기타 칸까지 본다."""
+    """조건 글에 그 말이 나오면 앞뒤 글(근거로 보여 줄 인용), 없으면 None. 조기 마감 표현은 신청 방법·기타 칸과 정책 이름까지 본다
+    ('(미추홀구) 청년 면접수당 지원사업 [예산소진 시 조기마감]'처럼 이름에만 적힌 정책이 있다)."""
     cond = _conditions(payload)
-    wide = cond + ' ' + ' '.join(' '.join(str(payload.get(f) or '') for f in ('plcyAplyMthdCn', 'etcMttrCn', 'bizPrdEtcCn', 'plcyExplnCn')).split())
+    wide = cond + ' ' + ' '.join(' '.join(str(payload.get(f) or '') for f in ('plcyAplyMthdCn', 'etcMttrCn', 'bizPrdEtcCn', 'plcyExplnCn', 'plcyNm')).split())
     out = {}
     for key, pattern in SAID.items():
         text = wide if key == 'early_close' else cond
@@ -511,9 +519,28 @@ _DOC_CUT = re.compile(r'[\r\n]+|(?:^|\s)(?:[-–•○□▪◦※☞❍ㅇ]|[�
 _DOC_IF = re.compile(r'해당\s*자|해당\s*시|해당하는|경우|한함|한해|\(선택\)|선택\s*제출|필요\s*시|우대')
 
 
+_PAREN = re.compile(r'\([^()\n]*\)|（[^（）\n]*）')
+
+
+@lru_cache(maxsize=8192)
+def _doc_forms(text):
+    """(원문, 괄호와 그 안 글을 지운 글, 괄호 기호만 지운 글)과 그 셋에서 한 줄 안의 띄어쓰기를 지운 글.
+    '임대차(전세)계약서'·'재학(휴학)증명서'·'신청(변경)서'·'사업자 등록증'·'가족관계 증명서'처럼 표기만 다른 이름을 찾으려고."""
+    kept = tuple(dict.fromkeys((text, _PAREN.sub('', text), re.sub(r'[()（）]', '', text))))
+    return kept, tuple(dict.fromkeys(re.sub(r'[ \t　]+', '', t) for t in kept))
+
+
+@lru_cache(maxsize=512)
+def _long(needle):
+    """한글 네 글자 이상인 낱말. 띄어쓰기를 지운 글에는 이런 낱말만 대 본다('최초 본인'이 '초본'으로 붙지 않게)."""
+    return len(re.findall(r'[가-힣]', needle)) >= 4
+
+
 def doc_hit(text, needles):
-    """서류 이름이 글에 나오는가. 낱말은 정규식이다('신청서류'의 '신청서', '응시료'의 '응시'처럼 서류가 아닌 말에 걸리지 않게 하려고)."""
-    return any(re.search(n, text) for n in needles)
+    """서류 이름이 글에 나오는가. 낱말은 정규식이다('신청서류'의 '신청서', '응시료'의 '응시'처럼 서류가 아닌 말에 걸리지 않게 하려고).
+    낱말은 원문과 표기를 고른 글(_doc_forms)에 대 보고, 네 글자 이상인 낱말은 띄어쓰기를 지운 글에도 대 본다."""
+    kept, joined = _doc_forms(text)
+    return any(re.search(n, t) for n in needles for t in (kept + joined if _long(n) else kept))
 
 
 def doc_optional(text, needles):

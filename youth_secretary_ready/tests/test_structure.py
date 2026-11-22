@@ -2150,3 +2150,30 @@ def test_only_links_that_name_the_policy_are_marked_as_its_notice(ctx, monkeypat
     checks.write_text(json.dumps({'named': {'NT1': ['https://example.go.kr/board/view?no=7']}}), encoding='utf-8')
     monkeypatch.setattr(desk_service, 'NOTICE_CHECKS', checks)
     assert marks() == {'https://example.go.kr/': False, 'https://example.go.kr/board/view?no=7': True, 'https://example.go.kr/apply': False}
+
+
+def test_document_names_with_parentheses_spacing_and_other_names_are_found():
+    # 팀원 제보(2026-11-23): 월세대출 통합 서류에서 '확정일자부 임대차(전세)계약서'·'소득확인서류'·'건강보험득실확인서'가 빠졌다
+    text = '신분증, 주민등록등본, 소득확인서류, 건강보험득실확인서, 확정일자부 임대차(전세)계약서 사본, 임차주택 건물 등기사항 전부 증명서'
+    assert made(sbmsnDcmntCn=text)['documents']['known'] == ['resident_register', 'insurance_status', 'lease', 'id_card', 'registry', 'income_proof']
+    # 괄호가 낀 이름, 띄어 쓴 이름, 같은 서류의 다른 이름, 새로 넣은 종류
+    known = made(sbmsnDcmntCn='재학(휴학)증명서, 월세지원 신청(변경)서(필수), 사업자 등록증, 응시원서 1부, 사업 신청 각서 1부, 소득·재산 신고서, 본인신용정보조회서, 4대보험 가입내역 확인서')['documents']['known']
+    assert {'enrollment', 'leave', 'application', 'business', 'pledge', 'income_report', 'credit_report', 'social_insurance'} <= set(known)
+    # 띄어쓰기를 지운 글에는 네 글자 이상인 이름만 대 본다('최초 본인'을 '초본'으로 읽지 않는다)
+    assert 'resident_abstract' not in made(sbmsnDcmntCn='최초 본인 확인, 통장 사본')['documents']['known']
+    # 사업장이 내는 '원천징수이행상황신고서'는 개인의 소득 증빙이 아니다
+    assert 'income_proof' not in made(sbmsnDcmntCn='원천징수이행상황신고서 1부')['documents']['known']
+
+
+def test_early_close_wording_in_policy_name_is_read():
+    # 미추홀구 면접수당처럼 조기 마감 문구가 이름에만 있는 정책
+    assert made(plcyNm='(미추홀구) 청년 면접수당 지원사업 [예산소진 시 조기마감]')['said']['early_close']
+
+
+def test_official_closure_records_keep_their_evidence_and_are_not_approvals():
+    # 공식 페이지에서 접수 마감을 확인해 적은 기록(2026-11-22·23). 인용 문장과 출처가 있고, 사람 승인이 아니라고 적혀 있다.
+    checks = json.loads((Path(__file__).resolve().parents[1] / 'data' / 'source_checks.json').read_text(encoding='utf-8'))
+    added = [c for c in checks if c['checked_on'] >= '2026-11-22']
+    assert len(added) == 18 and all(c['official_status'] == 'closed' and c['quote'] and c['source_url'].startswith('https://') and '사람 승인 아님' in c['checked_by'] for c in added)
+    assert len({c['external_id'] for c in checks}) == len(checks)
+    assert period_status(application({'aplyPrdSeCd': '0057001', 'aplyYmd': '20260201 ~ 20261130'}), date(2026, 11, 23), {**added[0], 'api_changed_since_check': False}) == 'closed_official'
