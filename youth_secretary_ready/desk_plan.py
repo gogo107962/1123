@@ -18,6 +18,67 @@ _SUBMIT = re.compile(r'제출|첨부|지참|구비')
 FILE_READ = ('attachment_pdf', 'attachment_hwpx', 'image')   # 보완 기록의 read_from: 공고의 첨부파일·이미지에서 읽음
 
 
+def _doc_text(fields, item, bundle):
+    """그 정책의 서류 안내 글과 어디서 온 글인지(api | web_check | 첨부·이미지 | api_other)."""
+    docs = item['documents']
+    text, source = (fields.get('sbmsnDcmntCn', '').strip() if docs['has_text'] else ''), 'api'
+    # 서류 칸이 비었거나 '붙임파일을 확인'처럼 서류 이름이 하나도 없으면, 공식 페이지에서 확인해 둔 서류 안내를 쓴다(사람 검수 전).
+    if not text or not docs['known']:
+        # 출처 페이지에서 문장이 자동 확인된 것을 먼저 쓰고, 없으면 공고의 첨부파일·이미지에서 읽은 것을 쓴다.
+        # 첨부파일·이미지에서 읽은 문장은 자동 대조를 할 수 없어 어디서 읽었는지를 화면에 함께 적는다(판정에는 쓰지 않는다).
+        listed = [x for x in bundle['supplements'] if x['field'] == 'documents']
+        usable = [x for x in listed if confirmed(x)] + [x for x in listed if not confirmed(x) and x.get('read_from') in FILE_READ]
+        # 서류 이름이 가장 많이 읽히는 기록을 쓴다(페이지 글에는 한두 줄뿐이고 첨부 공고문에 전체 목록이 있는 정책이 있다). 같으면 자동 확인된 것 먼저.
+        found_docs = sorted(usable, key=lambda x: -sum(doc_hit('\n'.join(x['quotes']), needles) for _, _, needles, _ in DOCS))[:1]
+        if found_docs:
+            text, source = '\n'.join(found_docs[0]['quotes']), ('web_check' if confirmed(found_docs[0]) else found_docs[0]['read_from'])
+    if not any(doc_hit(text, needles) for _, _, needles, _ in DOCS):
+        # 서류 칸에도 보완 기록에도 서류 이름이 없으면, 신청 방법·기타 안내 글에서 '…를 제출·첨부·지참'이라고 적힌 문장을 쓴다.
+        other = [s.strip() for f in ('plcyAplyMthdCn', 'etcMttrCn') for s in _SENTENCE.split(fields.get(f) or '')
+                 if _SUBMIT.search(s) and any(doc_hit(s, needles) for _, _, needles, _ in DOCS)]
+        if other:
+            text, source = '\n'.join(other), 'api_other'
+    return text, source
+
+
+def documents(external_ids, on):
+    """대화 오케스트레이터가 서류 준비판(docboard.board)을 부를 때 쓴다. 읽기 전용이고 준비 공간이 필요 없다. 문장은 준비판이 틀로 만든 brief다."""
+    from desk_service import evidence
+    policies = []
+    for eid in external_ids:
+        bundle = evidence(eid)[0]
+        fields, item = bundle['public_fields'], structure(bundle['public_fields'])
+        status = period_status(item['application'], on, bundle['source_check'])
+        deadline, label = timing(item['application'], status, on)
+        text, source = _doc_text(fields, item, bundle)
+        policies.append({'external_id': eid, 'name': fields['plcyNm'], 'documents_text': text, 'documents_source': source,
+                         'period_status': status, 'period_label': label, 'deadline': deadline})
+    made = board(policies, (), on)
+    return {**made, 'text': '\n'.join(made['brief'][1:]) + '\n' + made['notice']}
+
+
+def _exclusions(item, bundle):
+    return item['exclusions']['sentences'] + [q for x in bundle['supplements'] if x['field'] == 'conditions' for q in x['quotes'] if EXCLUDE.search(q)]
+
+
+def compare(external_ids, on):
+    """대화 오케스트레이터가 충돌·순서 플래너(planner.plan)를 부를 때 쓴다. 찾은 정책 몇 건의 순서·함께 받기 어려운 조합·예상 금액.
+    읽기 전용이고 준비 공간이 필요 없다. 화면 문장(text)은 플래너가 틀로 만든 brief를 그대로 쓴다(모델이 쓰지 않는다)."""
+    from desk_service import evidence
+    policies = []
+    for eid in external_ids:
+        bundle = evidence(eid)[0]
+        fields, item = bundle['public_fields'], structure(bundle['public_fields'])
+        status = period_status(item['application'], on, bundle['source_check'])
+        deadline, label = timing(item['application'], status, on)
+        policies.append({'external_id': eid, 'name': fields['plcyNm'], 'period_status': status, 'period_label': label, 'deadline': deadline,
+                         'amounts': item['amounts'], 'provision': item['provision'], 'early_close': item['said']['early_close'],
+                         'region_codes': item['region']['codes'], 'category': item['category'], 'exclusions': _exclusions(item, bundle)})
+    planned = plan_order(policies, on)
+    return {**planned, 'policies': [{'external_id': p['external_id'], 'name': p['name'], 'period_label': p['period_label']} for p in policies],
+            'text': '\n'.join(planned['brief']) + '\n' + planned['notice']}
+
+
 def build(wid, external_ids, profile, on, have=()):
     from desk_service import evidence, preview
     ids = list(dict.fromkeys(external_ids))
@@ -31,23 +92,7 @@ def build(wid, external_ids, profile, on, have=()):
         deadline, label = timing(item['application'], status, on)
         result = screen(item, profile, status, age_rule(bundle['supplements']), bundle['supplements'], on) if compared else None
         docs = item['documents']
-        text, source = (fields.get('sbmsnDcmntCn', '').strip() if docs['has_text'] else ''), 'api'
-        # 서류 칸이 비었거나 '붙임파일을 확인'처럼 서류 이름이 하나도 없으면, 공식 페이지에서 확인해 둔 서류 안내를 쓴다(사람 검수 전).
-        if not text or not docs['known']:
-            # 출처 페이지에서 문장이 자동 확인된 것을 먼저 쓰고, 없으면 공고의 첨부파일·이미지에서 읽은 것을 쓴다.
-            # 첨부파일·이미지에서 읽은 문장은 자동 대조를 할 수 없어 어디서 읽었는지를 화면에 함께 적는다(판정에는 쓰지 않는다).
-            listed = [x for x in bundle['supplements'] if x['field'] == 'documents']
-            usable = [x for x in listed if confirmed(x)] + [x for x in listed if not confirmed(x) and x.get('read_from') in FILE_READ]
-            # 서류 이름이 가장 많이 읽히는 기록을 쓴다(페이지 글에는 한두 줄뿐이고 첨부 공고문에 전체 목록이 있는 정책이 있다). 같으면 자동 확인된 것 먼저.
-            found_docs = sorted(usable, key=lambda x: -sum(doc_hit('\n'.join(x['quotes']), needles) for _, _, needles, _ in DOCS))[:1]
-            if found_docs:
-                text, source = '\n'.join(found_docs[0]['quotes']), ('web_check' if confirmed(found_docs[0]) else found_docs[0]['read_from'])
-        if not any(doc_hit(text, needles) for _, _, needles, _ in DOCS):
-            # 서류 칸에도 보완 기록에도 서류 이름이 없으면, 신청 방법·기타 안내 글에서 '…를 제출·첨부·지참'이라고 적힌 문장을 쓴다.
-            other = [s.strip() for f in ('plcyAplyMthdCn', 'etcMttrCn') for s in _SENTENCE.split(fields.get(f) or '')
-                     if _SUBMIT.search(s) and any(doc_hit(s, needles) for _, _, needles, _ in DOCS)]
-            if other:
-                text, source = '\n'.join(other), 'api_other'
+        text, source = _doc_text(fields, item, bundle)
         if not text:
             unlisted.append(eid)
         for key, name, needles, how in DOCS:
@@ -67,8 +112,7 @@ def build(wid, external_ids, profile, on, have=()):
             'scale': item['scale'], 'selection': item['selection'],
             'criteria': result['criteria'] if result else None, 'links': links,
             # 수집 글의 참여 제한 문장 + 공식 페이지에서 보완한 조건 문장 중 제외·중복 문구
-            'exclusions': item['exclusions']['sentences'] + [q for x in bundle['supplements'] if x['field'] == 'conditions'
-                                                              for q in x['quotes'] if EXCLUDE.search(q)],
+            'exclusions': _exclusions(item, bundle),
             'tasks': [{'key': t['key'], 'title': t['title'], 'instructions': t['instructions']} for t in plan['tasks']],
             'preview_token': plan['preview_token']})
     planned = plan_order(policies, on)
