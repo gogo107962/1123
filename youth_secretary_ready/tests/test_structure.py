@@ -1003,15 +1003,18 @@ def test_policy_without_application_method_is_compared_when_it_has_a_notice_link
     item = made(plcyAplyMthdCn='', refUrlAddr1='https://example.go.kr/notice')
     assert tier(item, 'open') == {'tier': 'screenable', 'reasons': []}
     out, results = verdict(item, PROFILE)
-    assert results['apply'] == 'unknown' and out['outcome'] == 'needs_check' and 'apply' in out['to_confirm']   # '맞아요'로 올라가지 않는다
+    # 신청 방법 미기재는 판정이 아니라 공식 사이트 안내다(v0.57): 줄은 남고(counted False) 판정과 확인할 것에는 들지 않는다
+    assert results['apply'] == 'unknown' and out['outcome'] == 'api_match' and 'apply' not in out['to_confirm']
+    assert next(c for c in out['criteria'] if c['key'] == 'apply')['counted'] is False
     assert 'apply' not in verdict(made(), PROFILE)[1]
     assert tier(made(plcyAplyMthdCn='', refUrlAddr1='example.go.kr'), 'open')['reasons'] == ['no_application_route']
 
 
 def test_policies_without_application_method_sort_after_those_with_one(ctx):
-    seed([good('ZZ9', plcyAplyMthdCn='', refUrlAddr1='https://example.go.kr/n'), good('AA1', earnCndSeCd='0043003')])
+    # 신청 방법 미기재는 판정을 바꾸지 않지만(v0.57), 같은 판정 안에서는 신청 방법이 있는 정책을 앞에 둔다
+    seed([good('ZZ9', plcyAplyMthdCn='', refUrlAddr1='https://example.go.kr/n'), good('AA1'), good('MM5', earnCndSeCd='0043003')])
     items = post(ctx).json()['items']
-    assert [(x['external_id'], x['screen']['outcome']) for x in items] == [('AA1', 'needs_check'), ('ZZ9', 'needs_check')]
+    assert [(x['external_id'], x['screen']['outcome']) for x in items] == [('AA1', 'api_match'), ('ZZ9', 'api_match'), ('MM5', 'needs_check')]
 
 
 def test_whole_sido_policy_registered_with_the_other_code_set_is_not_a_mismatch():

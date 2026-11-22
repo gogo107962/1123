@@ -240,7 +240,9 @@ def _coded(item, value):
     return 'mismatch', '등록된 조건: ' + ', '.join(item['labels'])
 
 
-UNCOUNTED = ('period',)   # 화면에 표시만 하고 판정(맞아요·확인 필요·달라요)에는 넣지 않는 항목
+# 화면에 표시만 하고 판정(맞아요·확인 필요·달라요)에는 넣지 않는 항목. 내 조건이 아니라 절차다.
+# period: 신청기간(정책 옆 표시), apply: 온통청년에 신청 방법이 없음(공식 사이트로 안내, 2026-11-22 사용자 결정)
+UNCOUNTED = ('period', 'apply')
 
 
 def _period(status, long_window=False, scale=None):
@@ -633,7 +635,7 @@ def screen_catalog(profile, on, query='', outcome='', only_tier='', page=1, page
     found.sort(key=lambda x: (bool(words) and not x['name_hit'], not (x['engine'] and x['engine']['status'] == 'review_possible'),
                               ORDER[x['screen']['outcome']] if x['screen'] else 3,
                               # 신청 방법이 비어 있는 정책(제도·과제 성격이 섞여 있다)은 같은 결과 안에서 뒤에 둔다.
-                              bool(x['screen']) and 'apply' in x['screen']['to_confirm'],
+                              bool(x['screen']) and any(c['key'] == 'apply' for c in x['screen']['criteria']),
                               RANK[x['period_status']] + (1.5 if x['long_window'] and x['period_status'] == 'open' else 0), x['deadline'] or ''))
     # 같은 이름·같은 지역 코드로 여러 번 등록된 정책(지난 회차·재등록, 실제 4,020건 중 292건)은 하나로 묶는다.
     # 정렬 뒤 첫 항목(비교 가능한 것, 그다음 최신 등록)을 남기고 몇 건이 등록돼 있는지 알려 준다.
