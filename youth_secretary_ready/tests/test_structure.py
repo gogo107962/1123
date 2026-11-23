@@ -2204,21 +2204,20 @@ def test_plan_documents_carry_the_issuer_site_named_in_how(ctx):
     assert any(not d['sites'] for d in docs.values())                      # 발급처 누리집이 없는 서류(통장 사본)에는 링크를 달지 않는다
 
 
-# ── 문구는 없지만 종류가 같아 겹칠 수 있는 쌍(추정) ───────────────────
-def test_alike_pairs_need_same_field_shared_topic_and_overlapping_region():
-    from planner import alike
-    p = lambda eid, name, cat='주거', codes=('11110',): {'external_id': eid, 'name': name, 'category': cat, 'region_codes': list(codes), 'exclusions': [],
-                                                        'amounts': [], 'provision': '', 'period_status': 'open', 'period_label': '', 'deadline': None, 'early_close': None}
-    rent = [p('A', '청년 월세 지원'), p('B', '신혼부부 월세 지원사업')]
-    assert alike(rent) == [{'a': 'A', 'b': 'B', 'topic': '월세'}]
-    assert alike([rent[0], p('C', '청년 월세 지원', codes=('26110',))]) == []        # 지역이 겹치지 않는다
-    assert alike([rent[0], p('D', '월세 대출 상담', cat='금융･복지･문화')]) == []      # 분야가 다르다
-    assert alike([rent[0], p('E', '청년 월세 지원', cat='')]) == []                  # 분야를 모르면 고르지 않는다
-    assert alike([rent[0], p('F', '청년 이사비 지원')]) == []                        # 같은 주제 낱말이 없다
-    assert alike(rent, [{'from': 'B', 'to': 'A'}]) == []                             # 문구로 이미 가린 쌍은 뺀다
-
-
-def test_plan_reports_alike_pairs_apart_from_text_conflicts(ctx):
-    seed([good('AL1', plcyNm='청년 월세 지원', lclsfNm='주거'), good('AL2', plcyNm='신혼부부 월세 지원사업', lclsfNm='주거'), good('AL3', plcyNm='청년 이사비 지원', lclsfNm='주거')])
-    body = plan_of(ctx, ['AL1', 'AL2', 'AL3'])[1].json()
-    assert body['alike'] == [{'a': 'AL1', 'b': 'AL2', 'topic': '월세'}] and body['conflicts'] == []      # 추정은 문구 충돌과 섞지 않는다
+# ── 중복 수혜 여부 줄: 이미 계산된 근거 가운데 하나를 고른다 ───────────────────
+def test_overlap_row_picks_the_most_cautious_evidence(ctx):
+    seed([good('OV1', plcyNm='중랑구 미취업청년 자격증 응시료 지원사업', ptcpPrpTrgtCn='2026년 서울 청년수당, 국민취업지원제도 참여자는 지원 제외'),
+          good('OV2', plcyNm='2026 서울시 청년수당'),
+          good('OV3', plcyNm='청주시 자격증 시험 응시료 지원사업', ptcpPrpTrgtCn='정부 및 타 지자체 동일/유사사업 수혜자'),
+          good('OV4', plcyNm='청년 문화패스'),
+          good('OV5', plcyNm='청년 면접정장 대여', ptcpPrpTrgtCn='공무원 및 공공기관 재직자 제외'),
+          good('OV6', plcyNm='청년 건강검진 지원', ptcpPrpTrgtCn='재학생 제외')])
+    view = lambda ids, **profile: plan_of(ctx, ids, profile={**PROFILE, **profile})[1].json()['overlap']
+    assert view(['OV1', 'OV2'])['status'] == 'conflict'                                   # 고른 정책끼리 막는 문구
+    held = view(['OV1', 'OV4'], benefits=['국민취업지원제도'])
+    assert held['status'] == 'held' and '국민취업지원제도' in held['basis'] and held['policy'].startswith('중랑구')   # 내가 받고 있는 지원이 제한 문구에 나온다
+    assert view(['OV1', 'OV4'])['status'] == 'unknown'                                    # 받는 지원을 적지 않았고, 안내가 없는 정책이 있다
+    word = view(['OV3', 'OV4'])
+    assert word['status'] == 'wording' and '유사사업' in word['quote']                    # 비슷한 사업을 두루 제한하는 문구
+    assert view(['OV5', 'OV6'])['status'] == 'no_wording'                                 # 둘 다 안내가 있는데 중복 문구는 없다
+    assert view(['OV5', 'OV4'])['status'] == 'unknown' and view(['OV4'])['status'] == 'unknown'   # 안내가 없는 정책이 있으면 '문구 없음'이라고 하지 않는다
