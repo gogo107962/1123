@@ -11,7 +11,7 @@ from policy_structure import DOC_KIND, DOCS, EXCLUDE, RANK, doc_hit, doc_optiona
 from screening import NOTICE, age_rule, confirmed, provided, screen
 
 from docboard import SITES, board
-from planner import conflicts, core_tokens, estimate, plan as plan_order   # 충돌·순서·금액 계산은 planner.py (이전 이름으로도 불러 쓸 수 있게 둔다)
+from planner import SIMILAR, conflicts, core_tokens, estimate, plan as plan_order   # 충돌·순서·금액 계산은 planner.py (이전 이름으로도 불러 쓸 수 있게 둔다)
 
 _SENTENCE = re.compile(r'[\r\n]+|(?<=[.。])\s+')
 _SUBMIT = re.compile(r'제출|첨부|지참|구비')
@@ -59,6 +59,26 @@ def documents(external_ids, on):
 
 def _exclusions(item, bundle):
     return item['exclusions']['sentences'] + [q for x in bundle['supplements'] if x['field'] == 'conditions' for q in x['quotes'] if EXCLUDE.search(q)]
+
+
+def _overlap(policies, planned):
+    """신청 전 점검의 '중복 수혜 여부' 줄에 쓸 요약. 새 판정을 만들지 않고 이미 계산된 근거 가운데 가장 조심해야 할 것 하나를 고른다.
+    conflict: 고른 정책끼리 막는 문구 / held: 제한 문구에 내가 받고 있는 지원이 나옴 / wording: 유사·중복 사업을 두루 제한하는 문구 /
+    allowed: 함께 받을 수 있다고 적힘 / no_wording: 모든 정책에 참여 제한 안내가 있는데 중복 문구는 없음 / unknown: 안내가 없는 정책이 있어 알 수 없음."""
+    if planned['conflicts']:
+        return {'status': 'conflict', 'count': len(planned['conflicts'])}
+    for p in policies:   # 판별 엔진(screening)이 '받고 있는 지원'과 맞춰 본 줄. 그 문장을 그대로 쓴다.
+        row = next((c for c in p['criteria'] or [] if c['key'] == 'exclusion' and c['result'] == 'mismatch' and '받고 있는 지원(' in c['basis']), None)
+        if row:
+            return {'status': 'held', 'policy': p['name'], 'basis': row['basis']}
+    for p in policies:
+        quote = next((s for s in p['exclusions'] if SIMILAR.search(s)), None)
+        if quote:
+            return {'status': 'wording', 'policy': p['name'], 'quote': quote}
+    if planned['compatible']:
+        return {'status': 'allowed', 'quote': planned['compatible'][0]['quote'], 'count': len(planned['compatible'])}
+    # 안내가 없는 정책이 하나라도 있으면 '문구 없음'이라고 하지 않는다(말이 없는 것은 가능하다는 뜻이 아니다).
+    return {'status': 'no_wording' if policies and all(p['exclusions'] for p in policies) else 'unknown'}
 
 
 def compare(external_ids, on):
@@ -120,6 +140,6 @@ def build(wid, external_ids, profile, on, have=()):
     planned = plan_order(policies, on)
     return {'as_of': on.isoformat(), 'policies': policies, 'order': planned['order'],
             'documents': [found[key] for key, *_ in DOCS if key in found], 'documents_unlisted': unlisted,
-            'conflicts': planned['conflicts'], 'alike': planned['alike'], 'overlap_checked': False, 'saved': False, 'estimate': estimate(policies),
+            'conflicts': planned['conflicts'], 'overlap': _overlap(policies, planned), 'overlap_checked': False, 'saved': False, 'estimate': estimate(policies),
             'planner': planned, 'docboard': board(policies, have, on),
             'notice': NOTICE + ' 서류는 등록된 서류 안내 글에서 이름을 찾은 것이며, 중복 수혜 제한은 검수하지 않았습니다.'}
