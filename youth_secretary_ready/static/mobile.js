@@ -129,15 +129,16 @@ const HELP=`<div class="scrim" data-a="closehelp"></div><section class="sheet" r
 const howLinks=d=>(d.sites||[]).reduce((t,x)=>t.replace(esc(x.name),`<a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline">${esc(x.name)}</a>`),esc(d.how));
 
 const V={
-// 시작 화면: 문구 · 앱 화면 미리보기(예시, 꾸밈이라 화면 읽기 프로그램에서는 건너뜀) · 아래쪽 버튼. 미리보기에는 버튼을 두지 않는다.
+// 시작 화면: 문구 · 앱 화면 미리보기(꾸밈이라 화면 읽기 프로그램에서는 건너뜀) · 아래쪽 버튼. 미리보기에는 버튼을 두지 않는다.
+// 버튼은 언제나 두 개: '데모 계정으로 시작하기'(흰색 고정) + 노란 버튼 하나. 노란 버튼은 내 정보가 없으면 '내 정보 입력하기', 한 번 입력해 저장했으면
+// '기존 정보로 계속 이용하기'(2026-11-23 사용자 결정). 정보를 바꾸려면 이어서 들어간 뒤 '내 정보' 탭에서 고친다.
 login:()=>`<main class="pad login"><div class="login-intro"><h1 class="hero">공고는 저희가 읽을게요.<br>신청 준비만 하세요.</h1><p class="sub">청년비서 · 청년 지원 신청 준비 도우미</p></div>
-<div class="peek" aria-hidden="true"><div class="peek-top"><span class="peek-tag">화면 예시</span><span class="peek-chat">월세 지원 받을 수 있어?</span></div>
+<div class="peek" aria-hidden="true"><div class="peek-top"><span class="peek-chat">월세 지원 받을 수 있어?</span></div>
 <div class="peek-card"><span class="soft-icon yellow">${ms('home_work')}</span><span class="peek-copy"><strong>청년 월세 지원</strong><span>내 조건과 비교했어요</span></span>${pill('맞아요','ok')}</div>
 <div class="peek-card in"><span class="soft-icon">${ms('description')}</span><span class="peek-copy"><strong>서류 6종을 한 번에</strong><span class="peek-bar"><i></i></span><span>4종 준비 · 2종 남음</span></span></div>
 <div class="peek-card"><span class="soft-icon">${ms('checklist')}</span><span class="peek-copy"><strong>공식 사이트로 신청</strong><span>준비를 마치면 바로 안내해요</span></span>${ms('chevron_right')}</div></div>
-<div class="col login-actions">${S.profile?`<button class="btn" data-a="continue">기존 정보로 계속 이용</button><p class="sub c">${S.profile.name?esc(S.profile.name)+' 님이 ':''}입력한 정보로 이어서 해요</p><div class="login-two"><button class="btn white" data-a="demo">데모 계정으로 시작하기</button><button class="btn soft" data-a="start">내 정보 입력하기</button></div>`
- // 정보가 없을 때(처음 · 내 정보를 지운 뒤): '데모 계정으로 시작하기'(흰색, 가상 인물의 정보)와 '내 정보 입력하기'(노란색) 두 버튼
- :`<button class="btn white" data-a="demo">데모 계정으로 시작하기</button><button class="btn" data-a="start">내 정보 입력하기</button><p class="sub c">데모 계정은 가상 인물의 정보로 시작해요</p>`}</div></main>`,
+<div class="col login-actions"><button class="btn white" data-a="demo">데모 계정으로 시작하기</button>${S.profile?`<button class="btn" data-a="continue">기존 정보로 계속 이용하기</button><p class="sub c">${S.profile.name?esc(S.profile.name)+' 님이 ':''}입력한 정보로 이어서 해요</p>`
+ :`<button class="btn" data-a="start">내 정보 입력하기</button><p class="sub c">데모 계정은 가상 인물의 정보로 시작해요</p>`}</div></main>`,
 
 home:()=>{const p=S.profile||{},all=tasks(),rd=new Set((S.space?.plans||[]).filter(x=>x.ready).map(x=>x.external_id)),
  // '이어서 준비하기'는 준비 완료로 옮기지 않은 계획만 센다(모두 준비 완료면 전체). '저장한 정책' 건수는 전체를 센다.
