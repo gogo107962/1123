@@ -122,6 +122,8 @@ with sync_playwright() as p:
     expect(page.locator('.act')).to_contain_text('2개 선택')
     page.locator('[data-a=plan]').click()
     expect(page.locator('.ord li')).to_have_count(2)
+    links = page.locator('main .card').filter(has_text='안내 및 신청 링크')
+    assert links.locator('a.btn').count() >= 2 and all(h.startswith('https://') for h in links.locator('a.btn').evaluate_all('a=>a.map(x=>x.href)'))   # 고른 정책마다 링크
     assert page.locator('main h3').filter(has_text='고른 정책').count() == 0     # '고른 정책' 칸은 없다
     assert '신청 순서' not in page.locator('main').inner_text()
     # 안내 글에 서로 막는 문구가 있으면 그 문장을, 없으면 확인 필요 안내를 보여 준다.
@@ -182,13 +184,18 @@ with sync_playwright() as p:
     expect(page.locator('.ready-card')).to_have_count(0)
     page.locator('.plan-card summary').first.click()
     expect(page.locator('.plan-card[open]')).to_contain_text('개도 완료로 표시돼요')
+    # 계획 카드의 버튼은 '온통청년 정책 페이지'와 '준비 완료로 옮기기' 둘뿐이고, 위아래로 같은 크기다
+    card = page.locator('.plan-card[open]').first
+    assert card.locator('a.btn').all_inner_texts() == ['온통청년 정책 페이지'] and card.locator('a.btn').get_attribute('href').startswith('https://www.youthcenter.go.kr/')
+    a, r = card.locator('a.btn').bounding_box(), card.locator('[data-a=ready]').bounding_box()
+    assert abs(a['width'] - r['width']) < 1 and abs(a['height'] - r['height']) < 1 and a['y'] < r['y'] and abs(a['x'] - r['x']) < 1, (a, r)
     page.locator('.plan-card[open] [data-a=ready]').click()
     expect(page.locator('.ready-card')).to_have_count(1)
     expect(page.locator('#toast')).to_contain_text('준비 완료')
     expect(page.locator('main')).to_contain_text('1건 준비 중')
     expect(page.locator('.ready-card')).to_contain_text('모두 완료')
     expect(page.locator('.ready-card')).to_contain_text('공식 사이트')       # 안내 문장은 접수 상태에 따라 다르다(접수 중이면 '신청하세요', 끝났으면 '다음 모집 여부 확인')
-    assert page.locator('.ready-card a.btn[href^="https://"]').count() >= 1
+    assert page.locator('.ready-card a.btn').all_inner_texts() == ['온통청년 정책 페이지']
     assert page.locator('.ready-card [data-a=ready]').count() == 0
     assert page.evaluate(FITS)
     page.locator('.ready-card input[data-a=task]').first.uncheck()
