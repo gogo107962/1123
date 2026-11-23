@@ -55,7 +55,7 @@ with sync_playwright() as p:
     for i in range(5):
         page.locator('.browse-item').nth(i).click()
         page.locator('[data-a=prep]').click()
-        expect(page.locator('.plan-head h2')).to_be_visible()              # 계획 머리에 어떤 정책인지 나온다
+        expect(page.locator('h2.h20')).to_be_visible()                   # 계획(서류가 있을 때) 또는 신청 전 점검(서류가 없을 때)의 머리
         page.locator('[data-a=back]').click()                      # 신청 계획 → 상세
         page.locator('[data-a=back]').click()                      # 상세 → 지원 찾기
         expect(page.locator('.browse-item').first).to_be_visible()
@@ -65,7 +65,23 @@ with sync_playwright() as p:
     expect(page.locator('#toast')).to_contain_text('5개까지')
     page.locator('[data-a=back]').click()
     # '이 정책 준비하기'로 들어온 신청 계획은 그 정책 하나만 보여 준다. 전에 고른 정책은 '함께 보기'를 눌러야 나온다(고른 목록은 그대로 5개)
-    page.locator('.browse-item').nth(4).click()
+    # 서류를 하나도 찾지 못한 정책은 빈 계획 화면을 건너뛰고 바로 '신청 전 점검'으로 가고, 공식 신청 페이지를 확인하라는 카드가 나온다
+    nodoc = page.evaluate("(async()=>{for(const [i,x] of S.list.items.slice(0,5).entries()){const r=await fetch(space('/plan'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({external_ids:[x.external_id]})}).then(r=>r.json());if(!r.documents.length)return i}return -1})()")
+    withdoc = page.evaluate("(async()=>{for(const [i,x] of S.list.items.slice(0,5).entries()){const r=await fetch(space('/plan'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({external_ids:[x.external_id]})}).then(r=>r.json());if(r.documents.length)return i}return -1})()")
+    assert nodoc >= 0 and withdoc >= 0, (nodoc, withdoc)
+    page.locator('.browse-item').nth(nodoc).click()
+    page.locator('[data-a=prep]').click()
+    expect(page.locator('header h1')).to_have_text('신청 전 점검')
+    expect(page.locator('main')).to_contain_text('제출서류는 공식 신청 페이지에서 확인해 주세요')
+    expect(page.locator('main')).to_contain_text('서류가 필요 없다는 뜻이 아니에요')
+    assert page.locator('main .card a.btn[href^="https://"]').count() >= 1
+    assert '서류 0종 중 0종 준비' not in page.locator('main').inner_text()          # 서류 줄 대신 위 카드가 안내한다
+    page.locator('[data-a=back]').click()                          # 계획 화면을 쌓지 않았으므로 뒤로 가면 상세
+    expect(page.locator('[data-a=prep]')).to_be_visible()
+    page.locator('[data-a=back]').click()
+    expect(page.locator('.browse-item').first).to_be_visible()
+    done.append('no_documents_skip_to_check')
+    page.locator('.browse-item').nth(withdoc).click()
     page.locator('[data-a=prep]').click()
     expect(page.locator('[data-a=all]')).to_contain_text('고른 정책 5개 함께 보기')
     expect(page.locator('.plan-head h2')).not_to_contain_text('신청 준비')     # 정책 하나면 머리에 그 정책 이름
