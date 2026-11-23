@@ -376,6 +376,11 @@ def _exam(item, names):
     listed = f" 글에 적힌 시험 종류: {', '.join(item['kinds'])}." if item['kinds'] else ''
     if not names:
         return 'unknown', '응시료 지원입니다. 내 정보에 자격증·시험이 없어 대상 시험인지 비교하지 않았습니다.' + listed
+    # 원서를 접수할 때 할인되는 방식이면, 내 정보의 시험(응시한 달과 함께 적는 '이미 응시한 시험')에는 받을 수 없다.
+    # 다음 시험을 접수할 때는 받을 수 있으므로 '달라요'가 아니라 확인 필요로 둔다.
+    if item.get('at_signup'):
+        return 'unknown', (f"시험 원서를 접수할 때 할인되는 방식입니다: “{item['at_signup']}”. 내 정보의 시험({', '.join(names)})처럼 이미 응시한 시험에는 "
+                           '받을 수 없고, 다음에 원서를 접수할 때 적용됩니다. 다음 시험을 접수할 때 확인하세요.')
     for name in names:
         key = ''.join(name.split()).lower()
         if len(key) >= 2 and key not in ('자격증', '시험', '응시료', '어학') and key in item['text']:

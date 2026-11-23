@@ -98,6 +98,9 @@ def test_ai_calls_read_tools_without_writing_tasks(ctx,monkeypatch):
     assert [t['tool'] for t in r.json()['tools']]==['read_policy','preview_tasks']
     assert r.json()['focus']==['application','documents']
     assert r.json()['answer_origin']=='validated_action_selection'
+    # 고른 항목마다 이 정책의 등록 내용(신청기간·서류)이 안내 문장 앞에 붙는다(정책마다 같은 다섯 문장이 나오던 것)
+    answer=r.json()['answer'];assert '2026.01.01 ~ 2026.12.31' in answer and ('서류 안내' in answer or '온통청년에 서류 안내가 없어요' in answer)
+    assert desk_agent.GUIDANCE['application'] in answer and desk_agent.GUIDANCE['documents'] in answer
     assert ctx.get(base).json()['tasks']==[]
     with connect() as con:assert con.execute('SELECT status FROM desk_agent_runs').fetchone()[0]=='completed'
 
