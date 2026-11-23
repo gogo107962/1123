@@ -25,10 +25,11 @@ with sync_playwright() as p:
     page.on('pageerror', lambda error: errors.append(str(error)))
     page.goto(URL, wait_until='networkidle')
 
-    # 시작 화면에는 '새 정보 입력'만 있고 '체험'·'데모'라는 말이 없다
+    # 시작 화면(정보 없음): '데모 계정(민지)으로 시작'과 '새 정보 입력' 두 버튼. '체험'이라는 말은 없다(2026-11-23 사용자 요청으로 데모 계정을 되살림)
     expect(page.locator('h1.hero')).to_contain_text('공고는 저희가 읽을게요')
     first = page.locator('main').inner_text()
-    assert '체험' not in first and '데모' not in first and page.locator('main button').count() == 1
+    assert '체험' not in first and page.locator('main button').count() == 2
+    expect(page.locator('[data-a=demo]')).to_have_text('데모 계정(민지)으로 시작')
     # 새 정보 입력에서 이름을 적고 저장하면 홈에 그 이름이 나온다
     page.locator('[data-a=start]').click()
     assert '체험' not in page.locator('main').inner_text()
@@ -207,6 +208,17 @@ with sync_playwright() as p:
     page.locator('[data-a=logout]').click()
     expect(page.locator('h1.hero')).to_be_visible()
     assert page.locator('[data-a=continue]').count() == 0                      # 정보를 지우면 '계속 이용'이 없다
+    # 로그아웃 뒤에도 데모 계정으로 다시 들어갈 수 있다(가상 인물 민지의 정보가 그대로 들어간다)
+    page.locator('[data-a=demo]').click()
+    expect(page.locator('.greeting')).to_contain_text('민지 님')
+    expect(page.locator('.greeting')).to_contain_text('미추홀구')
+    demo = page.evaluate("JSON.parse(localStorage.getItem('youth-desk-profile'))")
+    assert {k: demo[k] for k in ('name', 'birth', 'sido', 'region_code', 'job_code', 'housing')} == {k: PROFILE[k] for k in ('name', 'birth', 'sido', 'region_code', 'job_code', 'housing')}
+    assert demo['exams'] == PROFILE['exams'], demo['exams']                       # 지난달 정보처리기사 응시
+    page.reload(wait_until='networkidle')
+    expect(page.locator('[data-a=continue]')).to_be_visible()                     # 정보가 있으면 계속 이용 · 새 정보 입력 · 데모 계정
+    expect(page.locator('.login-two [data-a=demo]')).to_have_text('데모 계정으로 시작')
+    assert page.evaluate(FITS)
 
     # 넓은 화면에서도 앱 폭을 유지한다.
     page.set_viewport_size({'width': 1280, 'height': 900})

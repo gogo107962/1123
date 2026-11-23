@@ -54,4 +54,5 @@ details.plan-card{font-size:inherit;margin-top:12px}.plan-card>summary{list-styl
 .peek-card .soft-icon{width:34px;height:34px;border-radius:12px}.peek-card .soft-icon .ms{width:19px;height:19px}.peek-card>.ms{width:16px;height:16px;color:#b0b3b8}
 .peek-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.peek-copy strong{font-size:13px;font-weight:650;line-height:1.4}.peek-copy span{font-size:11px;color:#8b8f95;line-height:1.4}
 .peek-bar{display:block;height:4px;margin:2px 0 1px;border-radius:999px;background:#f0f0f1;overflow:hidden}.peek-bar i{display:block;width:67%;height:100%;background:#e3ce55}
-.login .login-actions{padding-top:20px}@media(max-height:700px){.login .login-intro{margin-top:12px}.peek{padding:14px}.login .login-actions{padding-top:14px}}@media(max-height:620px){.peek-card.in{display:none}}
+.login .login-actions{padding-top:20px}@media(max-height:700px){.login .login-intro{margin-top:12px}.peek{padding:14px}.login .login-actions{padding-top:14px}}@media(max-height:620px){.peek-card.in{display:none}}/* 시작 화면: 정보가 있을 때 '새 정보 입력'과 '데모 계정으로 시작'을 한 줄에 */
+.login-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
