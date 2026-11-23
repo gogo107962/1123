@@ -444,6 +444,9 @@ document.addEventListener('input',e=>{const t=e.target;if(t.dataset.k&&S.draft)S
 document.addEventListener('click',e=>{if(e.target.matches?.('.pick input'))try{e.target.showPicker()}catch(_){}});
 // 접어 둔 부분은 다시 그려도 펼친 상태를 기억한다.
 document.addEventListener('toggle',e=>{const k=e.target.dataset?.d;if(k)S[k]=e.target.open},true);
+// 펼침 상태는 누르는 순간 기억한다. 'toggle' 이벤트는 한 박자 늦게 와서, 그사이 화면을 다시 그리면(탭을 연 직후 자료를 불러올 때)
+// 펼친 카드가 다시 접혔다(스모크 테스트가 가끔 실패하던 원인). 누르기 직전의 반대 상태를 바로 남기고, toggle 이벤트가 오면 같은 값으로 다시 맞춘다.
+document.addEventListener('click',e=>{const s=e.target.closest?.('summary'),d=s?.parentElement;if(d&&d.tagName==='DETAILS'&&d.dataset.d&&s===d.querySelector('summary'))S[d.dataset.d]=!d.open},true);
 document.addEventListener('submit',e=>{e.preventDefault();const f=e.target.dataset.f;
  if(f==='chat'){const input=$('#m'),text=input.value.trim();input.value='';say(text)}
  else if(f==='q'||f==='find'){S.query.q=$(f==='q'?'#q':'#find').value.trim();run(()=>loadList())}});

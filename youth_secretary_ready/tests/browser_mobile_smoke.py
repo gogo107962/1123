@@ -191,7 +191,8 @@ with sync_playwright() as p:
     # 준비 완료: 계획을 펼쳐 '준비 완료로 옮기기'를 누르면 '준비 완료' 칸으로 옮겨지고 공식 사이트 버튼이 보인다. 체크를 하나 풀면 다시 준비 중으로 돌아간다.
     expect(page.locator('main')).to_contain_text('2건 준비 중')
     expect(page.locator('.ready-card')).to_have_count(0)
-    page.locator('.plan-card summary').first.click()
+    # 펼치는 순간 화면을 다시 그려도(탭을 연 직후 자료를 불러올 때처럼) 펼친 채로 남는다. 전에는 'toggle' 이벤트가 오기 전에 다시 그리면 접혀서 이 단계가 가끔 실패했다.
+    assert page.evaluate("(()=>{document.querySelector('.plan-card summary').click();render();return document.querySelector('.plan-card').open})()")
     expect(page.locator('.plan-card[open]')).to_contain_text('개도 완료로 표시돼요')
     # 계획 카드의 버튼은 '온통청년 정책 페이지'와 '준비 완료로 옮기기' 둘뿐이고, 위아래로 같은 크기다
     card = page.locator('.plan-card[open]').first
