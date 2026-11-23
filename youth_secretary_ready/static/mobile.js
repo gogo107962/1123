@@ -20,7 +20,7 @@ const CRIT={period:'신청기간',age:'나이',region:'거주지',income:'소득
 const PERIOD={open:'접수 중',rolling:'상시',upcoming:'시작 전',unknown:'기간 확인 필요',ended:'신청기간 지남',closed_code:'마감',closed_official:'공식 공고 종료'};
 const REASON={closed:'마감됐어요',no_application_route:'신청 방법 정보가 없어요',no_region_code:'지역 정보가 없어요'};
 const TOPICS={'자격증 응시료':'자격증 시험 쳤는데 응시료 지원받을 수 있어?','월세 지원':'월세 지원 받을 수 있어?','구직 수당':'취업 준비 중인데 구직 수당 받을 수 있어?','교통비':'교통비 지원 받을 수 있어?'};
-const CATS=[['응시료','school','자격증 응시료'],['주거','home_work','월세 지원'],['취업','work','구직 수당'],['생활','directions_bus','교통비']];
+const CATS=[['일자리','work','일자리'],['주거','home_work','주거'],['교육 · 훈련','school','교육･직업훈련'],['자격증','award','k:자격증,응시료']];
 const ENGINE={review_possible:['신청 검토 가능','ok'],ineligible:['조건 불충족','bad'],needs_review:['확인 필요','warn'],application_closed:['신청 기간 아님','gray']};
 const EFFECT={pass:['충족','ok'],block:['불충족','bad'],unknown:['확인 필요','warn']};
 const FIELD={documents:'제출서류',period:'신청 시기',method:'신청 방법',conditions:'대상 · 조건'};
@@ -66,7 +66,7 @@ const ICON={home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-
  checklist:'<rect x="5" y="4" width="15" height="17" rx="3"/><path d="M9 3h7v4H9zM9 12l2 2 4-4M9 18h6"/>',notifications:'<path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5ZM10 21h4"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.6 2.2c-.8.5-1.2 1-1.2 1.9M12 17h.01"/>',
  person:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>',description:'<path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8ZM14 3v5h5M9 12h6M9 16h6"/>',
  chevron_right:'<path d="m9 5 7 7-7 7"/>',arrow_back:'<path d="m15 5-7 7 7 7"/>',school:'<path d="m2 8 10-5 10 5-10 5ZM6 10v6q6 5 12 0v-6M22 8v8"/>',
- home_work:'<path d="m3 10 7-6 7 6v10H3ZM8 20v-6h4v6M16 3h5v17h-4M18 7h1M18 11h1"/>',work:'<rect x="3" y="7" width="18" height="14" rx="3"/><path d="M8 7V3h8v4M3 12q9 6 18 0M12 12v4"/>',
+ home_work:'<path d="m3 10 7-6 7 6v10H3ZM8 20v-6h4v6M16 3h5v17h-4M18 7h1M18 11h1"/>',award:'<circle cx="12" cy="9" r="5.5"/><path d="m8.5 13.5-2 7.5 5.5-3 5.5 3-2-7.5"/>',work:'<rect x="3" y="7" width="18" height="14" rx="3"/><path d="M8 7V3h8v4M3 12q9 6 18 0M12 12v4"/>',
  directions_bus:'<rect x="5" y="3" width="14" height="17" rx="4"/><path d="M5 10h14M8 20v2M16 20v2M8 15h1M15 15h1"/>',add:'<path d="M12 4v16M4 12h16"/>',close:'<path d="m5 5 14 14M5 19 19 5"/>',
  auto_awesome:'<path d="m12 3 3 6 6 3-6 3-3 6-3-6-6-3 6-3ZM20 2v4M18 4h4"/>',arrow_upward:'<path d="M12 21V3m-7 7 7-7 7 7"/>',attach_file:'<path d="m8 13 7-7a3 3 0 0 1 4 4L9 20a5 5 0 0 1-7-7L13 2"/>'};
 const ms=name=>`<span class="ms" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON[name]}</svg></span>`;
@@ -145,7 +145,7 @@ ${hp&&hp.must.length?`<div class="prep-count"><span>서류 준비</span><strong>
  :`<div class="prep-count"><span>확인한 일</span><strong>${done}<em> / ${t.length}</em></strong></div><div class="prog"><div style="width:${t.length?done/t.length*100:0}%"></div></div>
 <button class="next-row" data-a="tab" data-s="plan"><span>${esc(next?.title||(t.length?'모두 확인했어요':'서류 안내를 공고에서 확인해요'))}</span><span>확인하기 ${chev}</span></button>`}</section>`:''}
 <section class="feed-card"><button class="section-heading" data-a="tab" data-s="browse">나에게 필요한 지원 ${chev}</button>
-<div class="category-grid">${CATS.map(([label,icon,topic])=>`<button class="category" data-a="topic" data-t="${topic}"><span class="category-icon">${ms(icon)}</span><span>${label}</span></button>`).join('')}</div></section>
+<div class="category-grid">${CATS.map(([label,icon,topic])=>`<button class="category" data-a="cat" data-k="${esc(topic)}"><span class="category-icon">${ms(icon)}</span><span>${label}</span></button>`).join('')}</div></section>
 <section class="feed-card"><button class="section-heading" ${compared()&&top?`data-a="detail" data-id="${esc(top.external_id)}"`:'data-a="tab" data-s="browse"'}>놓치기 전에 살펴봐요 ${chev}</button>
 ${!compared()?`<button class="next-row" style="margin-top:22px" data-a="tab" data-s="profile"><span>내 정보를 입력하면 맞는 지원부터 보여드려요</span>${chev}</button>`
  :!c?'<p class="sub" style="margin-top:14px">내 조건과 비교하고 있어요…</p>'
@@ -160,7 +160,7 @@ chats:()=>{const list=store.get(CHATS,[]);
 chat:()=>{const bot=inner=>`<div class="m bot"><img class="av" src="/static/quokka.png" alt=""><div><p class="who">청년비서</p>${inner}</div></div>`;
  const msgs=S.chat.map((m,i)=>m.who!=='bot'?`<div class="m user"><div><p class="who r">${esc(S.profile?.name||'나')}</p><div class="bub">${esc(m.t)}</div></div>${ME}</div>`
   :m.pending?bot('<div class="bub"><span class="typing" role="status" aria-label="답변을 쓰고 있어요"><i></i><i></i><i></i></span></div>')
-  :bot(`${m.known?`<div class="bub" style="margin-bottom:8px">내 정보(${esc(m.known.join(' · '))})가 저장돼 있어서 다시 묻지 않을게요.</div>`:''}${m.topics?.length?`<div class="bub"><strong>${HOWMANY[m.topics.length]} 가지 지원으로 나눠 찾았어요.</strong>${m.topics.map((t,k)=>`<div class="trow"><div><b>${CIRC[k]} ${esc(t.label)}</b><span class="tiny">정책 ${n(t.total)}건${m.cmp?` · 확인 필요 ${n(t.outcomes.needs_check)}건`:''}</span></div><button class="btn sm" data-a="results" data-i="${i}" data-t="${k}">결과 보기</button></div>`).join('')}</div>`:`<div class="bub">${esc(m.t)}</div>`}${m.compare||m.cnote?`<div class="bub" style="margin-top:8px;white-space:pre-line"><strong>함께 보면</strong>
+  :bot(`${m.topics?.length?`<div class="bub"><strong>${HOWMANY[m.topics.length]} 가지 지원으로 나눠 찾았어요.</strong>${m.topics.map((t,k)=>`<div class="trow"><div><b>${CIRC[k]} ${esc(t.label)}</b><span class="tiny">정책 ${n(t.total)}건${m.cmp?` · 확인 필요 ${n(t.outcomes.needs_check)}건`:''}</span></div><button class="btn sm" data-a="results" data-i="${i}" data-t="${k}">결과 보기</button></div>`).join('')}</div>`:`<div class="bub">${esc(m.t)}</div>`}${m.compare||m.cnote?`<div class="bub" style="margin-top:8px;white-space:pre-line"><strong>함께 보면</strong>
 ${esc(m.compare?m.compare.text:m.cnote)}</div>`:''}${m.papers||m.pnote?`<div class="bub" style="margin-top:8px;white-space:pre-line"><strong>준비할 서류</strong>
 ${esc(m.papers?m.papers.text:m.pnote)}</div>`:''}${m.cta&&!m.topics?.length?`<button class="btn sm" data-a="results" data-i="${i}">결과 보기</button>`:''}${m.suggest?`<button class="btn line sm wrap" data-a="apply" data-i="${i}">내 정보에 반영하고 다시 찾기 · ${esc(chips(m.suggest).join(' · '))}</button>`:''}${m.ask?`<div class="bub" style="margin-top:8px"><strong>${esc(m.ask.text)}</strong></div><div class="opts">${m.ask.options.map(o=>`<button class="btn line" data-a="answer" data-i="${i}" data-v="${esc(o.value)}">${esc(o.label)}</button>`).join('')}<button class="btn line" data-a="skipask" data-i="${i}">잘 모르겠어요</button></div>`:''}${m.tools?`<p class="tiny" style="margin-top:6px">실행한 도구: ${m.tools.filter(t=>t.status==='ok').map(t=>TOOLS[t.tool]+(t.tool==='search_policies'&&m.topics?.length?`(주제 ${m.topics.length}개)`:'')).join(' → ')} · ${m.ai==='used'?(S.ai==='gemini'?'Gemini AI':'로컬 AI')+'가 검색어를 고르고, 건수와 문장은 코드가 만들었어요.':'AI 없이 정해 둔 낱말로 찾았어요. 건수와 문장은 코드가 만들었어요.'}</p>`:''}${m.steps?`<details class="tiny" style="margin-top:6px"><summary>이번 답을 만든 순서</summary><ol style="margin:6px 0 0;padding-left:18px">${m.steps.map(x=>`<li><b>${WHO[x.who]}${x.who==='orchestrator'?(x.by==='ai'?' ('+(S.ai==='gemini'?'Gemini AI':'로컬 AI')+')':' (AI 없이 코드)'):''}</b> ${esc(x.did)}</li>`).join('')}</ol></details>`:''}`)).join('');
  const opts=S.chat.length<=1&&!S.busy?[S.profile?.exams?.[0]?`${S.profile.exams[0].name} 봤는데 응시료 지원돼?`:TOPICS['자격증 응시료'],TOPICS['월세 지원'],'나에게 맞는 정책 찾아줘']:[];
@@ -319,7 +319,7 @@ async function loadList(page=1){const q=S.query;if(page===1){S.list=null;if(S.sc
  const r=await api('/api/integrations/ontong/screen','POST',{profile:mine(),q:q.q,keywords:word?q.kind.slice(2).split(','):q.topics&&q.topic!=null?q.topics[q.topic].keywords:q.keywords,category:q.kind&&!word?q.kind:'',sido:q.sido||'',
   ages:q.ages==='me'?(age==null?'':`${age}-${age}`):q.ages||'',open_only:!!q.open,outcome:compared()?q.outcome:'',page,page_size:10});
  S.list={...r,items:page===1?r.items:S.list.items.concat(r.items)};if(S.screen==='results')render(page===1)}
-function showResults(keywords=[],tab=false,topics=null,topic=null){S.listTab=tab;S.query={keywords,...NOFILTER,topics:topics?.length?topics:null,topic};if(tab){S.back=[];S.screen='results';S.sheet=null;render(true)}else go('results');
+function showResults(keywords=[],tab=false,topics=null,topic=null,kind=''){S.listTab=tab;S.query={keywords,...NOFILTER,kind,topics:topics?.length?topics:null,topic};if(tab){S.back=[];S.screen='results';S.sheet=null;render(true)}else go('results');
  if(S.query.topics&&topic==null){S.list=null;render(true);return Promise.resolve()}   // '전체'는 주제별 위쪽 정책만 보여 주므로 목록을 따로 부르지 않는다
  return loadList()}
 async function openDetail(id){S.detail=null;S.detailId=id;go('detail');const path='/api/integrations/ontong/candidates/'+encodeURIComponent(id);
@@ -347,9 +347,7 @@ async function say(text,quiet){if(S.busy||!text)return;
  else if(last?.ask)last.ask=null;
  if(!quiet)S.chat.push({who:'user',t:text});S.chat.push({who:'bot',pending:true,t:''});render();
  try{const r=await api('/api/integrations/ontong/ask','POST',{message:text,profile:mine(),skip:S.skip||[],selected:Object.keys(S.selected||{}).slice(0,5)});
-  // 이 대화에서 처음 답할 때만, 비교에 쓰는 저장값(지역 · 나이 · 취업 상태 · 시험)을 알려 준다.
-  const p=mine(),known=S.chat.some(m=>m.known)?[]:[area(p),p.age!=null?p.age+'세':'',S.names.job_code[p.job_code],...(p.exams||[])].filter(Boolean);
-  S.chat[S.chat.length-1]={who:'bot',known:known.length?known:null,t:r.answer,cta:r.total>0,keywords:r.keywords,suggest:Object.keys(r.profile_suggestion).length?r.profile_suggestion:null,ask:r.question,tools:r.tools,ai:r.ai,asked:text,steps:r.steps,compare:r.compare,cnote:r.compare_note,papers:r.documents,pnote:r.documents_note,topics:r.topics,cmp:r.compared};
+  S.chat[S.chat.length-1]={who:'bot',t:r.answer,cta:r.total>0,keywords:r.keywords,suggest:Object.keys(r.profile_suggestion).length?r.profile_suggestion:null,ask:r.question,tools:r.tools,ai:r.ai,asked:text,steps:r.steps,compare:r.compare,cnote:r.compare_note,papers:r.documents,pnote:r.documents_note,topics:r.topics,cmp:r.compared};
  }catch(e){S.chat[S.chat.length-1]={who:'bot',t:e.message}}
  keepChat();
  S.busy=false;if(S.screen==='chat')render()}
@@ -365,7 +363,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!
  else if(a==='continue'){go('home',true);run(loadCounts)}
  else if(a==='start'){S.draft={name:'',sido:'',job_code:'',school_code:''};go('profile')}
  else if(a==='tab'){S.draft=null;if(d.s==='plan')run(()=>showPlan(true));else if(d.s==='browse')run(()=>showResults([],true));else{S.back=[];S.screen=d.s;S.sheet=null;render(true);if(d.s==='home')run(async()=>{if(!S.counts||!S.homePlan)await loadCounts()})}}
- else if(a==='openchat')openChat();else if(a==='topic')openChat(TOPICS[d.t]);else if(a==='say')say(d.t);
+ else if(a==='openchat')openChat();else if(a==='cat')run(()=>showResults([],true,null,null,d.k));else if(a==='say')say(d.t);
  else if(a==='results')run(()=>showResults(S.chat[d.i].keywords,false,S.chat[d.i].topics,d.t!=null?+d.t:null));else if(a==='browse')run(()=>showResults([],true));
  else if(a==='newchat'){if(!S.busy){S.chat=[];S.skip=[];S.chatId=null;S.chatOn=null;openChat();render(true)}}
  else if(a==='deldraft'){select(d.id,'',false);toast('임시저장한 계획을 지웠어요. 결과에서 다시 고를 수 있어요.');render();if(selIds().length)run(loadPlan)}
