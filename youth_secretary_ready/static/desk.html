@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#12664e"><title>청년비서 — 나의 정책 준비 앱</title><link rel="stylesheet" href="/static/desk.css"></head>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#12664e"><title>청년이음 — 나의 정책 준비 앱</title><link rel="stylesheet" href="/static/desk.css"></head>
 <body>
 <link rel="stylesheet" href="/static/desk-app.css">
 <a class="skip" href="#content">본문으로 이동</a>
@@ -29,7 +29,7 @@
  <section class="ai-box"><div class="section-heading"><div><span class="eyebrow">AI ASSISTANT</span><h3>이 정책, 무엇부터 확인할까요?</h3></div><span id="aiReady" class="badge">연결 확인 중</span></div><p class="small">AI가 자료와 준비 작업을 조회해 확인할 항목을 고릅니다. 안내는 정해진 문구로 표시하며 자격을 확정하지 않습니다. 가상 상황만 입력해 주세요.</p><label class="sr-only" for="aiQuestion">선택한 정책에 대해 질문</label><textarea id="aiQuestion" rows="3" maxlength="600" placeholder="예: 신청하기 전에 어떤 조건과 서류를 확인해야 해?"></textarea><button id="askPolicy" class="button dark">AI에게 물어보기 ↗</button><p id="aiStatus" class="small" role="status"></p><div id="aiAnswer" class="ai-answer" aria-live="polite"></div></section>
 </div></dialog>
 <button id="chatFab" class="fab" aria-label="AI에게 정책 찾아달라고 하기">✦</button>
-<dialog id="chatDialog" aria-labelledby="chatTitle"><div class="dialog-top"><span id="chatTitle">청년비서에게 물어보기</span><button id="closeChat" class="icon-button" aria-label="대화 닫기">×</button></div><div id="chatLog" class="chat-log" aria-live="polite"></div><div id="chatOptions" class="quick chat-options"></div><form id="chatForm" class="searchbar"><label class="sr-only" for="chatInput">메시지</label><input id="chatInput" maxlength="600" placeholder="예: 자격증 시험 쳤는데 지원받을 수 있어?" autocomplete="off"><button class="button primary" type="submit">보내기</button></form><p class="small chat-note">로컬 AI가 검색어를 고르고, 조건 비교와 안내 문장은 코드가 만들어요. 가상 상황만 입력해 주세요.</p></dialog>
+<dialog id="chatDialog" aria-labelledby="chatTitle"><div class="dialog-top"><span id="chatTitle">청년이음에게 물어보기</span><button id="closeChat" class="icon-button" aria-label="대화 닫기">×</button></div><div id="chatLog" class="chat-log" aria-live="polite"></div><div id="chatOptions" class="quick chat-options"></div><form id="chatForm" class="searchbar"><label class="sr-only" for="chatInput">메시지</label><input id="chatInput" maxlength="600" placeholder="예: 자격증 시험 쳤는데 지원받을 수 있어?" autocomplete="off"><button class="button primary" type="submit">보내기</button></form><p class="small chat-note">로컬 AI가 검색어를 고르고, 조건 비교와 안내 문장은 코드가 만들어요. 가상 상황만 입력해 주세요.</p></dialog>
 <div id="toast" class="toast" role="status" hidden></div>
 <script src="/static/desk.js" defer></script>
 </body></html>
