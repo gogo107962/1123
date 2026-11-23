@@ -1426,6 +1426,22 @@ def test_exam_fee_policy_compares_exam_names_and_never_mismatches():
     assert plain['exam'] == {'fee': False, 'kinds': [], 'text': ''} and 'exam' not in verdict(plain, {'exams': ['정보처리기사']})[1]
 
 
+def test_fee_discounted_at_exam_signup_is_not_for_an_exam_already_taken():
+    """2026-11-23 팀 이슈: 국가기술자격 응시료 지원(Q-Net 원서접수 결제 단계에서 50% 자동 할인)이 이미 응시한 민지에게 '맞아요'로
+    신청 순서 1번에 나왔다. 내 정보의 시험은 응시한 달과 함께 적는 이미 본 시험이므로, 접수 때 할인되는 지원은 확인 필요로 둔다(다음 시험에는 받을 수 있어 '달라요'는 아니다)."""
+    signup = made(plcyNm='청년 국가기술자격 응시료 지원 사업', plcySprtCn='국가기술자격 시험에 응시하는 경우 응시료의 50%를 선 지원',
+                  plcyAplyMthdCn='한국산업인력공단 Q-Net 원서접수 결제 단계에서, 34세 이하 청년인 경우 별도의 신청 절차 없이 50% 할인 자동 적용')
+    assert signup['exam']['at_signup'].startswith('한국산업인력공단 Q-Net 원서접수')
+    out, results = verdict(signup, {'age': 26, 'exams': ['정보처리기사']})
+    basis = next(c['basis'] for c in out['criteria'] if c['key'] == 'exam')
+    assert results['exam'] == 'unknown' and out['outcome'] == 'needs_check' and '이미 응시한 시험' in basis and '다음에 원서를 접수할 때' in basis
+    assert verdict(signup, {'age': 26})[1]['exam'] == 'unknown'                               # 시험을 적지 않았으면 전처럼 '비교하지 않음'
+    # 응시료를 실제 낸 뒤 신청하는 지원(인천시 응시료 지원처럼 '감면 지원받은 경우 차액 지원')은 그대로 시험 이름으로 비교한다
+    refund = made(plcyNm='청년 자격증 응시료 지원', plcySprtCn='국가기술자격증 응시료 지원. Q-net 국가기술자격 시험 응시료의 50%를 감면 지원받은 경우, 차액(실제 결제액)을 지원',
+                  plcyAplyMthdCn='온라인 신청')
+    assert refund['exam']['at_signup'] == '' and verdict(refund, {'exams': ['정보처리기사']})[1]['exam'] == 'match'
+
+
 def test_no_home_requirement_compares_housing():
     rent = made(plcyNm='청년월세 지원', addAplyQlfcCndCn='부모님과 별도 거주하는 19~34세 무주택 청년')
     basis = lambda out: next(c['basis'] for c in out['criteria'] if c['key'] == 'housing')

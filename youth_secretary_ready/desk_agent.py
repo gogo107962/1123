@@ -16,6 +16,42 @@ GUIDANCE={
 }
 
 
+STATUS={'open':'접수 중','rolling':'상시','upcoming':'시작 전','unknown':'기간 확인 필요','ended':'신청기간 지남','closed_code':'마감','closed_official':'공식 공고 종료'}
+
+
+def facts(bundle):
+    """확인 항목마다 이 정책의 등록 내용에서 그대로 가져온 사실(날짜·조건·인용·서류 이름). 모델이 쓴 글이 아니다.
+    전에는 모든 정책에 같은 안내 다섯 문장이 나와 정책마다 무엇을 봐야 하는지 보이지 않았다(2026-11-23 팀 이슈).
+    자료를 읽지 못하면 빈 사전을 돌려주고, 안내 문장만 보인다."""
+    try:
+        from policy_structure import DOCS,documents,period_status,structure
+        from temporal import korean_now
+        p=bundle['public_fields'];s=structure(p);check=bundle['source_check']
+        out={}
+        import re
+        period=re.sub(r'(\d{4})(\d{2})(\d{2})',r'\1.\2.\3',str(p.get('aplyYmd') or '').strip());early=s['said'].get('early_close')
+        out['application']=(f"등록된 신청기간은 {period}({STATUS[period_status(s['application'],korean_now().date(),check)]})이에요." if period
+                            else f"등록된 신청기간이 없고 '{STATUS[period_status(s['application'],korean_now().date(),check)]}'로 보여요.")+(f" 글에 “{early}”라고 적혀 있어요." if early else '')
+        if s['exam'].get('at_signup'):   # 원서 접수 때 할인되는 응시료 지원: 이미 응시한 시험에는 받을 수 없다
+            out['application']+=f" 시험 원서를 접수할 때 할인되는 방식이에요(“{s['exam']['at_signup'][:80]}”). 이미 응시한 시험에는 받을 수 없어요."
+        a,r=s['age'],s['region'];who=[]
+        if a.get('kind')=='range' and not a.get('no_limit') and a.get('min') is not None and a.get('max') is not None:who.append(f"만 {a['min']}~{a['max']}세")
+        if r.get('nationwide'):who.append('전국')
+        elif r.get('sido_names'):who.append(', '.join(r['sido_names'][:3])+(' 등' if len(r['sido_names'])>3 else ''))
+        if who:out['eligibility']=f"등록된 대상: {' · '.join(who)}."
+        ex=s['exclusions']['sentences']
+        out['benefits']=(f"참여 제한 안내: “{ex[0][:80]}{'…' if len(ex[0])>80 else ''}”"+(f" 외 {len(ex)-1}건." if len(ex)>1 else '.')) if ex else '등록된 참여 제한 안내가 없어요.'
+        d=documents(p);names=dict((k,n) for k,n,_,_ in DOCS);found=[names[k] for k in d['known']]
+        out['documents']=(f"서류 안내에서 찾은 서류 {len(found)}종: {', '.join(found[:6])}{' 등' if len(found)>6 else ''}." if found
+                          else '온통청년에 서류 안내가 없어요.' if not d['has_text'] else '서류 안내 글에서 서류 이름을 찾지 못했어요.')
+        if check and check.get('official_status')=='closed':
+            # 확인일과 접수기간을 섞지 않는다
+            out['next_notice']=f"공식 페이지에서 접수 마감을 확인했어요(확인일 {check['checked_on']}"+(f", 공식 페이지의 신청기간: {check['official_period_text']}" if check.get('official_period_text') else '')+').'
+        return out
+    except Exception:
+        return {}
+
+
 def generate(messages):
     schema={'type':'object','properties':{
         'calls':{'type':'array','maxItems':2,'items':{'type':'string','enum':['read_policy','preview_tasks']}},
@@ -66,7 +102,9 @@ def run(wid,external_id,message):
                     context=({'period':check['official_period_text'],'checked_on':check['checked_on'],
                               'note':'해당 회차 공고에 대한 대조 기록입니다. 현재 다른 회차의 모집 여부는 조회하지 않았습니다.'} if check and not check['api_changed_since_check'] else None)
                     focus=list(dict.fromkeys(result['focus']))
-                    answer='\n\n'.join(f'{i+1}. {GUIDANCE[key]}' for i,key in enumerate(focus))
+                    # 고른 항목마다: 이 정책의 등록 내용에서 가져온 사실 + 검증된 안내 문장
+                    known=facts(bundle)
+                    answer='\n\n'.join(f"{i+1}. {known[key]+' ' if known.get(key) else ''}{GUIDANCE[key]}" for i,key in enumerate(focus))
                     return {'answer':answer,'focus':focus,'answer_origin':'validated_action_selection',
                             'tools':trace,'sources':links,'run_id':run_id,'evidence_context':context,
                             'notice':'AI 설명은 자격 판정이 아닙니다. 아래 출처와 최신 공고를 확인하세요. 준비 작업은 저장되지 않았습니다.'}

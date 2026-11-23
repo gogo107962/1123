@@ -417,13 +417,21 @@ _HOME_HEDGE = re.compile(r'우대|우선|가능|예외|무관|관계\s?없|구�
 _APART = re.compile(r'부모[^.]{0,8}(별도|따로)')
 
 
+# 시험 원서를 접수(결제)할 때 할인·지원되는 방식인지(신청 방법 칸). 예: Q-Net 원서접수 결제 단계에서 50% 할인 자동 적용.
+# 이런 지원은 이미 응시한 시험에는 받을 수 없다. 2026-11-23 수집본에서 국가기술자격 응시료 지원 2건만 걸린다.
+_AT_SIGNUP = re.compile(r'원서\s*접수[^\n]{0,40}?(?:자동|할인|결제)')
+
+
 def exam(payload):
-    """응시료 지원인가(이름·설명·지원 내용에 '응시료'), 글에 적힌 시험 종류, 시험 이름을 찾아볼 글(띄어쓰기 없이 소문자)."""
+    """응시료 지원인가(이름·설명·지원 내용에 '응시료'), 글에 적힌 시험 종류, 시험 이름을 찾아볼 글(띄어쓰기 없이 소문자),
+    원서를 접수할 때 할인되는 방식이면 그 신청 방법 글(at_signup, 아니면 빈 글)."""
     core = ' '.join(_text(payload, f) for f in ('plcyNm', 'plcyExplnCn', 'plcySprtCn'))
     if '응시료' not in core:
         return {'fee': False, 'kinds': [], 'text': ''}
     full = core + ' ' + _text(payload, 'addAplyQlfcCndCn')
-    return {'fee': True, 'kinds': [k for k, pattern in EXAM_KINDS.items() if re.search(pattern, full)], 'text': ''.join(full.split()).lower()}
+    how = ' '.join(_text(payload, 'plcyAplyMthdCn').split())
+    return {'fee': True, 'kinds': [k for k, pattern in EXAM_KINDS.items() if re.search(pattern, full)], 'text': ''.join(full.split()).lower(),
+            'at_signup': how[:160] if _AT_SIGNUP.search(how) else ''}
 
 
 def housing(payload):
