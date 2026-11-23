@@ -132,7 +132,8 @@ with sync_playwright() as p:
     # 정책 2개 선택 → 신청 계획 → 점검 → 승인 → 내 신청
     page.locator('input[data-a=sel]').nth(0).check()
     page.locator('input[data-a=sel]').nth(1).check()
-    expect(page.locator('.act')).to_contain_text('2개 선택')
+    expect(page.locator('.act [data-a=plan]')).to_be_enabled()
+    assert page.evaluate('selIds().length') == 2 and '개 선택' not in page.locator('.act').inner_text()   # 몇 개 골랐는지는 막대에 적지 않는다(2026-11-23 사용자 요청)
     page.locator('[data-a=plan]').click()
     expect(page.locator('.ord li')).to_have_count(2)
     links = page.locator('main .card').filter(has_text='안내 및 신청 링크')
@@ -205,7 +206,8 @@ with sync_playwright() as p:
     # 계획 카드의 버튼은 '온통청년 정책 페이지'와 '준비 완료로 옮기기' 둘뿐이고, 위아래로 같은 크기다
     card = page.locator('.plan-card[open]').first
     assert card.locator('a.btn').all_inner_texts() == ['온통청년 정책 페이지'] and card.locator('a.btn').get_attribute('href').startswith('https://www.youthcenter.go.kr/')
-    a, r = card.locator('a.btn').bounding_box(), card.locator('[data-a=ready]').bounding_box()
+    # 두 버튼의 위치를 한 순간에 잰다(따로 재면 그사이 탭이 자료를 불러와 다시 그리며 스크롤이 바뀌어 위치가 어긋나 가끔 실패했다)
+    a, r = page.evaluate("(()=>{const c=document.querySelector('.plan-card[open]'),f=e=>{const b=e.getBoundingClientRect();return {x:b.x,y:b.y,width:b.width,height:b.height}};return [f(c.querySelector('a.btn')),f(c.querySelector('[data-a=ready]'))]})()")
     assert abs(a['width'] - r['width']) < 1 and abs(a['height'] - r['height']) < 1 and a['y'] < r['y'] and abs(a['x'] - r['x']) < 1, (a, r)
     page.locator('.plan-card[open] [data-a=ready]').click()
     expect(page.locator('.ready-card')).to_have_count(1)
