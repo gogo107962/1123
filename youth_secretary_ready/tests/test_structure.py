@@ -2177,3 +2177,12 @@ def test_official_closure_records_keep_their_evidence_and_are_not_approvals():
     assert len(added) == 18 and all(c['official_status'] == 'closed' and c['quote'] and c['source_url'].startswith('https://') and '사람 승인 아님' in c['checked_by'] for c in added)
     assert len({c['external_id'] for c in checks}) == len(checks)
     assert period_status(application({'aplyPrdSeCd': '0057001', 'aplyYmd': '20260201 ~ 20261130'}), date(2026, 11, 23), {**added[0], 'api_changed_since_check': False}) == 'closed_official'
+
+
+# ── 서류 발급처 링크 ───────────────────
+def test_plan_documents_carry_the_issuer_site_named_in_how(ctx):
+    seed([good('DL1', sbmsnDcmntCn='주민등록등본 1부, 통장사본')])
+    docs = {d['name']: d for d in plan_of(ctx, ['DL1'])[1].json()['documents']}
+    assert docs['주민등록등본']['sites'] == [{'name': '정부24', 'url': 'https://www.gov.kr'}] and '정부24' in docs['주민등록등본']['how']
+    assert all(s['name'] in d['how'] and s['url'].startswith('https://') for d in docs.values() for s in d['sites'])
+    assert any(not d['sites'] for d in docs.values())                      # 발급처 누리집이 없는 서류(통장 사본)에는 링크를 달지 않는다
