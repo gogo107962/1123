@@ -155,9 +155,11 @@ def plans(rows,seen):
         deadline,label=timing(item['application'],status,on)
         # 저장 시각은 DB에 UTC로 남는다. 화면에는 한국 날짜로 보여 준다.
         first=datetime.strptime(min(r['created_at'] for r in mine),'%Y-%m-%d %H:%M:%S')+timedelta(hours=9)
+        done=sum(r['status']=='done' for r in mine);outdated=any(r['outdated'] for r in mine)
         out.append({'external_id':eid,'name':mine[0]['policy_name'],'agency':bundle['public_fields'].get('sprvsnInstCdNm',''),'saved_on':first.date().isoformat(),
-                    'period_status':status,'period_label':label,'deadline':deadline,'total':len(mine),'done':sum(r['status']=='done' for r in mine),
-                    'outdated':any(r['outdated'] for r in mine),'links':links})
+                    'period_status':status,'period_label':label,'deadline':deadline,'total':len(mine),'done':done,
+                    # 준비 완료: 준비 작업을 모두 끝냈고 그 뒤로 자료가 바뀌지 않은 계획. 자료가 바뀌면 다시 승인해야 하므로 준비 완료로 보지 않는다.
+                    'outdated':outdated,'ready':bool(mine) and done==len(mine) and not outdated,'links':links})
     return out
 
 
@@ -218,6 +220,20 @@ def update_task(wid:str,task_id:str,payload:TaskStatus):
         if not still_valid(row['external_id'],row['evidence_hash'],evidence(row['external_id'])[2]):raise HTTPException(409,'정보가 바뀐 작업입니다. 정책 상세에서 준비할 일을 다시 확인해 주세요.')
         con.execute('UPDATE desk_tasks SET status=? WHERE id=?',(payload.status,task_id))
     return {'updated':True}
+
+
+@router.patch('/workspaces/{wid}/plans/{external_id}')
+def update_plan(wid:str,external_id:str,payload:TaskStatus):
+    """'내 신청'의 '준비 완료로 옮기기': 한 정책의 준비 작업을 한꺼번에 바꾼다. 사용자가 버튼을 누를 때만 부른다.
+    자료가 바뀐 계획은 다시 승인해야 하므로 바꾸지 않는다(작업 하나를 바꿀 때와 같은 규칙)."""
+    with connect() as con:
+        con.execute('BEGIN IMMEDIATE');require_workspace(wid,con)
+        stored=[r['evidence_hash'] for r in con.execute('SELECT DISTINCT evidence_hash FROM desk_tasks WHERE workspace_id=? AND external_id=?',(wid,external_id))]
+        if not stored:raise HTTPException(404,'이 준비 공간에 세운 신청 계획을 찾을 수 없습니다.')
+        now=evidence(external_id)[2]
+        if not all(still_valid(external_id,h,now) for h in stored):raise HTTPException(409,'정보가 바뀐 계획입니다. 정책 상세에서 준비할 일을 다시 확인해 주세요.')
+        n=con.execute('UPDATE desk_tasks SET status=? WHERE workspace_id=? AND external_id=?',(payload.status,wid,external_id)).rowcount
+    return {'updated':n}
 
 
 @router.post('/workspaces/{wid}/assistant')

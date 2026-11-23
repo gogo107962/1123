@@ -140,3 +140,26 @@ def test_workspace_lists_the_plans_i_saved_with_progress_and_links(ctx):
     other='/api/desk/workspaces/'+ctx.post('/api/desk/workspaces').json()['id']
     assert ctx.get(other).json()['plans']==[]                                 # 다른 준비 공간에는 보이지 않는다
 
+
+def test_moving_a_plan_to_ready_marks_all_its_tasks_and_unchecking_one_moves_it_back(ctx):
+    base=setup(ctx);approve(ctx,base);approve(ctx,base,'0002')
+    assert [p['ready'] for p in ctx.get(base).json()['plans']]==[False,False]   # 승인만 하면 준비 중
+    assert ctx.patch(base+'/plans/0001',json={'status':'done'}).json()=={'updated':3}
+    now=ctx.get(base).json()
+    assert {p['external_id']:p['ready'] for p in now['plans']}=={'0001':True,'0002':False}   # 누른 정책만 옮겨진다
+    assert all(t['status']==('done' if t['external_id']=='0001' else 'todo') for t in now['tasks'])
+    first=next(t for t in now['tasks'] if t['external_id']=='0001')['id']
+    ctx.patch(base+'/tasks/'+first,json={'status':'todo'})                    # 준비 완료에서 체크를 하나 풀면 다시 준비 중
+    assert ctx.get(base).json()['plans'][0]['ready'] is False
+    for t in ctx.get(base).json()['tasks']:                                   # 하나씩 모두 체크해도 준비 완료
+        if t['external_id']=='0002':ctx.patch(base+'/tasks/'+t['id'],json={'status':'done'})
+    assert ctx.get(base).json()['plans'][1]['ready'] is True
+    other='/api/desk/workspaces/'+ctx.post('/api/desk/workspaces').json()['id']
+    assert ctx.patch(other+'/plans/0001',json={'status':'done'}).status_code==404   # 다른 준비 공간의 계획은 바꾸지 못한다
+    assert ctx.patch(base+'/plans/0003',json={'status':'done'}).status_code==404    # 세우지 않은 계획
+    assert ctx.patch(base+'/plans/0001',json={'status':'ready'}).status_code==422
+    # 자료가 바뀐 계획은 옮길 수 없고, 모두 체크돼 있어도 준비 완료로 보지 않는다(다시 승인해야 한다)
+    with connect() as con:con.execute("UPDATE ontong_candidates SET payload_json=json_set(payload_json,'$.aplyYmd','20270101 ~ 20270131') WHERE external_id='0002'")
+    assert ctx.patch(base+'/plans/0002',json={'status':'done'}).status_code==409
+    assert ctx.get(base).json()['plans'][1]['ready'] is False
+
