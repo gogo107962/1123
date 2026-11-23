@@ -25,11 +25,12 @@ with sync_playwright() as p:
     page.on('pageerror', lambda error: errors.append(str(error)))
     page.goto(URL, wait_until='networkidle')
 
-    # 시작 화면(정보 없음): '데모 계정(민지)으로 시작'과 '새 정보 입력' 두 버튼. '체험'이라는 말은 없다(2026-11-23 사용자 요청으로 데모 계정을 되살림)
+    # 시작 화면(정보 없음): 아래에 '데모 계정으로 체험하기'와 '내 정보 입력하기' 두 버튼(2026-11-23 사용자 요청). 미리보기(화면 예시)에는 버튼이 없다
     expect(page.locator('h1.hero')).to_contain_text('공고는 저희가 읽을게요')
-    first = page.locator('main').inner_text()
-    assert '체험' not in first and page.locator('main button').count() == 2
-    expect(page.locator('[data-a=demo]')).to_have_text('데모 계정(민지)으로 시작')
+    assert page.locator('main button').count() == 2 and page.locator('.peek button').count() == 0
+    expect(page.locator('[data-a=demo]')).to_have_text('데모 계정으로 체험하기')
+    expect(page.locator('[data-a=start]')).to_have_text('내 정보 입력하기')
+    assert page.evaluate("(()=>{const m=document.querySelector('main');return m.scrollHeight<=m.clientHeight})()")   # 시작 화면은 스크롤 없이 한 화면에 들어간다
     # 새 정보 입력에서 이름을 적고 저장하면 홈에 그 이름이 나온다
     page.locator('[data-a=start]').click()
     assert '체험' not in page.locator('main').inner_text()
@@ -40,7 +41,7 @@ with sync_playwright() as p:
     # 나머지 흐름은 가상 인물의 정보를 넣어 두고 '기존 정보로 계속 이용'으로 이어 간다
     page.evaluate('p=>localStorage.setItem("youth-desk-profile",JSON.stringify(p))', PROFILE)
     page.reload(wait_until='networkidle')
-    expect(page.locator('.or')).to_be_visible()                                   # 계속 이용 · 또는 · 새 정보 입력
+    expect(page.locator('.login-two')).to_be_visible()                            # 계속 이용 아래에 데모 계정으로 체험하기 · 내 정보 입력하기
     page.locator('[data-a=continue]').click()
     expect(page.locator('.greeting')).to_contain_text('민지 님')
     assert '지금 할 일' not in page.locator('main').inner_text()
@@ -157,7 +158,7 @@ with sync_playwright() as p:
 
     # 새로고침 뒤: 첫 화면에서 '기존 정보로 계속 이용'을 누르면 복원
     page.reload(wait_until='networkidle')
-    expect(page.locator('[data-a=start]')).to_have_text('새 정보 입력')
+    expect(page.locator('[data-a=start]')).to_have_text('내 정보 입력하기')
     page.locator('[data-a=continue]').click()
     expect(page.locator('.greeting')).to_contain_text('민지 님')
     # 홈 '이어서 준비하기': 저장한 정책에 서류가 있으면 '서류 준비 n / m', 없으면 '확인한 일 n / m'
@@ -225,8 +226,9 @@ with sync_playwright() as p:
     assert {k: demo[k] for k in ('name', 'birth', 'sido', 'region_code', 'job_code', 'housing')} == {k: PROFILE[k] for k in ('name', 'birth', 'sido', 'region_code', 'job_code', 'housing')}
     assert demo['exams'] == PROFILE['exams'], demo['exams']                       # 지난달 정보처리기사 응시
     page.reload(wait_until='networkidle')
-    expect(page.locator('[data-a=continue]')).to_be_visible()                     # 정보가 있으면 계속 이용 · 새 정보 입력 · 데모 계정
-    expect(page.locator('.login-two [data-a=demo]')).to_have_text('데모 계정으로 시작')
+    expect(page.locator('[data-a=continue]')).to_be_visible()                     # 정보가 있으면 계속 이용 · 데모 계정으로 체험하기 · 내 정보 입력하기
+    expect(page.locator('.login-two [data-a=demo]')).to_have_text('데모 계정으로 체험하기')
+    assert page.evaluate("[...document.querySelectorAll('.login-actions .btn')].every(b=>b.scrollWidth<=b.clientWidth)")   # 버튼 글이 잘리지 않는다
     assert page.evaluate(FITS)
 
     # 넓은 화면에서도 앱 폭을 유지한다.
