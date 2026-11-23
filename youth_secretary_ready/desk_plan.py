@@ -10,7 +10,7 @@ from fastapi import HTTPException
 from policy_structure import DOC_KIND, DOCS, EXCLUDE, RANK, doc_hit, doc_optional, period_status, structure, timing
 from screening import NOTICE, age_rule, confirmed, provided, screen
 
-from docboard import board
+from docboard import SITES, board
 from planner import conflicts, core_tokens, estimate, plan as plan_order   # 충돌·순서·금액 계산은 planner.py (이전 이름으로도 불러 쓸 수 있게 둔다)
 
 _SENTENCE = re.compile(r'[\r\n]+|(?<=[.。])\s+')
@@ -97,7 +97,9 @@ def build(wid, external_ids, profile, on, have=()):
             unlisted.append(eid)
         for key, name, needles, how in DOCS:
             if doc_hit(text, needles):
-                doc = found.setdefault(key, {'key': key, 'name': name, 'how': how, 'kind': DOC_KIND[key], 'policies': [], 'optional': True})
+                doc = found.setdefault(key, {'key': key, 'name': name, 'how': how, 'kind': DOC_KIND[key], 'policies': [], 'optional': True,
+                                             # 발급 방법 글에 이름이 나온 발급처의 주소(누리집 첫 화면). 화면이 그 이름에 링크를 단다.
+                                             'sites': [{'name': site, 'url': url} for site, url in SITES.items() if site in how]})
                 doc['policies'].append(eid)
                 # 고른 정책 모두에서 '해당자·선택'으로 적힌 서류만 '해당하는 경우만'으로 표시한다(하나라도 필수면 필수).
                 doc['optional'] = doc['optional'] and doc_optional(text, needles)
