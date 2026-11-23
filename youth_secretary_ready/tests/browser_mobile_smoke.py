@@ -57,13 +57,22 @@ with sync_playwright() as p:
     assert page.evaluate(FITS)
     page.screenshot(path=str(BASE / '.local/mobile-home.png'))
 
+    # 홈 '나에게 필요한 지원': 종류를 누르면 그 종류로 거른 정책 목록으로 간다(챗봇이 아니다)
+    assert page.locator('.category').all_inner_texts() == ['일자리', '주거', '교육 · 훈련', '자격증']
+    for i, kind in enumerate(['일자리', '주거', '교육 · 훈련', '자격증 · 시험']):
+        page.locator('.category').nth(i).click()
+        expect(page.locator('.chip.on')).to_have_text(kind)
+        expect(page.locator('.browse-item').first).to_be_visible()
+        page.locator('nav [data-s=home]').click()
+
     # 챗봇으로 찾기
     ai = page.evaluate("fetch('/api/health').then(r=>r.json()).then(d=>d.llm.ready)")
     started = time.monotonic()
-    page.locator('[data-a=topic]').first.click()
+    page.evaluate("openChat(TOPICS['자격증 응시료'])")
     page.locator('[data-a=results]').wait_for(timeout=120000)
     ai_seconds = round(time.monotonic() - started, 1)
     expect(page.locator('.m.bot').last).to_contain_text('관련 정책')
+    assert '다시 묻지 않을게요' not in page.locator('main').inner_text()
     # AI가 꺼져 있으면 낱말로 찾고, 그렇게 했다고 화면에 밝힌다.
     expect(page.locator('main')).to_contain_text('실행한 도구: 정책 검색' if ai else '낱말로 찾았어요')
     # 데모 프로필에는 '받고 있는 지원'이 없어서 그 질문을 되묻는다.
