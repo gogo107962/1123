@@ -75,6 +75,8 @@ with sync_playwright() as p:
     expect(page.locator('main')).to_contain_text('제출서류는 공식 신청 페이지에서 확인해 주세요')
     expect(page.locator('main')).to_contain_text('서류가 필요 없다는 뜻이 아니에요')
     assert page.locator('main .card a.btn[href^="https://"]').count() >= 1
+    # 위 카드에 공식 페이지 버튼이 있으므로 아래 막대에는 '승인하고 저장'만 있다(2026-11-23 사용자 요청)
+    assert page.locator('.act a.btn').count() == 0 and page.locator('.act [data-a=approve]').count() == 1
     assert '서류 0종 중 0종 준비' not in page.locator('main').inner_text()          # 서류 줄 대신 위 카드가 안내한다
     page.locator('[data-a=back]').click()                          # 계획 화면을 쌓지 않았으므로 뒤로 가면 상세
     expect(page.locator('[data-a=prep]')).to_be_visible()
