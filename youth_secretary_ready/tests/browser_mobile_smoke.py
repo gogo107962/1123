@@ -88,8 +88,11 @@ with sync_playwright() as p:
     assert '다시 묻지 않을게요' not in page.locator('main').inner_text()
     # AI가 꺼져 있으면 낱말로 찾고, 그렇게 했다고 화면에 밝힌다.
     expect(page.locator('main')).to_contain_text('실행한 도구: 정책 검색' if ai else '낱말로 찾았어요')
-    # 데모 프로필에는 '받고 있는 지원'이 없어서 그 질문을 되묻는다.
-    expect(page.locator('.m.bot').last).to_contain_text('지금 받고 있는 지원이 있나요?')
+    # 쿼비는 내 정보를 바탕으로 대화하므로 되묻지 않는다(2026-11-23 사용자 결정). 이 테스트의 가상 프로필은 '받은 지원 이력'이 비어 있어서,
+    # 질문과 답 버튼 대신 그 칸을 내 정보에서 채우라는 안내와 '내 정보에서 입력하기' 버튼이 나온다.
+    expect(page.locator('.m.bot').last).to_contain_text('‘받은 지원 이력’ 칸이 비어 있어서')
+    assert page.locator('[data-a=answer], [data-a=skipask]').count() == 0 and '지금 받고 있는 지원이 있나요?' not in page.locator('main').inner_text()
+    expect(page.locator('.m.bot').last.locator('[data-a=tab][data-s=profile]')).to_have_text('내 정보에서 입력하기')
     page.screenshot(path=str(BASE / '.local/mobile-chat.png'))
     # 이전 대화: '새 대화'를 눌러도 방금 대화가 목록에 남고, 눌러서 다시 열 수 있다
     page.locator('[data-a=newchat]').click()

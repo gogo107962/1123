@@ -359,7 +359,7 @@ def find(message, profile, on, skip=(), selected=()):
         steps.append({'who': 'docboard', 'did': papers['text'] if papers else
                       ('내 정보가 없고 고른 정책도 없어서' if not compared else '내게 해당할 수 있는 정책을 찾지 못해') + ' 서류를 볼 정책을 정하지 못했어요.' + gaps})
     if question:
-        steps.append({'who': 'question', 'did': '찾은 정책을 가장 많이 가르는 항목 하나를 골라 되물어요.'})
+        steps.append({'who': 'question', 'did': '찾은 정책을 가장 많이 가르는 항목 가운데 내 정보에 비어 있는 것 하나를 골라, 내 정보에서 입력하도록 알려요.'})
     steps.append({'who': 'output', 'did': '화면의 문장은 정해 둔 틀과 등록된 글로만 만들었어요. 모델이 쓴 문장은 없어요.'})
     note = next((x['did'] for x in steps if x['who'] == 'planner'), '') if asked_plan and not comp else ''
     paper_note = next((x['did'] for x in steps if x['who'] == 'docboard'), '') if asked_docs and not papers else ''
