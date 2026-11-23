@@ -2221,3 +2221,8 @@ def test_overlap_row_picks_the_most_cautious_evidence(ctx):
     assert word['status'] == 'wording' and '유사사업' in word['quote']                    # 비슷한 사업을 두루 제한하는 문구
     assert view(['OV5', 'OV6'])['status'] == 'no_wording'                                 # 둘 다 안내가 있는데 중복 문구는 없다
     assert view(['OV5', 'OV4'])['status'] == 'unknown' and view(['OV4'])['status'] == 'unknown'   # 안내가 없는 정책이 있으면 '문구 없음'이라고 하지 않는다
+    # 판단 기준(rules): 중복 수혜를 말하는 문장이 있는 정책만, 등록된 문장 그대로
+    assert [(r['external_id'], r['sentences']) for r in word['rules']] == [('OV3', ['정부 및 타 지자체 동일/유사사업 수혜자'])]
+    assert [r['external_id'] for r in held['rules']] == ['OV1'] and '국민취업지원제도' in held['rules'][0]['sentences'][0]
+    assert [r['external_id'] for r in view(['OV1', 'OV2'])['rules']] == ['OV1']           # 가리킨 쪽의 문장만(반대 방향으로 뒤집지 않는다)
+    assert view(['OV5', 'OV6'])['rules'] == [] and view(['OV4'])['rules'] == []           # 그런 문장이 없으면 기준도 없다(화면은 이 줄을 숨긴다)

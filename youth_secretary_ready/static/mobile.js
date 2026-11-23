@@ -282,19 +282,17 @@ check:()=>{const P=S.plan;if(!P)return wait('신청 전 점검');
   return `<li class="rowbtn"><span><span class="b">${ps.length>1?P.order.indexOf(x.external_id)+1+'. ':''}${esc(x.name)}</span><span class="sub s13 blk">${x.criteria?`등록된 조건 ${ok.length}개 맞아요${ok.length?' · '+ok.map(k=>CRIT[k.key]).join(', '):''}`:'내 정보가 없어 조건을 비교하지 않았어요'}</span></span>${!x.criteria?pill('비교 안 함'):bad?pill('달라요 '+bad,'bad'):unk?pill('확인 필요 '+unk,'warn'):pill('맞아요','ok')}</li>`};
  // 정책마다 신청하는 곳이 다르다: 정책 이름과 갈 곳(신청 페이지 → 공식 공고 → 온통청년 정책 페이지 순)
  const go=x=>{const s=official(x.links,x.external_id);return {url:(s.apply||s.notice)?.url||PORTAL(x.external_id),what:s.apply?'공식 신청 페이지':s.notice?'공식 공고':'온통청년 정책 페이지'}};
- // 중복 수혜 여부: 서버가 이미 계산된 근거 가운데 하나를 골라 준다(overlap). 말이 없는 것을 '가능'으로 바꾸지 않는다.
- const ov=P.overlap||{status:P.conflicts.length?'conflict':'unknown'},cutq=q=>q.length>80?q.slice(0,78)+'…':q;
- const dup={conflict:[`안내 글에 함께 받기 어렵다는 문구가 ${P.conflicts.length}건 있어요. 기관에 문의한 뒤 신청하세요`,'문구 있음','bad'],
-  held:[`${ov.policy}: ${ov.basis}`,'받는 지원과 겹쳐요','bad'],
-  wording:[`${ov.policy}의 안내에 비슷한 사업·중복 수혜를 제한하는 문구가 있어요: “${cutq(ov.quote||'')}”. 고른 정책이나 받고 있는 지원이 해당하는지 기관에 문의하세요`,'제한 문구 있음','warn'],
-  allowed:[`함께 받을 수 있다고 적힌 문구가 있어요: “${cutq(ov.quote||'')}”. 신청 전에 공고에서 한 번 더 확인하세요`,'가능 문구 있음','ok'],
-  no_wording:['고른 정책의 참여 제한 안내에 중복 수혜 문구는 없었어요. 안내가 전부는 아니니 기관에 문의한 뒤 신청하세요','문구 없음','gray'],
-  unknown:['참여 제한 안내가 없는 정책이 있어 판단하지 않았어요. 기관에 문의한 뒤 신청하세요','확인 필요','warn']}[ov.status];
+ // 중복 수혜 여부: 중복 참여를 제한하는 문구가 있을 때만 줄을 보여 준다. 접혀 있고, 펼치면 정책마다 판단 기준(등록된 안내의 문장 그대로)이 나온다.
+ const ov=P.overlap||{status:P.conflicts.length?'conflict':'unknown'};
+ const dup={conflict:[`고른 정책끼리 함께 받기 어렵다는 문구가 ${P.conflicts.length}건 있어요. 기관에 문의한 뒤 신청하세요.`,'문구 있음','bad'],
+  held:[`${ov.policy}의 참여 제한 안내에 내가 받고 있는 지원이 나와요. 함께 받을 수 있는지 기관에 확인하세요.`,'받는 지원과 겹쳐요','bad'],
+  wording:['아래 문장에 해당하면 함께 받기 어려울 수 있어요. 고른 정책이나 받고 있는 지원이 해당하는지 기관에 문의하세요.','제한 문구 있음','warn'],
+  allowed:['함께 받을 수 있다고 적힌 문구가 있어요. 신청 전에 공고에서 한 번 더 확인하세요.','가능 문구 있음','ok']}[ov.status];
  return bar('신청 전 점검','b')+`<main class="pad"><div><h2 class="h20">${ps.length>1?`정책 ${ps.length}개 신청 준비`:esc(ps[0].name)}</h2><p class="sub">${ps.map(x=>esc(x.period_label)).join(' · ')} · 기준일 ${esc(P.as_of)}</p></div>
 ${ps.length>1?`<div class="card apply-links"><h3>정책별 신청하는 곳</h3><p class="tiny">고른 정책마다 신청하는 곳이 달라요. 각 정책의 공식 페이지에서 따로 신청하세요.</p>${ps.map((x,i)=>{const g=go(x);return `<a class="btn line w wrap" style="margin-top:8px" href="${esc(g.url)}" target="_blank" rel="noopener noreferrer"><span class="b">${i+1}. ${esc(x.name.replace(/\s*\(.*?\)\s*/g,' ').trim())}</span><span class="sub s13 blk">${g.what}로 이동</span></a>`}).join('')}</div>`:''}
 ${(no=>no.length?`<div class="card"><h3>제출서류는 공식 신청 페이지에서 확인해 주세요</h3><p class="sub s13">${no.length<ps.length?no.map(x=>'「'+esc(x.name)+'」').join(', ')+'은(는) ':''}온통청년에 서류 안내가 없거나 서류 이름을 찾지 못했어요. 서류가 필요 없다는 뜻이 아니에요. 신청 전에 공식 페이지에서 제출서류와 발급 조건을 확인하세요.</p>${no.map(x=>{const s=official(x.links,x.external_id);return `<a class="btn line w" style="margin-top:8px" href="${esc((s.apply||s.notice)?.url||PORTAL(x.external_id))}" target="_blank" rel="noopener noreferrer">${ps.length>1?esc(x.name.replace(/\s*\(.*?\)\s*/g,' ').trim())+' · ':''}${s.apply?'공식 신청 페이지 열기':s.notice?'공식 공고 열기':'온통청년 정책 페이지 열기'}</a>`}).join('')}</div>`:'')(ps.filter(x=>!P.documents.some(d=>d.policies.includes(x.external_id))))}<div class="card"><h3>점검 목록</h3><ul class="list">${ps.map(row).join('')}
 ${nd.length||P.documents.length?`<li class="rowbtn"><span><span class="b">서류 ${nd.length}종 중 ${have}종 준비</span><span class="sub s13 blk">${nd.length?left.length?'남은 서류: '+esc(left.join(', ')):'찾은 서류는 모두 준비했어요':'서류는 공고에서 확인해 주세요'}</span></span>${!nd.length?pill('확인 필요','warn'):left.length?pill('남음','bad'):pill('완료','ok')}</li>`:''}
-<li class="rowbtn"><span><span class="b">중복 수혜 여부</span><span class="sub s13 blk">${esc(dup[0])}</span></span>${pill(dup[1],dup[2])}</li></ul>
+${dup?`<li><details class="dup" data-d="dupOpen" ${S.dupOpen?'open':''}><summary class="rowbtn"><span class="b">중복 수혜 여부</span><span style="display:flex;align-items:center;gap:8px">${pill(dup[1],dup[2])}<span class="chev" aria-hidden="true">⌄</span></span></summary><div style="padding-bottom:14px"><p class="sub s13">${esc(dup[0])}</p>${(ov.rules||[]).map(r=>`<p class="b s13" style="margin:10px 0 2px">${esc(r.name)} · 판단 기준</p>${r.sentences.map(t=>`<p class="tiny">· ${esc(t)}</p>`).join('')}`).join('')}<p class="tiny" style="margin-top:8px">온통청년에 등록된 참여 제한 안내의 문장이에요. 내가 해당하는지는 기관에 문의하세요.</p></div></details></li>`:''}</ul>
 ${left.length?`<button class="btn line w" style="margin:10px 0 6px" data-a="back">서류 체크하러 돌아가기</button>`:''}</div>
 <details class="more" data-d="moreCheck" ${S.moreCheck?'open':''}><summary>승인하면 저장되는 확인 목록 보기</summary><div class="card"><h3>공고에서 확인할 일</h3><p class="tiny">승인하면 아래 일이 내 신청에 저장돼요.</p>${ps.map(x=>`<p class="b s14" style="margin:10px 0 2px">${esc(x.name)}</p><ul class="pre" style="padding-left:18px;margin:0">${x.tasks.map(t=>`<li>${esc(t.title)}</li>`).join('')}</ul>`).join('')}</div></details>
 <p class="tiny mt">등록 정보를 정리한 안내예요. 제출 전에 공식 공고를 한 번 더 확인하세요.</p></main>

@@ -61,7 +61,7 @@ def _exclusions(item, bundle):
     return item['exclusions']['sentences'] + [q for x in bundle['supplements'] if x['field'] == 'conditions' for q in x['quotes'] if EXCLUDE.search(q)]
 
 
-def _overlap(policies, planned):
+def _overlap_status(policies, planned):
     """신청 전 점검의 '중복 수혜 여부' 줄에 쓸 요약. 새 판정을 만들지 않고 이미 계산된 근거 가운데 가장 조심해야 할 것 하나를 고른다.
     conflict: 고른 정책끼리 막는 문구 / held: 제한 문구에 내가 받고 있는 지원이 나옴 / wording: 유사·중복 사업을 두루 제한하는 문구 /
     allowed: 함께 받을 수 있다고 적힘 / no_wording: 모든 정책에 참여 제한 안내가 있는데 중복 문구는 없음 / unknown: 안내가 없는 정책이 있어 알 수 없음."""
@@ -79,6 +79,20 @@ def _overlap(policies, planned):
         return {'status': 'allowed', 'quote': planned['compatible'][0]['quote'], 'count': len(planned['compatible'])}
     # 안내가 없는 정책이 하나라도 있으면 '문구 없음'이라고 하지 않는다(말이 없는 것은 가능하다는 뜻이 아니다).
     return {'status': 'no_wording' if policies and all(p['exclusions'] for p in policies) else 'unknown'}
+
+
+def _overlap(policies, planned):
+    """_overlap_status에, 정책마다 중복 수혜를 판단하는 기준이 되는 문장(rules)을 붙인다. 등록된 참여 제한 안내에서 그대로 옮긴 문장이고 새로 쓴 것이 아니다.
+    비슷한 사업·중복 수혜를 말하는 문장, 고른 다른 정책을 가리킨 문장, 내가 받고 있는 지원이 나온 문장을 모은다. 그런 문장이 없는 정책은 넣지 않는다."""
+    view, rules = _overlap_status(policies, planned), []
+    for p in policies:
+        sentences = [s for s in p['exclusions'] if SIMILAR.search(s)]
+        sentences += [c['quote'] for c in planned['conflicts'] + planned['compatible'] if c['from'] == p['external_id']]
+        if view['status'] == 'held' and view['policy'] == p['name']:
+            sentences += re.findall(r'“(.+?)”', view['basis'])
+        if sentences:
+            rules.append({'external_id': p['external_id'], 'name': p['name'], 'sentences': list(dict.fromkeys(sentences))[:4]})
+    return {**view, 'rules': rules}
 
 
 def compare(external_ids, on):
