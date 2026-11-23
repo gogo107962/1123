@@ -59,7 +59,7 @@ with sync_playwright() as p:
         page.locator('[data-a=back]').click()                      # 신청 계획 → 상세
         page.locator('[data-a=back]').click()                      # 상세 → 지원 찾기
         expect(page.locator('.browse-item').first).to_be_visible()
-    expect(page.locator('.act')).to_contain_text('5개 선택')
+    assert page.evaluate('selIds().length') == 5 and '개 선택' not in page.locator('.act').inner_text()   # 몇 개 골랐는지는 막대에 적지 않는다
     page.locator('.browse-item').nth(5).click()
     page.locator('[data-a=prep]').click()
     expect(page.locator('#toast')).to_contain_text('5개까지')
@@ -103,7 +103,7 @@ with sync_playwright() as p:
     expect(page.locator('main')).to_contain_text('내 정보를 입력하면 조건을 비교해 드려요')
     page.locator('[data-a=back]').click()
     expect(page.locator('.browse-item strong').first).to_have_text(first)
-    expect(page.locator('.act')).to_contain_text('5개 선택')
+    assert page.evaluate('selIds().length') == 5 and '개 선택' not in page.locator('.act').inner_text()   # 몇 개 골랐는지는 막대에 적지 않는다
     page.reload(wait_until='networkidle')
     page.locator('[data-a=continue]').click()
     page.locator('nav [data-s=plan]').click()
