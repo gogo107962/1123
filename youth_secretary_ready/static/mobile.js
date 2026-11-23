@@ -123,8 +123,13 @@ const HELP=`<div class="scrim" data-a="closehelp"></div><section class="sheet" r
 <p class="tiny">청년비서는 신청 준비를 돕는 서비스예요. 자격을 확정하지 않으니 신청 전에 공고를 꼭 확인하세요.</p><button class="btn w" data-a="closehelp">확인</button></section>`;
 
 const V={
-login:()=>`<main class="pad"><div class="login-intro"><h1 class="hero">공고는 저희가 읽을게요.<br>신청 준비만 하세요.</h1><p class="sub">청년비서 · 청년 지원 신청 준비 도우미</p></div>
-<div class="col">${S.profile?`<button class="btn" data-a="continue">기존 정보로 계속 이용</button><p class="sub c">${S.profile.name?esc(S.profile.name)+' 님이 ':''}입력한 정보로 이어서 해요</p><div class="or"><span></span>또는<span></span></div>`:''}<button class="btn ${S.profile?'line':''}" data-a="start">새 정보 입력</button></div></main>`,
+// 시작 화면: 문구 · 앱 화면 미리보기(예시, 꾸밈이라 화면 읽기 프로그램에서는 건너뜀) · 아래쪽 버튼. 미리보기에는 버튼을 두지 않는다.
+login:()=>`<main class="pad login"><div class="login-intro"><h1 class="hero">공고는 저희가 읽을게요.<br>신청 준비만 하세요.</h1><p class="sub">청년비서 · 청년 지원 신청 준비 도우미</p></div>
+<div class="peek" aria-hidden="true"><div class="peek-top"><span class="peek-tag">화면 예시</span><span class="peek-chat">월세 지원 받을 수 있어?</span></div>
+<div class="peek-card"><span class="soft-icon yellow">${ms('home_work')}</span><span class="peek-copy"><strong>청년 월세 지원</strong><span>내 조건과 비교했어요</span></span>${pill('맞아요','ok')}</div>
+<div class="peek-card in"><span class="soft-icon">${ms('description')}</span><span class="peek-copy"><strong>서류 6종을 한 번에</strong><span class="peek-bar"><i></i></span><span>4종 준비 · 2종 남음</span></span></div>
+<div class="peek-card"><span class="soft-icon">${ms('checklist')}</span><span class="peek-copy"><strong>준비를 마치면 공식 사이트로</strong><span>신청 페이지로 바로 안내해요</span></span>${ms('chevron_right')}</div></div>
+<div class="col login-actions">${S.profile?`<button class="btn" data-a="continue">기존 정보로 계속 이용</button><p class="sub c">${S.profile.name?esc(S.profile.name)+' 님이 ':''}입력한 정보로 이어서 해요</p><div class="or"><span></span>또는<span></span></div>`:''}<button class="btn ${S.profile?'line':''}" data-a="start">새 정보 입력</button></div></main>`,
 
 home:()=>{const p=S.profile||{},all=tasks(),rd=new Set((S.space?.plans||[]).filter(x=>x.ready).map(x=>x.external_id)),
  // '이어서 준비하기'는 준비 완료로 옮기지 않은 계획만 센다(모두 준비 완료면 전체). '저장한 정책' 건수는 전체를 센다.
