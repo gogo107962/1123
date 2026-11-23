@@ -31,6 +31,7 @@ with sync_playwright() as p:
     expect(page.locator('[data-a=demo]')).to_have_text('데모 계정으로 시작하기')
     expect(page.locator('[data-a=start]')).to_have_text('내 정보 입력하기')
     assert '민지' not in page.locator('main').inner_text()                         # 시작 화면에 가상 인물 이름을 적지 않는다
+    assert '화면 예시' not in page.locator('main').inner_text()                     # 미리보기에 '화면 예시' 표시를 두지 않는다(2026-11-23 사용자 요청)
     colors = page.evaluate("['demo','start'].map(a=>getComputedStyle(document.querySelector(`[data-a=${a}]`)).backgroundColor)")
     assert colors == ['rgb(255, 255, 255)', 'rgb(254, 230, 80)'], colors          # 데모 계정은 흰색, 내 정보 입력하기는 노란색
     assert page.evaluate("(()=>{const m=document.querySelector('main');return m.scrollHeight<=m.clientHeight})()")   # 시작 화면은 스크롤 없이 한 화면에 들어간다
@@ -44,7 +45,11 @@ with sync_playwright() as p:
     # 나머지 흐름은 가상 인물의 정보를 넣어 두고 '기존 정보로 계속 이용'으로 이어 간다
     page.evaluate('p=>localStorage.setItem("youth-desk-profile",JSON.stringify(p))', PROFILE)
     page.reload(wait_until='networkidle')
-    expect(page.locator('.login-two')).to_be_visible()                            # 계속 이용 아래에 데모 계정으로 시작하기 · 내 정보 입력하기
+    # 정보를 한 번 저장하면 버튼은 그대로 두 개: 데모 계정으로 시작하기(흰색) · 기존 정보로 계속 이용하기(노란색). '내 정보 입력하기'는 없다
+    expect(page.locator('[data-a=continue]')).to_have_text('기존 정보로 계속 이용하기')
+    assert page.locator('main button').count() == 2 and page.locator('[data-a=start]').count() == 0
+    colors = page.evaluate("['demo','continue'].map(a=>getComputedStyle(document.querySelector(`[data-a=${a}]`)).backgroundColor)")
+    assert colors == ['rgb(255, 255, 255)', 'rgb(254, 230, 80)'], colors
     page.locator('[data-a=continue]').click()
     expect(page.locator('.greeting')).to_contain_text('민지 님')
     assert '지금 할 일' not in page.locator('main').inner_text()
@@ -165,7 +170,7 @@ with sync_playwright() as p:
 
     # 새로고침 뒤: 첫 화면에서 '기존 정보로 계속 이용'을 누르면 복원
     page.reload(wait_until='networkidle')
-    expect(page.locator('[data-a=start]')).to_have_text('내 정보 입력하기')
+    expect(page.locator('[data-a=continue]')).to_have_text('기존 정보로 계속 이용하기')
     page.locator('[data-a=continue]').click()
     expect(page.locator('.greeting')).to_contain_text('민지 님')
     # 홈 '이어서 준비하기': 저장한 정책에 서류가 있으면 '서류 준비 n / m', 없으면 '확인한 일 n / m'
@@ -236,8 +241,9 @@ with sync_playwright() as p:
         'school_code': '0049007', 'business': 'no', 'income_band': 60, 'income_monthly': 50, 'household': 1,
         'exams': [{'name': '정보처리기사', 'month': '2026-10'}], 'benefits': ['국민취업지원제도']}, demo
     page.reload(wait_until='networkidle')
-    expect(page.locator('[data-a=continue]')).to_be_visible()                     # 정보가 있으면 계속 이용 · 데모 계정으로 시작하기 · 내 정보 입력하기
-    expect(page.locator('.login-two [data-a=demo]')).to_have_text('데모 계정으로 시작하기')
+    expect(page.locator('[data-a=continue]')).to_be_visible()                     # 정보가 있으면 데모 계정으로 시작하기 · 기존 정보로 계속 이용하기 두 개
+    expect(page.locator('[data-a=demo]')).to_have_text('데모 계정으로 시작하기')
+    assert page.locator('main button').count() == 2
     assert page.evaluate("[...document.querySelectorAll('.login-actions .btn')].every(b=>b.scrollWidth<=b.clientWidth)")   # 버튼 글이 잘리지 않는다
     assert page.evaluate(FITS)
 
