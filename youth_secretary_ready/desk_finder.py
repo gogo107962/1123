@@ -11,7 +11,7 @@ import re
 import threading
 import httpx
 from fastapi import HTTPException
-from local_agent import config, model_status
+from local_agent import model_status, provider, structured
 from policy_codes import CODEBOOK
 from policy_structure import SIDO, SIGUNGU, SIGUNGU_COMPLETE
 from screening import BENEFITS, provided, screen_catalog, validate_profile
@@ -140,27 +140,14 @@ TOOL_SCHEMA = {'type': 'object', 'properties': {'plan': {'type': 'boolean'}, 'do
 
 
 def generate(message):
-    base, model = config()
-    with httpx.Client(timeout=120, trust_env=False) as client:
-        response = client.post(base + '/api/chat', json={
-            'model': model, 'stream': False, 'think': False, 'format': SCHEMA,
-            'messages': [{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': message}],
-            'options': {'temperature': 0, 'num_ctx': 4096, 'num_predict': 200}})
-        response.raise_for_status()
-        body = response.json()
-        if body.get('done_reason') == 'length':
-            raise ValueError('truncated')
-        picked = check(json.loads(body['message']['content']))
-        try:   # 도구 선택이 실패해도 찾기는 그대로 한다(말에 낱말이 있으면 코드가 플래너를 부른다)
-            # num_ctx를 검색어 호출과 같게 둔다. 다르면 Ollama가 호출마다 모델을 다시 올려 한 질문에 10초 넘게 걸렸다.
-            chosen = client.post(base + '/api/chat', json={
-                'model': model, 'stream': False, 'think': False, 'format': TOOL_SCHEMA,
-                'messages': [{'role': 'system', 'content': TOOL_SYSTEM}, {'role': 'user', 'content': message}],
-                'options': {'temperature': 0, 'num_ctx': 4096, 'num_predict': 30}}).json()
-            chosen = json.loads(chosen['message']['content'])
-            picked['tools'] = ['find', *(k for k in ('plan', 'documents') if chosen.get(k) is True)]
-        except Exception:
-            pass
+    ask = lambda system, schema, limit: structured([{'role': 'system', 'content': system}, {'role': 'user', 'content': message}], schema, 4096, limit)
+    picked = check(ask(SYSTEM, SCHEMA, 200))
+    try:   # 도구 선택이 실패해도 찾기는 그대로 한다(말에 낱말이 있으면 코드가 플래너를 부른다)
+        # Ollama에서는 num_ctx를 검색어 호출과 같게 둔다. 다르면 호출마다 모델을 다시 올려 한 질문에 10초 넘게 걸렸다.
+        chosen = ask(TOOL_SYSTEM, TOOL_SCHEMA, 30)
+        picked['tools'] = ['find', *(k for k in ('plan', 'documents') if chosen.get(k) is True)]
+    except Exception:
+        pass
     return picked
 
 
@@ -376,7 +363,10 @@ def find(message, profile, on, skip=(), selected=()):
     steps.append({'who': 'output', 'did': '화면의 문장은 정해 둔 틀과 등록된 글로만 만들었어요. 모델이 쓴 문장은 없어요.'})
     note = next((x['did'] for x in steps if x['who'] == 'planner'), '') if asked_plan and not comp else ''
     paper_note = next((x['did'] for x in steps if x['who'] == 'docboard'), '') if asked_docs and not papers else ''
-    return {'topics': topics_of(words, profile, on, compared), 'steps': steps, 'compare': comp, 'compare_note': note, 'documents': papers, 'documents_note': paper_note, 'answer': FALLBACK_NOTE.get(ai, '') + answer, 'ai': ai, 'answer_origin': 'validated_template', 'keywords': words, 'compared': compared,
+    prefix = FALLBACK_NOTE.get(ai, '')
+    if provider() != 'ollama':   # 로컬 모델이 아닌 서버에서 '로컬 AI'라고 말하지 않는다
+        prefix = prefix.replace('로컬 AI', 'AI')
+    return {'topics': topics_of(words, profile, on, compared), 'steps': steps, 'compare': comp, 'compare_note': note, 'documents': papers, 'documents_note': paper_note, 'answer': prefix + answer, 'ai': ai, 'answer_origin': 'validated_template', 'keywords': words, 'compared': compared,
             'profile_suggestion': suggestion, 'question': question, 'total': result['total'], 'outcomes': o, 'tiers': t,
             'items': result['items'] if compared else [{**x, 'tier': None, 'screen': None} for x in result['items']],
             'tools': [{'tool': 'search_policies' if ai == 'used' else 'keyword_match', 'status': 'ok'}, {'tool': 'screen_profile', 'status': 'ok' if compared else 'skipped'},

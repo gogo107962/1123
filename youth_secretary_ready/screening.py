@@ -624,6 +624,7 @@ def screen_catalog(profile, on, query='', outcome='', only_tier='', page=1, page
                       'long_window': item['application']['long_window'],
                       'category': item['category'], 'period_status': status, 'engine': engine_view(policy, profile, on) if policy else None, 'name_hit': any(w in row['name'] for w in words), **placed, 'screen': result,
                       'amounts': item['amounts'], 'channels': item['access']['channels'], 'provision': item['provision']['label'],
+                      'early_close': item['said']['early_close'],
                       'scale': item['scale'], 'selection': item['selection']['methods'], 'summary': item['summary'],
                       'age': item['age'], 'sido_names': item['region']['sido_names'], 'nationwide': item['region']['nationwide'],
                       # 전국 대상은 시군구 묶음이 두 벌이라(행정구역 개편) 코드가 달라도 같은 지역으로 본다.

@@ -14,6 +14,9 @@ from playwright.sync_api import sync_playwright, expect
 BASE = Path(__file__).resolve().parents[1]
 URL = os.environ.get('APP_URL', 'http://127.0.0.1:8000')
 FITS = 'document.documentElement.scrollWidth<=window.innerWidth+1'
+LAST_MONTH = time.strftime('%Y-%m', time.localtime(time.mktime(time.localtime()[:1] + (time.localtime()[1] - 1, 1, 0, 0, 0, 0, 0, -1))))
+PROFILE = {'name': '민지', 'birth': '2000-03', 'moved': '2024-02', 'age': 26, 'sido': '28', 'region_code': '28177', 'job_code': '0013003',
+           'school_code': '', 'household': 1, 'housing': '월세', 'exams': [{'name': '정보처리기사', 'month': LAST_MONTH}]}     # 가상 인물
 
 with sync_playwright() as p:
     browser = p.chromium.launch(channel='msedge', headless=True)
@@ -22,11 +25,33 @@ with sync_playwright() as p:
     page.on('pageerror', lambda error: errors.append(str(error)))
     page.goto(URL, wait_until='networkidle')
 
-    # 시작 → 데모 계정 → 홈
+    # 시작 화면에는 '새 정보 입력'만 있고 '체험'·'데모'라는 말이 없다
     expect(page.locator('h1.hero')).to_contain_text('공고는 저희가 읽을게요')
-    page.locator('[data-a=demo]').click()
+    first = page.locator('main').inner_text()
+    assert '체험' not in first and '데모' not in first and page.locator('main button').count() == 1
+    # 새 정보 입력에서 이름을 적고 저장하면 홈에 그 이름이 나온다
+    page.locator('[data-a=start]').click()
+    assert '체험' not in page.locator('main').inner_text()
+    page.locator('#name').fill('민지')
+    expect(page.locator('.pick > span').first).to_have_text('선택')             # 비어 있는 달 칸은 '선택'이라고 보인다
+    page.locator('[data-a=save]').click()
     expect(page.locator('.greeting')).to_contain_text('민지 님')
-    expect(page.locator('.pill.ok').first).to_contain_text('조건 맞아요')
+    # 나머지 흐름은 가상 인물의 정보를 넣어 두고 '기존 정보로 계속 이용'으로 이어 간다
+    page.evaluate('p=>localStorage.setItem("youth-desk-profile",JSON.stringify(p))', PROFILE)
+    page.reload(wait_until='networkidle')
+    expect(page.locator('.or')).to_be_visible()                                   # 계속 이용 · 또는 · 새 정보 입력
+    page.locator('[data-a=continue]').click()
+    expect(page.locator('.greeting')).to_contain_text('민지 님')
+    assert '지금 할 일' not in page.locator('main').inner_text()
+    # 도움말: 알림 옆의 버튼을 누르면 이용 방법이 나오고, 확인을 누르면 닫힌다
+    page.locator('header [data-a=help]').click()
+    expect(page.locator('.sheet')).to_contain_text('이렇게 이용해요')
+    expect(page.locator('.sheet li')).to_have_count(5)
+    assert page.evaluate(FITS)
+    page.locator('.sheet [data-a=closehelp]').click()
+    expect(page.locator('.sheet')).to_have_count(0)
+    expect(page.locator('.pill.ok').first).to_contain_text('맞아요')
+    assert '조건 맞아요' not in page.locator('main').inner_text()
     assert page.evaluate(FITS)
     page.screenshot(path=str(BASE / '.local/mobile-home.png'))
 
@@ -56,9 +81,11 @@ with sync_playwright() as p:
     assert page.evaluate(FITS)
     page.screenshot(path=str(BASE / '.local/mobile-results.png'))
     page.locator('.cardbtn').first.click()
-    expect(page.locator('main')).to_contain_text('조건 대조')
-    # 공식 사이트: 온통청년 정책 페이지는 모든 정책에 있고, '공식 공고' 버튼은 항상 주소가 있다
-    expect(page.locator('main a[href^="https://www.youthcenter.go.kr/youthPolicy/ythPlcyTotalSearch/ythPlcyDetail/"]')).to_have_text('온통청년 정책 페이지')
+    expect(page.locator('main h3').filter(has_text='지원 조건')).to_be_visible()
+    text = page.locator('main').inner_text()
+    assert '조건 대조' not in text and '내 정보:' not in text and '공식 사이트' not in text
+    assert text.index('지원 내용') < text.index('지원 조건')                    # 지원 내용이 먼저
+    # '공식 공고' 버튼은 항상 주소가 있다
     assert page.locator('.act a.btn').get_attribute('href').startswith('https://')
     # 신청기간 줄은 맨 위에 판정 없이 표시만(회색) 나오고, 누르면 오늘 날짜와 '표시만' 안내가 보인다
     expect(page.locator('[data-a=sheet]').first).to_contain_text('신청기간')
@@ -80,7 +107,9 @@ with sync_playwright() as p:
     page.locator('input[data-a=sel]').nth(1).check()
     expect(page.locator('.act')).to_contain_text('2개 선택')
     page.locator('[data-a=plan]').click()
-    expect(page.locator('main')).to_contain_text('신청 순서')
+    expect(page.locator('.ord li')).to_have_count(2)
+    assert page.locator('main h3').filter(has_text='고른 정책').count() == 0     # '고른 정책' 칸은 없다
+    assert '신청 순서' not in page.locator('main').inner_text()
     # 안내 글에 서로 막는 문구가 있으면 그 문장을, 없으면 확인 필요 안내를 보여 준다.
     expect(page.locator('.warnbox')).to_contain_text('함께 받')
     assert page.evaluate(FITS)
@@ -95,9 +124,8 @@ with sync_playwright() as p:
             expect(page.locator('input[data-a=doc]:not(:checked)')).to_have_count(left - 1)
     page.locator('[data-a=check]').click()
     expect(page.locator('main')).to_contain_text('중복 수혜 여부')
-    expect(page.locator('#msg')).to_contain_text('문의드립니다')
-    expect(page.locator('main a[href^="https://www.youthcenter.go.kr/youthPolicy/ythPlcyTotalSearch/ythPlcyDetail/"]')).to_have_count(2)                 # 고른 정책마다 공식 사이트 링크
-    assert page.locator('.act a.btn').inner_text() in ('공식 신청 페이지로 이동', '공식 공고로 이동')
+    assert '문의 문구' not in page.locator('main').inner_text() and '공식 사이트' not in page.locator('main').inner_text()                 # 고른 정책마다 공식 사이트 링크
+    assert page.locator('.act a.btn').inner_text() in ('공식 신청 페이지로 이동', '공식 공고로 이동', '온통청년 공고로 이동')
     assert page.locator('.act a.btn').get_attribute('href').startswith('https://')
     # 승인 전에는 아무것도 저장되지 않는다.
     assert page.evaluate("fetch('/api/desk/workspaces/'+localStorage.getItem('youth-desk-workspace')).then(r=>r.json()).then(d=>d.tasks.length)") == 0
@@ -117,8 +145,10 @@ with sync_playwright() as p:
     page.locator('.plan-card summary').first.click()
     expect(tasks.first).to_be_hidden()
 
-    # 새로고침 뒤 복원
+    # 새로고침 뒤: 첫 화면에서 '기존 정보로 계속 이용'을 누르면 복원
     page.reload(wait_until='networkidle')
+    expect(page.locator('[data-a=start]')).to_have_text('새 정보 입력')
+    page.locator('[data-a=continue]').click()
     expect(page.locator('.greeting')).to_contain_text('민지 님')
     # 홈 '이어서 준비하기': 저장한 정책에 서류가 있으면 '서류 준비 n / m', 없으면 '확인한 일 n / m'
     expect(page.locator('.prep-count')).to_be_visible()
@@ -139,7 +169,7 @@ with sync_playwright() as p:
     expect(page.locator('main')).to_contain_text('공식 페이지에서 보완한 정보')
     expect(page.locator('main')).to_contain_text('사람 검수 전')
     # 조건 줄은 '지원 조건'으로 나오고, 보완 기록마다 출처에서 문장을 확인했는지 표시가 붙는다
-    expect(page.locator('main')).to_contain_text('지원 조건:')
+    expect(page.locator('main')).to_contain_text('지원 조건')
     assert page.locator('details.more .pill').filter(has_text='출처에서 문장 확인').count() + page.locator('details.more .pill').filter(has_text='자동 대조 안 됨').count() >= 1
     page.locator('[data-a=back]').click()
 
@@ -152,11 +182,13 @@ with sync_playwright() as p:
     page.locator('[data-a=save]').click()
     expect(page.locator('#toast')).to_contain_text('저장했어요')
     page.reload(wait_until='networkidle')
+    page.locator('[data-a=continue]').click()
     page.locator('nav [data-s=profile]').click()
     expect(page.locator('select[data-k=income_band]')).to_have_value('100')
     assert page.evaluate("JSON.parse(localStorage.getItem('youth-desk-profile')).income_band") == 100
     page.locator('[data-a=logout]').click()
     expect(page.locator('h1.hero')).to_be_visible()
+    assert page.locator('[data-a=continue]').count() == 0                      # 정보를 지우면 '계속 이용'이 없다
 
     # 넓은 화면에서도 앱 폭을 유지한다.
     page.set_viewport_size({'width': 1280, 'height': 900})
