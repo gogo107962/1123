@@ -141,8 +141,12 @@ with sync_playwright() as p:
     page.locator('[data-a=check]').click()
     expect(page.locator('main')).to_contain_text('중복 수혜 여부')
     assert '문의 문구' not in page.locator('main').inner_text() and '공식 사이트' not in page.locator('main').inner_text()                 # 고른 정책마다 공식 사이트 링크
-    assert page.locator('.act a.btn').inner_text() in ('공식 신청 페이지로 이동', '공식 공고로 이동', '온통청년 공고로 이동')
-    assert page.locator('.act a.btn').get_attribute('href').startswith('https://')
+    # 정책을 둘 골랐으면 정책마다 신청하는 곳 버튼이 하나씩 있다(아래 막대에는 승인 버튼만). 하나면 아래 막대에 공식 페이지 버튼.
+    links = page.locator('.apply-links a.btn')
+    expect(links).to_have_count(2)
+    assert all(links.nth(i).get_attribute('href').startswith('https://') for i in range(2))
+    assert all(links.nth(i).inner_text().startswith(f'{i + 1}. ') for i in range(2))
+    assert page.locator('.act a.btn').count() == 0
     # 승인 전에는 아무것도 저장되지 않는다.
     assert page.evaluate("fetch('/api/desk/workspaces/'+localStorage.getItem('youth-desk-workspace')).then(r=>r.json()).then(d=>d.tasks.length)") == 0
     page.locator('[data-a=approve]').click()
@@ -234,7 +238,10 @@ with sync_playwright() as p:
     expect(page.locator('.greeting')).to_contain_text('미추홀구')
     demo = page.evaluate("JSON.parse(localStorage.getItem('youth-desk-profile'))")
     assert {k: demo[k] for k in ('name', 'birth', 'sido', 'region_code', 'job_code', 'housing')} == {k: PROFILE[k] for k in ('name', 'birth', 'sido', 'region_code', 'job_code', 'housing')}
-    assert demo['exams'] == PROFILE['exams'], demo['exams']                       # 지난달 정보처리기사 응시
+    # 시연 페르소나(2026-11-23 팀 정리)의 나머지 값: 대학 졸업 · 사업자 없음 · 중위소득 60% 이하 · 월 50만원 · 2026년 10월 정보처리기사 · 국민취업지원제도
+    assert {k: demo[k] for k in ('school_code', 'business', 'income_band', 'income_monthly', 'household', 'exams', 'benefits')} == {
+        'school_code': '0049007', 'business': 'no', 'income_band': 60, 'income_monthly': 50, 'household': 1,
+        'exams': [{'name': '정보처리기사', 'month': '2026-10'}], 'benefits': ['국민취업지원제도']}, demo
     page.reload(wait_until='networkidle')
     expect(page.locator('[data-a=continue]')).to_be_visible()                     # 정보가 있으면 계속 이용 · 데모 계정으로 시작하기 · 내 정보 입력하기
     expect(page.locator('.login-two [data-a=demo]')).to_have_text('데모 계정으로 시작하기')

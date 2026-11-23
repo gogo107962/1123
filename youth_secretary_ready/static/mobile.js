@@ -21,6 +21,9 @@ const PERIOD={open:'접수 중',rolling:'상시',upcoming:'시작 전',unknown:'
 const REASON={closed:'마감됐어요',no_application_route:'신청 방법 정보가 없어요',no_region_code:'지역 정보가 없어요'};
 const TOPICS={'자격증 응시료':'자격증 시험 쳤는데 응시료 지원받을 수 있어?','월세 지원':'월세 지원 받을 수 있어?','구직 수당':'취업 준비 중인데 구직 수당 받을 수 있어?','교통비':'교통비 지원 받을 수 있어?'};
 const CATS=[['일자리','work','일자리'],['주거','home_work','주거'],['교육 · 훈련','school','교육･직업훈련'],['자격증','award','k:자격증,응시료']];
+// 데모 계정: 시연 영상 페르소나(가상 인물 김민지, 2026-11-23 팀 정리)의 '내 정보'. 인천 미추홀구 혼자 월세 · 대학 졸업 뒤 취업 준비 · 국민취업지원제도 참여 · 2026년 10월 정보처리기사 응시.
+const DEMO={name:'민지',birth:'2000-03',age:26,moved:'2024-02',residence_months:null,sido:'28',region_code:'28177',job_code:'0013003',school_code:'0049007',business:'no',biz_opened:'',biz_type:'',
+ income_band:60,income_monthly:50,household:1,income_bracket:null,housing:'월세',exams:[{name:'정보처리기사',month:'2026-10'}],benefits:['국민취업지원제도'],groups:null};
 const ENGINE={review_possible:['신청 검토 가능','ok'],ineligible:['조건 불충족','bad'],needs_review:['확인 필요','warn'],application_closed:['신청 기간 아님','gray']};
 const EFFECT={pass:['충족','ok'],block:['불충족','bad'],unknown:['확인 필요','warn']};
 const FIELD={documents:'제출서류',period:'신청 시기',method:'신청 방법',conditions:'대상 · 조건'};
@@ -138,7 +141,7 @@ login:()=>`<main class="pad login"><div class="login-intro"><h1 class="hero">공
 
 home:()=>{const p=S.profile||{},all=tasks(),rd=new Set((S.space?.plans||[]).filter(x=>x.ready).map(x=>x.external_id)),
  // '이어서 준비하기'는 준비 완료로 옮기지 않은 계획만 센다(모두 준비 완료면 전체). '저장한 정책' 건수는 전체를 센다.
- t=all.some(x=>!rd.has(x.external_id))?all.filter(x=>!rd.has(x.external_id)):all,done=t.filter(x=>x.status==='done').length,c=S.counts,groups=new Set(all.map(x=>x.external_id)).size,next=t.find(x=>x.status!=='done'),top=c?.items[0],chev=ms('chevron_right'),hp=S.homePlan?.policies.length?S.homePlan:null,have=hp?hp.must.filter(d=>S.docs[d.key]).length:0,lack=hp?.must.find(d=>!S.docs[d.key]);
+ t=all.some(x=>!rd.has(x.external_id))?all.filter(x=>!rd.has(x.external_id)):all,done=t.filter(x=>x.status==='done').length,c=S.counts,groups=new Set(all.map(x=>x.external_id)).size,next=t.find(x=>x.status!=='done'),top=S.pick||c?.items[0],chev=ms('chevron_right'),hp=S.homePlan?.policies.length?S.homePlan:null,have=hp?hp.must.filter(d=>S.docs[d.key]).length:0,lack=hp?.must.find(d=>!S.docs[d.key]);
  return `<header class="home-head"><span class="wordmark">청년비서</span><span style="display:flex;gap:6px"><button class="ib" data-a="help" aria-label="이용 방법">${ms('help')}</button><button class="ib" data-a="notice" aria-label="알림">${ms('notifications')}</button></span></header>${S.help?HELP:''}
 <main class="pad home-main"><div class="greeting"><span>${p.name?esc(p.name)+' 님':'반가워요'}</span><button data-a="tab" data-s="profile">${esc(area(p)||'내 정보 입력')} ${chev}</button></div>
 <section class="balance-card"><div class="row"><h2>내가 준비 중인 지원</h2><span class="small-tag">저장한 정책</span></div><div class="balance-value">${groups}<span>건</span></div><p class="balance-caption">찾아둔 지원, 신청까지 차근차근</p>
@@ -239,7 +242,10 @@ plan:()=>{const picked=selIds(),ids=planIds(),P=S.plan,saved=S.space?.tasks||[],
   const extra=S.only&&S.selected[S.only]&&selIds().length>1;
   draft=`<div class="plan-head"><h2 class="h20">${many?`정책 ${P.order.length}개 신청 준비`:esc(by[P.order[0]].name)}</h2><p class="sub">${many?'':esc(by[P.order[0]].period_label)+' · '}기준일 ${esc(P.as_of)}</p>${many?`<ol class="ord" style="margin:6px 0 0;color:#5f646c;font-size:13px">${P.order.map(id=>`<li>${esc(by[id].name)} · ${esc(by[id].period_label)}</li>`).join('')}</ol>`:''}</div>${extra?`<p class="tiny" style="margin:0 4px 10px">방금 고른 정책만 보여 드려요. <button class="link" data-a="all" style="background:none;border:0;padding:0;color:inherit;text-decoration:underline;font:inherit;cursor:pointer">고른 정책 ${selIds().length}개 함께 보기</button></p>`:''}${P.conflicts.length?`<div class="warnbox" role="status"><strong>함께 받기 어려울 수 있어요.</strong> 안내 글에 아래 문구가 있어요. 사람 검수 전이니 기관에 확인하세요.${P.conflicts.map(c=>`<br>· ${num(c.from)}번 안내: “${esc(c.quote)}” → ${num(c.to)}번${c.kind==='named'?'의 이름이 보여요':'과 비슷한 사업 제한 문구예요'}`).join('')}</div>`:many?`<div class="warnbox" role="status"><strong>함께 받을 수 있는지 확인이 필요해요.</strong> 안내 글에서 서로 막는 문구는 없었지만, 중복 수혜 제한은 아직 검수하지 않았어요.</div>`:''}
 <div class="card"><div class="row"><h3>${many?'통합 서류':'필요한 서류'}</h3><span class="tiny">${P.must.length}종 중 ${have}종 준비</span></div>
-${P.documents.length?`<ul class="list">${P.documents.map(d=>{const tag=!many?'':d.policies.length===P.policies.length?'공통':d.policies.map(num).sort().join('·')+'번만';return `<li class="doc"><input type="checkbox" class="cb" data-a="doc" data-k="${esc(d.key)}" ${S.docs[d.key]?'checked':''} aria-label="${esc(d.name)} 보유"><div><div class="pills"><span class="b">${esc(d.name)}</span>${tag?pill(tag):''}${S.docs[d.key]?pill('보유','ok'):d.optional?pill('해당하는 경우만'):pill('부족','bad')}</div><p class="sub s13">${esc(d.kind)} · ${howLinks(d)}</p></div></li>`}).join('')}</ul>`:'<p class="sub">필요한 서류는 공고에서 확인해 주세요.</p>'}
+${P.documents.length?`<ul class="list">${P.documents.map(d=>{
+  // 여러 정책을 함께 준비할 때: 모든 정책에 필요하면 '공통', 일부에만 필요하면 그 정책 이름을 적는다('1번만'은 '한 번만 제출'로 읽혀 헷갈렸다)
+  const common=many&&d.policies.length===P.policies.length,only=many&&!common?P.order.filter(id=>d.policies.includes(id)).map(id=>by[id].name.replace(/\s*\(.*?\)\s*/g,' ').trim()):[];
+  return `<li class="doc"><input type="checkbox" class="cb" data-a="doc" data-k="${esc(d.key)}" ${S.docs[d.key]?'checked':''} aria-label="${esc(d.name)} 보유"><div><div class="pills"><span class="b">${esc(d.name)}</span>${common?pill('공통'):''}${S.docs[d.key]?pill('보유','ok'):d.optional?pill('해당하는 경우만'):pill('부족','bad')}</div>${only.length?`<p class="s13" style="margin:2px 0 0;color:#5f646c">${esc(only.join(', '))}에만 필요</p>`:''}<p class="sub s13">${esc(d.kind)} · ${howLinks(d)}</p></div></li>`}).join('')}</ul>`:'<p class="sub">필요한 서류는 공고에서 확인해 주세요.</p>'}
 ${P.must.some(d=>!S.docs[d.key])?'<p class="tiny" style="margin-top:8px">지금 다 체크하지 못해도 괜찮아요. 고른 정책과 체크한 서류는 임시저장되고, ‘내 신청’에서 이어서 준비할 수 있어요.</p>':''}<details><summary>서류 안내 원문 · 주의할 점</summary>${P.documents_unlisted.length?`<p class="tiny" style="margin-top:8px">${P.documents_unlisted.map(num).sort().map(i=>i+'번').join(', ')} 정책은 서류 안내가 없어요. 서류가 필요 없다는 뜻이 아니에요.</p>`:''}<p class="tiny" style="margin-top:6px">서류 안내 글에서 이름을 찾은 서류예요. 발급일 · 포함 항목 · 대체서류는 공고에서 확인하세요.</p>${P.policies.map(x=>`<p class="b" style="margin:8px 0 0">${num(x.external_id)}. ${esc(x.name)}</p><p class="pre">${({api_other:'(신청 방법·기타 안내 글에서 읽음) ',web_check:'(공식 페이지에서 보완 · 사람 검수 전) ',attachment_pdf:'(공고 첨부파일에서 읽음 · 자동 대조 안 됨 · 사람 검수 전) ',attachment_hwpx:'(공고 첨부파일에서 읽음 · 자동 대조 안 됨 · 사람 검수 전) ',image:'(공고 이미지에서 읽음 · 자동 대조 안 됨 · 사람 검수 전) '})[x.documents_source]||''}${esc(x.documents_text||'정보 없음')}</p>`).join('')}</details></div>
 <div class="card"><h3>안내 및 신청 링크</h3><p class="tiny">새 창에서 열려요.</p>${P.order.map(id=>`${many?`<p class="b s14" style="margin:10px 0 0">${num(id)}. ${esc(by[id].name)}</p>`:''}${sites(by[id].links,id)}`).join('')}</div>
 `;}
@@ -271,14 +277,17 @@ check:()=>{const P=S.plan;if(!P)return wait('신청 전 점검');
  const by=Object.fromEntries(P.policies.map(x=>[x.external_id,x])),ps=P.order.map(id=>by[id]),nd=P.must,have=nd.filter(d=>S.docs[d.key]).length,left=nd.filter(d=>!S.docs[d.key]).map(d=>d.name);
  const row=x=>{const c=x.criteria?.filter(k=>k.result!=='skipped'&&k.counted!==false)||[],ok=c.filter(k=>k.result==='match'),bad=c.filter(k=>k.result==='mismatch').length,unk=c.filter(k=>k.result==='unknown').length;
   return `<li class="rowbtn"><span><span class="b">${ps.length>1?P.order.indexOf(x.external_id)+1+'. ':''}${esc(x.name)}</span><span class="sub s13 blk">${x.criteria?`등록된 조건 ${ok.length}개 맞아요${ok.length?' · '+ok.map(k=>CRIT[k.key]).join(', '):''}`:'내 정보가 없어 조건을 비교하지 않았어요'}</span></span>${!x.criteria?pill('비교 안 함'):bad?pill('달라요 '+bad,'bad'):unk?pill('확인 필요 '+unk,'warn'):pill('맞아요','ok')}</li>`};
+ // 정책마다 신청하는 곳이 다르다: 정책 이름과 갈 곳(신청 페이지 → 공식 공고 → 온통청년 정책 페이지 순)
+ const go=x=>{const s=official(x.links,x.external_id);return {url:(s.apply||s.notice)?.url||PORTAL(x.external_id),what:s.apply?'공식 신청 페이지':s.notice?'공식 공고':'온통청년 정책 페이지'}};
  return bar('신청 전 점검','b')+`<main class="pad"><div><h2 class="h20">${ps.length>1?`정책 ${ps.length}개 신청 준비`:esc(ps[0].name)}</h2><p class="sub">${ps.map(x=>esc(x.period_label)).join(' · ')} · 기준일 ${esc(P.as_of)}</p></div>
+${ps.length>1?`<div class="card apply-links"><h3>정책별 신청하는 곳</h3><p class="tiny">고른 정책마다 신청하는 곳이 달라요. 각 정책의 공식 페이지에서 따로 신청하세요.</p>${ps.map((x,i)=>{const g=go(x);return `<a class="btn line w wrap" style="margin-top:8px" href="${esc(g.url)}" target="_blank" rel="noopener noreferrer"><span class="b">${i+1}. ${esc(x.name.replace(/\s*\(.*?\)\s*/g,' ').trim())}</span><span class="sub s13 blk">${g.what}로 이동</span></a>`}).join('')}</div>`:''}
 ${(no=>no.length?`<div class="card"><h3>제출서류는 공식 신청 페이지에서 확인해 주세요</h3><p class="sub s13">${no.length<ps.length?no.map(x=>'「'+esc(x.name)+'」').join(', ')+'은(는) ':''}온통청년에 서류 안내가 없거나 서류 이름을 찾지 못했어요. 서류가 필요 없다는 뜻이 아니에요. 신청 전에 공식 페이지에서 제출서류와 발급 조건을 확인하세요.</p>${no.map(x=>{const s=official(x.links,x.external_id);return `<a class="btn line w" style="margin-top:8px" href="${esc((s.apply||s.notice)?.url||PORTAL(x.external_id))}" target="_blank" rel="noopener noreferrer">${ps.length>1?esc(x.name.replace(/\s*\(.*?\)\s*/g,' ').trim())+' · ':''}${s.apply?'공식 신청 페이지 열기':s.notice?'공식 공고 열기':'온통청년 정책 페이지 열기'}</a>`}).join('')}</div>`:'')(ps.filter(x=>!P.documents.some(d=>d.policies.includes(x.external_id))))}<div class="card"><h3>점검 목록</h3><ul class="list">${ps.map(row).join('')}
 ${nd.length||P.documents.length?`<li class="rowbtn"><span><span class="b">서류 ${nd.length}종 중 ${have}종 준비</span><span class="sub s13 blk">${nd.length?left.length?'남은 서류: '+esc(left.join(', ')):'찾은 서류는 모두 준비했어요':'서류는 공고에서 확인해 주세요'}</span></span>${!nd.length?pill('확인 필요','warn'):left.length?pill('남음','bad'):pill('완료','ok')}</li>`:''}
 <li class="rowbtn"><span><span class="b">중복 수혜 여부</span><span class="sub s13 blk">${P.conflicts.length?`안내 글에 함께 받기 어렵다는 문구가 ${P.conflicts.length}건 있어요. 기관에 문의한 뒤 신청하세요`:'검수 전이라 판단하지 않았어요. 기관에 문의한 뒤 신청하세요'}</span></span>${P.conflicts.length?pill('문구 있음','bad'):pill('확인 필요','warn')}</li></ul>
 ${left.length?`<button class="btn line w" style="margin:10px 0 6px" data-a="back">서류 체크하러 돌아가기</button>`:''}</div>
 <details class="more" data-d="moreCheck" ${S.moreCheck?'open':''}><summary>승인하면 저장되는 확인 목록 보기</summary><div class="card"><h3>공고에서 확인할 일</h3><p class="tiny">승인하면 아래 일이 내 신청에 저장돼요.</p>${ps.map(x=>`<p class="b s14" style="margin:10px 0 2px">${esc(x.name)}</p><ul class="pre" style="padding-left:18px;margin:0">${x.tasks.map(t=>`<li>${esc(t.title)}</li>`).join('')}</ul>`).join('')}</div></details>
 <p class="tiny mt">등록 정보를 정리한 안내예요. 제출 전에 공식 공고를 한 번 더 확인하세요.</p></main>
-<div class="act">${(s=>`<a class="btn line" href="${esc((s.apply||s.notice)?.url||PORTAL(ps[0].external_id))}" target="_blank" rel="noopener noreferrer">${s.apply?'공식 신청 페이지로 이동':s.notice?'공식 공고로 이동':'온통청년 공고로 이동'}</a>`)(official(ps[0].links,ps[0].external_id))}<button class="btn f1" data-a="approve">승인하고 저장</button></div>`;},
+<div class="act">${ps.length>1?'':(s=>`<a class="btn line" href="${esc((s.apply||s.notice)?.url||PORTAL(ps[0].external_id))}" target="_blank" rel="noopener noreferrer">${s.apply?'공식 신청 페이지로 이동':s.notice?'공식 공고로 이동':'온통청년 공고로 이동'}</a>`)(official(ps[0].links,ps[0].external_id))}<button class="btn f1" data-a="approve">승인하고 저장</button></div>`;},
 
 profile:()=>{const d=S.draft||(S.draft={name:'',sido:'',job_code:'',school_code:'',...(S.profile||{})});
  if(d.job_pick===undefined)d.job_pick=d.job_code||((d.groups||[]).includes('대학(원)생')?'student':'');
@@ -320,7 +329,13 @@ async function loadCounts(){const done=new Set((S.space?.plans||[]).filter(x=>x.
  // 홈의 서류 진행 표시: 고른 정책(없으면 저장한 정책 가운데 '준비 완료'로 옮기지 않은 것)의 서류 목록
  if(ids.length&&S.space)api(space('/plan'),'POST',{external_ids:ids,profile:mine()}).then(r=>{r.must=r.documents.filter(d=>!d.optional);S.homePlan=r;if(S.screen==='home')render()},()=>{});else S.homePlan=null;
  if(first&&S.next?.external_id!==first.external_id)api('/api/integrations/ontong/screen','POST',{profile:{},q:first.external_id,page_size:1}).then(r=>{S.next=r.items[0]||null;if(S.screen==='home')render()},()=>{});
- if(!compared()){S.counts=null;return}S.counts=await api('/api/integrations/ontong/screen','POST',{profile:mine(),page_size:1});if(S.screen==='home')render()}
+ if(!compared()){S.counts=null;S.pick=null;return}
+ // 홈 '놓치기 전에 살펴봐요': 내 정보에 적은 관심(월세·전세 거주 → 그 낱말, 자격증·시험 → 응시료)에 맞고 달라요가 아니며 접수 중·상시·시작 전인 정책을 먼저. 없으면 전체 첫 정책.
+ const want=[...(['월세','전세'].includes(S.profile?.housing)?[S.profile.housing]:[]),...(S.profile?.exams?.length?['응시료']:[])];
+ (async()=>{let pick=null;for(const w of want){const r=await api('/api/integrations/ontong/screen','POST',{profile:mine(),keywords:[w],page_size:5}).catch(()=>null);
+  pick=r?.items.find(x=>x.screen&&x.screen.outcome!=='api_mismatch'&&['open','rolling','upcoming'].includes(x.period_status))||null;if(pick)break}
+  S.pick=pick;if(S.screen==='home')render()})();
+ S.counts=await api('/api/integrations/ontong/screen','POST',{profile:mine(),page_size:1});if(S.screen==='home')render()}
 async function loadList(page=1){const q=S.query;if(page===1){S.list=null;if(S.screen==='results')render(true)}
  const word=q.kind?.startsWith('k:'),age=mine().age;
  const r=await api('/api/integrations/ontong/screen','POST',{profile:mine(),q:q.q,keywords:word?q.kind.slice(2).split(','):q.topics&&q.topic!=null?q.topics[q.topic].keywords:q.keywords,category:q.kind&&!word?q.kind:'',sido:q.sido||'',
@@ -358,7 +373,7 @@ async function say(text,quiet){if(S.busy||!text)return;
  }catch(e){S.chat[S.chat.length-1]={who:'bot',t:e.message}}
  keepChat();
  S.busy=false;if(S.screen==='chat')render()}
-function saveProfile(next){S.profile=next;store.set('youth-desk-profile',next);S.draft=null;S.counts=null;S.list=null;S.plan=null}
+function saveProfile(next){S.profile=next;store.set('youth-desk-profile',next);S.draft=null;S.counts=null;S.pick=null;S.list=null;S.plan=null}
 async function approve(){const P=S.plan;
  try{for(const x of P.policies)S.space=await api(space('/policies/'+encodeURIComponent(x.external_id)+'/confirm'),'POST',{approved:true,preview_token:x.preview_token})}
  catch(e){if(e.status===409){await loadPlan()}throw e}
@@ -369,7 +384,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!
  else if(a==='help'||a==='closehelp'){S.help=a==='help';render()}
  else if(a==='continue'){go('home',true);run(loadCounts)}
  // 데모 계정: 가상 인물 '민지'의 정보(26세 · 인천 미추홀구 · 취업 준비 중 · 월세 · 지난달 정보처리기사 응시)를 내 정보로 넣고 홈으로. 내 정보를 지운 뒤에도 다시 들어올 수 있다.
- else if(a==='demo'){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-1);saveProfile({name:'민지',birth:'2000-03',moved:'2024-02',age:26,sido:'28',region_code:'28177',job_code:'0013003',school_code:'',household:1,housing:'월세',exams:[{name:'정보처리기사',month:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}]});S.back=[];go('home',true);run(loadCounts);toast('데모 계정으로 시작했어요.')}
+ else if(a==='demo'){saveProfile({...DEMO,exams:DEMO.exams.map(x=>({...x})),benefits:[...DEMO.benefits]});S.back=[];go('home',true);run(loadCounts);toast('데모 계정으로 시작했어요.')}
  else if(a==='start'){S.draft={name:'',sido:'',job_code:'',school_code:''};go('profile')}
  else if(a==='tab'){S.draft=null;if(d.s==='plan')run(()=>showPlan(true));else if(d.s==='browse')run(()=>showResults([],true));else{S.back=[];S.screen=d.s;S.sheet=null;render(true);if(d.s==='home')run(async()=>{if(!S.counts||!S.homePlan)await loadCounts()})}}
  else if(a==='openchat')openChat();else if(a==='cat')run(()=>showResults([],true,null,null,d.k));else if(a==='say')say(d.t);
