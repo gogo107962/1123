@@ -153,7 +153,8 @@ with sync_playwright() as p:
             page.locator('input[data-a=doc]:not(:checked)').first.click()      # 체크하면 화면을 다시 그리므로 개수가 줄었는지로 확인한다
             expect(page.locator('input[data-a=doc]:not(:checked)')).to_have_count(left - 1)
     page.locator('[data-a=check]').click()
-    expect(page.locator('main')).to_contain_text('중복 수혜 여부')
+    expect(page.locator('main')).to_contain_text('점검 목록')
+    assert '판단하지 않았어요' not in page.locator('main').inner_text()
     assert '문의 문구' not in page.locator('main').inner_text() and '공식 사이트' not in page.locator('main').inner_text()                 # 고른 정책마다 공식 사이트 링크
     # 정책을 둘 골랐으면 정책마다 신청하는 곳 버튼이 하나씩 있다(아래 막대에는 승인 버튼만). 하나면 아래 막대에 공식 페이지 버튼.
     links = page.locator('.apply-links a.btn')
