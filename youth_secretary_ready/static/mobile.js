@@ -125,7 +125,7 @@ const pick=(k,v)=>`<span class="pick"><span>${ym(v)||'선택'}</span><input id="
 // 이용 방법: 홈의 도움말을 누르면 나온다. 서비스의 끝은 공식 사이트로 넘기는 것이다.
 const HELP=`<div class="scrim" data-a="closehelp"></div><section class="sheet" role="dialog" aria-label="이용 방법"><span class="grab"></span><h2 class="h18">이렇게 이용해요</h2>
 <ol class="ord" style="display:flex;flex-direction:column;gap:12px;line-height:1.6">${[['내 정보 입력','나이 · 사는 곳 · 취업 상태를 넣으면 내 조건에 맞는 지원부터 보여 드려요.'],['지원 찾기','쿼비에게 받고 싶은 지원을 묻거나 ‘지원 찾기’에서 골라요. 정책마다 맞아요 · 확인 필요 · 달라요로 비교해 드려요.'],['서류 준비','‘이 정책 준비하기’를 누르면 필요한 서류를 모아 보여 드려요. 가진 서류를 체크해요.'],['신청 전 점검','조건 · 서류 · 중복 수혜를 한 번 더 보고 계획을 저장해요. 저장한 계획은 ‘내 신청’에 남아요.'],['공식 사이트에서 신청','실제 신청은 공식 사이트에서 해요. 공고 버튼으로 바로 갈 수 있어요.']].map(([t,d])=>`<li><strong>${t}</strong><span class="sub blk">${d}</span></li>`).join('')}</ol>
-<p class="tiny">청년비서는 신청 준비를 돕는 서비스예요. 자격을 확정하지 않으니 신청 전에 공고를 꼭 확인하세요.</p><button class="btn w" data-a="closehelp">확인</button></section>`;
+<p class="tiny">청년이음은 신청 준비를 돕는 서비스예요. 자격을 확정하지 않으니 신청 전에 공고를 꼭 확인하세요.</p><button class="btn w" data-a="closehelp">확인</button></section>`;
 
 // 서류 발급 방법 글에서 발급처 이름(정부24 등)만 그 누리집 링크로 바꾼다. 글과 모양은 그대로다.
 const howLinks=d=>(d.sites||[]).reduce((t,x)=>t.replace(esc(x.name),`<a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline">${esc(x.name)}</a>`),esc(d.how));
@@ -134,7 +134,7 @@ const V={
 // 시작 화면: 문구 · 앱 화면 미리보기(꾸밈이라 화면 읽기 프로그램에서는 건너뜀) · 아래쪽 버튼. 미리보기에는 버튼을 두지 않는다.
 // 버튼은 언제나 두 개: '데모 계정으로 시작하기'(흰색 고정) + 노란 버튼 하나. 노란 버튼은 내 정보가 없으면 '내 정보 입력하기', 한 번 입력해 저장했으면
 // '기존 정보로 계속 이용하기'(2026-11-23 사용자 결정). 정보를 바꾸려면 이어서 들어간 뒤 '내 정보' 탭에서 고친다.
-login:()=>`<main class="pad login"><div class="login-intro"><h1 class="hero">공고는 저희가 읽을게요.<br>신청 준비만 하세요.</h1><p class="sub">청년비서 · 청년 지원 신청 준비 도우미</p></div>
+login:()=>`<main class="pad login"><div class="login-intro"><h1 class="hero">공고는 저희가 읽을게요.<br>신청 준비만 하세요.</h1><p class="sub">청년이음 · 청년 지원 신청 준비 도우미</p></div>
 <div class="peek" aria-hidden="true"><div class="peek-top"><span class="peek-chat">월세 지원 받을 수 있어?</span></div>
 <div class="peek-card"><span class="soft-icon yellow">${ms('home_work')}</span><span class="peek-copy"><strong>청년 월세 지원</strong><span>내 조건과 비교했어요</span></span>${pill('맞아요','ok')}</div>
 <div class="peek-card in"><span class="soft-icon">${ms('description')}</span><span class="peek-copy"><strong>서류 6종을 한 번에</strong><span class="peek-bar"><i></i></span><span>4종 준비 · 2종 남음</span></span></div>
@@ -145,7 +145,7 @@ login:()=>`<main class="pad login"><div class="login-intro"><h1 class="hero">공
 home:()=>{const p=S.profile||{},all=tasks(),rd=new Set((S.space?.plans||[]).filter(x=>x.ready).map(x=>x.external_id)),
  // '이어서 준비하기'는 준비 완료로 옮기지 않은 계획만 센다(모두 준비 완료면 전체). '저장한 정책' 건수는 전체를 센다.
  t=all.some(x=>!rd.has(x.external_id))?all.filter(x=>!rd.has(x.external_id)):all,done=t.filter(x=>x.status==='done').length,c=S.counts,groups=new Set(all.map(x=>x.external_id)).size,next=t.find(x=>x.status!=='done'),top=S.pick||c?.items[0],chev=ms('chevron_right'),hp=S.homePlan?.policies.length?S.homePlan:null,have=hp?hp.must.filter(d=>S.docs[d.key]).length:0,lack=hp?.must.find(d=>!S.docs[d.key]);
- return `<header class="home-head"><span class="wordmark">청년비서</span><span style="display:flex;gap:6px"><button class="ib" data-a="help" aria-label="이용 방법">${ms('help')}</button><button class="ib" data-a="notice" aria-label="알림">${ms('notifications')}</button></span></header>${S.help?HELP:''}
+ return `<header class="home-head"><span class="wordmark">청년이음</span><span style="display:flex;gap:6px"><button class="ib" data-a="help" aria-label="이용 방법">${ms('help')}</button><button class="ib" data-a="notice" aria-label="알림">${ms('notifications')}</button></span></header>${S.help?HELP:''}
 <main class="pad home-main"><div class="greeting"><span>${p.name?esc(p.name)+' 님':'반가워요'}</span><button data-a="tab" data-s="profile">${esc(area(p)||'내 정보 입력')} ${chev}</button></div>
 <section class="balance-card"><div class="row"><h2>내가 준비 중인 지원</h2><span class="small-tag">저장한 정책</span></div><div class="balance-value">${groups}<span>건</span></div><p class="balance-caption">찾아둔 지원, 신청까지 차근차근</p>
 <div class="account-actions"><button data-a="tab" data-s="browse">지원 더 찾기 ${ms('add')}</button><button data-a="tab" data-s="plan">내 신청 보기 ${chev}</button></div></section>
