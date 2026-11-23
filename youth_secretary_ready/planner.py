@@ -91,6 +91,19 @@ def relations(policies):
     return conflicts, compatible
 
 
+def alike(policies, known=()):
+    """막는 문구는 없지만 종류가 같아 겹칠 수 있는 쌍. 분야가 같고, 지역이 겹치고, 두 이름에 같은 주제 낱말(월세·응시료 등)이 있을 때만 고른다.
+    글에 근거가 있는 판단이 아니라 추정이므로 '겹칠 수 있음'으로만 쓰고, 문구로 이미 가린 쌍(known)은 뺀다. 분야를 모르면 고르지 않는다."""
+    seen = {frozenset((c['from'], c['to'])) for c in known}
+    out = []
+    for i, a in enumerate(policies):
+        for b in policies[i + 1:]:
+            topic = next((t for t in TOPICS if t in a['name'] and t in b['name']), None)
+            if topic and a.get('category') and a.get('category') == b.get('category') and overlap(a, b)                     and frozenset((a['external_id'], b['external_id'])) not in seen:
+                out.append({'a': a['external_id'], 'b': b['external_id'], 'topic': topic})
+    return out
+
+
 def conflicts(policies):
     return relations(policies)[0]
 
@@ -206,7 +219,7 @@ def plan(policies, on):
         brief.append(f"예상 지원 금액(모두 받을 때): 매달 {total['monthly_krw']:,}원 + 그 밖에 {total['other_krw']:,}원"
                      + (f". 묶음에서 한 조합만 받으면 매달 {low[0]:,}~{high[0]:,}원 + 그 밖에 {low[1]:,}~{high[1]:,}원(금액을 더하지 않는 정책은 0원으로 셈)" if grouped else ''))
     return {'as_of': on.isoformat(), 'order': [s['external_id'] for s in order], 'steps': order,
-            'conflicts': found, 'compatible': compatible, 'groups': grouped,
+            'conflicts': found, 'compatible': compatible, 'alike': alike(policies, found + compatible), 'groups': grouped,
             'amounts': {'all': {'monthly_krw': total['monthly_krw'], 'other_krw': total['other_krw']},
                         'one_per_group': {'monthly_krw': [low[0], high[0]], 'other_krw': [low[1], high[1]]},
                         'used': total['used'], 'loans': total['loans'], 'unsure': total['unsure']},

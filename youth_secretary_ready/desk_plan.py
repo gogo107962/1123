@@ -120,6 +120,6 @@ def build(wid, external_ids, profile, on, have=()):
     planned = plan_order(policies, on)
     return {'as_of': on.isoformat(), 'policies': policies, 'order': planned['order'],
             'documents': [found[key] for key, *_ in DOCS if key in found], 'documents_unlisted': unlisted,
-            'conflicts': planned['conflicts'], 'overlap_checked': False, 'saved': False, 'estimate': estimate(policies),
+            'conflicts': planned['conflicts'], 'alike': planned['alike'], 'overlap_checked': False, 'saved': False, 'estimate': estimate(policies),
             'planner': planned, 'docboard': board(policies, have, on),
             'notice': NOTICE + ' 서류는 등록된 서류 안내 글에서 이름을 찾은 것이며, 중복 수혜 제한은 검수하지 않았습니다.'}
