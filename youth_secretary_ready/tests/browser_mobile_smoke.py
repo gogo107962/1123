@@ -79,6 +79,11 @@ with sync_playwright() as p:
     page.evaluate("openChat(TOPICS['자격증 응시료'])")
     page.locator('[data-a=results]').wait_for(timeout=120000)
     ai_seconds = round(time.monotonic() - started, 1)
+    # 챗봇 이름은 '쿼비'(2026-11-23 사용자 결정): 화면 제목 · 말한 사람 · 첫인사 · 입력 칸
+    expect(page.locator('header h1')).to_have_text('쿼비')
+    expect(page.locator('.m.bot .who').first).to_have_text('쿼비')
+    expect(page.locator('.m.bot').first).to_contain_text('쿼비예요')
+    assert page.locator('#m').get_attribute('placeholder') == '쿼비한테 물어보세요' and '청년비서' not in page.locator('.m.bot .who').all_inner_texts()
     expect(page.locator('.m.bot').last).to_contain_text('관련 정책')
     assert '다시 묻지 않을게요' not in page.locator('main').inner_text()
     # AI가 꺼져 있으면 낱말로 찾고, 그렇게 했다고 화면에 밝힌다.
