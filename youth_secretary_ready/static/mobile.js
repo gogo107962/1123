@@ -128,10 +128,10 @@ login:()=>`<main class="pad login"><div class="login-intro"><h1 class="hero">공
 <div class="peek" aria-hidden="true"><div class="peek-top"><span class="peek-tag">화면 예시</span><span class="peek-chat">월세 지원 받을 수 있어?</span></div>
 <div class="peek-card"><span class="soft-icon yellow">${ms('home_work')}</span><span class="peek-copy"><strong>청년 월세 지원</strong><span>내 조건과 비교했어요</span></span>${pill('맞아요','ok')}</div>
 <div class="peek-card in"><span class="soft-icon">${ms('description')}</span><span class="peek-copy"><strong>서류 6종을 한 번에</strong><span class="peek-bar"><i></i></span><span>4종 준비 · 2종 남음</span></span></div>
-<div class="peek-card"><span class="soft-icon">${ms('checklist')}</span><span class="peek-copy"><strong>준비를 마치면 공식 사이트로</strong><span>신청 페이지로 바로 안내해요</span></span>${ms('chevron_right')}</div></div>
-<div class="col login-actions">${S.profile?`<button class="btn" data-a="continue">기존 정보로 계속 이용</button><p class="sub c">${S.profile.name?esc(S.profile.name)+' 님이 ':''}입력한 정보로 이어서 해요</p><div class="or"><span></span>또는<span></span></div><div class="login-two"><button class="btn line" data-a="start">새 정보 입력</button><button class="btn line" data-a="demo">데모 계정으로 시작</button></div>`
- // 정보가 없을 때(처음 · 내 정보를 지운 뒤): 데모 계정(가상 인물 민지)으로 바로 들어가거나 새로 입력한다
- :`<button class="btn" data-a="demo">데모 계정(민지)으로 시작</button><p class="sub c">가상 인물 ‘민지’의 정보로 바로 시작해요</p><div class="or"><span></span>또는<span></span></div><button class="btn line" data-a="start">새 정보 입력</button>`}</div></main>`,
+<div class="peek-card"><span class="soft-icon">${ms('checklist')}</span><span class="peek-copy"><strong>공식 사이트로 신청</strong><span>준비를 마치면 바로 안내해요</span></span>${ms('chevron_right')}</div></div>
+<div class="col login-actions">${S.profile?`<button class="btn" data-a="continue">기존 정보로 계속 이용</button><p class="sub c">${S.profile.name?esc(S.profile.name)+' 님이 ':''}입력한 정보로 이어서 해요</p><div class="login-two"><button class="btn line" data-a="demo">데모 계정으로 체험하기</button><button class="btn line" data-a="start">내 정보 입력하기</button></div>`
+ // 정보가 없을 때(처음 · 내 정보를 지운 뒤): 아래에 '데모 계정으로 체험하기'(가상 인물 민지)와 '내 정보 입력하기' 두 버튼
+ :`<button class="btn" data-a="demo">데모 계정으로 체험하기</button><button class="btn line" data-a="start">내 정보 입력하기</button><p class="sub c">데모 계정은 가상 인물 ‘민지’의 정보로 시작해요</p>`}</div></main>`,
 
 home:()=>{const p=S.profile||{},all=tasks(),rd=new Set((S.space?.plans||[]).filter(x=>x.ready).map(x=>x.external_id)),
  // '이어서 준비하기'는 준비 완료로 옮기지 않은 계획만 센다(모두 준비 완료면 전체). '저장한 정책' 건수는 전체를 센다.
