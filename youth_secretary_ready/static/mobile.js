@@ -126,7 +126,9 @@ const V={
 login:()=>`<main class="pad"><div class="login-intro"><h1 class="hero">공고는 저희가 읽을게요.<br>신청 준비만 하세요.</h1><p class="sub">청년비서 · 청년 지원 신청 준비 도우미</p></div>
 <div class="col">${S.profile?`<button class="btn" data-a="continue">기존 정보로 계속 이용</button><p class="sub c">${S.profile.name?esc(S.profile.name)+' 님이 ':''}입력한 정보로 이어서 해요</p><div class="or"><span></span>또는<span></span></div>`:''}<button class="btn ${S.profile?'line':''}" data-a="start">새 정보 입력</button></div></main>`,
 
-home:()=>{const p=S.profile||{},t=tasks(),done=t.filter(x=>x.status==='done').length,c=S.counts,groups=new Set(t.map(x=>x.external_id)).size,next=t.find(x=>x.status!=='done'),top=c?.items[0],chev=ms('chevron_right'),hp=S.homePlan?.policies.length?S.homePlan:null,have=hp?hp.must.filter(d=>S.docs[d.key]).length:0,lack=hp?.must.find(d=>!S.docs[d.key]);
+home:()=>{const p=S.profile||{},all=tasks(),rd=new Set((S.space?.plans||[]).filter(x=>x.ready).map(x=>x.external_id)),
+ // '이어서 준비하기'는 준비 완료로 옮기지 않은 계획만 센다(모두 준비 완료면 전체). '저장한 정책' 건수는 전체를 센다.
+ t=all.some(x=>!rd.has(x.external_id))?all.filter(x=>!rd.has(x.external_id)):all,done=t.filter(x=>x.status==='done').length,c=S.counts,groups=new Set(all.map(x=>x.external_id)).size,next=t.find(x=>x.status!=='done'),top=c?.items[0],chev=ms('chevron_right'),hp=S.homePlan?.policies.length?S.homePlan:null,have=hp?hp.must.filter(d=>S.docs[d.key]).length:0,lack=hp?.must.find(d=>!S.docs[d.key]);
  return `<header class="home-head"><span class="wordmark">청년비서</span><span style="display:flex;gap:6px"><button class="ib" data-a="help" aria-label="이용 방법">${ms('help')}</button><button class="ib" data-a="notice" aria-label="알림">${ms('notifications')}</button></span></header>${S.help?HELP:''}
 <main class="pad home-main"><div class="greeting"><span>${p.name?esc(p.name)+' 님':'반가워요'}</span><button data-a="tab" data-s="profile">${esc(area(p)||'내 정보 입력')} ${chev}</button></div>
 <section class="balance-card"><div class="row"><h2>내가 준비 중인 지원</h2><span class="small-tag">저장한 정책</span></div><div class="balance-value">${groups}<span>건</span></div><p class="balance-caption">찾아둔 지원, 신청까지 차근차근</p>
@@ -235,7 +237,16 @@ ${P.must.some(d=>!S.docs[d.key])?'<p class="tiny" style="margin-top:8px">지금 
  const made=S.space?.plans||[],madeIds=new Set(made.map(x=>x.external_id)),drafting=ids.filter(id=>!madeIds.has(id)).length;
  const tasksOf=list=>`<ul class="list">${list.map(t=>`<li class="doc"><input type="checkbox" class="cb" data-a="task" data-id="${esc(t.id)}" ${t.status==='done'?'checked':''} ${t.outdated?'disabled':''} aria-label="${esc(t.title)} 완료"><div><span class="b">${esc(t.title)}</span><p class="sub s13">${esc(t.instructions)}</p>${t.outdated?'<p class="red s13">자료가 바뀌었어요. 정책을 다시 골라 계획을 승인해 주세요.</p>':''}</div></li>`).join('')}</ul>`;
  // 정책마다 한 줄(이름 · 접수 상태 · 진행)만 보이고, 누르면 준비 작업 체크리스트가 펼쳐진다. 펼친 상태는 다시 그려도 남는다(S['po_'+번호]).
- const madeHtml=`<div class="row" style="margin-top:2px"><h3>내가 세운 신청 계획</h3><span class="tiny">${made.length}건</span></div>${made.length?made.map(x=>`<details class="card plan-card" data-d="po_${esc(x.external_id)}" ${S['po_'+x.external_id]?'open':''}><summary><span class="row"><span class="h16">${esc(x.name)}</span><span class="chev" aria-hidden="true">⌄</span></span><span class="pills">${x.done===x.total?pill('준비 끝','ok'):pill('준비 중')}${pill(x.period_status==='open'?esc(short(x.period_label)):PERIOD[x.period_status],['ended','closed_code','closed_official'].includes(x.period_status)?'gray':'')}${x.outdated?pill('자료 바뀜','bad'):''}</span><span class="sub s13 blk">${esc(x.saved_on)}에 계획 저장 · 준비 작업 ${x.total}개 중 ${x.done}개 완료</span><span class="bar" role="img" aria-label="준비 작업 ${x.total}개 중 ${x.done}개 완료"><i style="width:${Math.round(x.done/x.total*100)}%"></i></span></summary>${tasksOf(groups.get(x.external_id)||[])}${sites(x.links,x.external_id)}<button class="link" style="margin-top:10px" data-a="detail" data-id="${esc(x.external_id)}">정책 조건 다시 보기</button></details>`).join(''):`<div class="card"><h3>아직 세운 신청 계획이 없어요</h3><p class="sub">${picked.length?'아래 임시저장한 계획에서 서류를 모두 체크하고 ‘신청 전 점검’에서 승인하면 여기에 남아요.':'정책을 고르고 ‘신청 전 점검’에서 계획을 승인하면 여기에 남아요.'}</p>${picked.length?'':'<button class="btn w" style="margin-top:12px" data-a="openchat">챗봇에게 물어보기</button>'}</div>`}`;
+ // 준비 작업을 모두 끝낸 계획은 '준비 완료'로 따로 모은다(서버의 ready: 모두 완료이고 자료가 바뀌지 않음). 준비 완료 카드에는 공식 사이트 버튼을 먼저 둔다.
+ const doing=made.filter(x=>!x.ready),ready=made.filter(x=>x.ready);
+ const planCard=(x,body)=>`<details class="card plan-card${x.ready?' ready-card':''}" data-d="po_${esc(x.external_id)}" ${S['po_'+x.external_id]?'open':''}><summary><span class="row"><span class="h16">${esc(x.name)}</span><span class="chev" aria-hidden="true">⌄</span></span><span class="pills">${x.ready?pill('준비 완료','ok'):pill('준비 중')}${pill(x.period_status==='open'?esc(short(x.period_label)):PERIOD[x.period_status],['ended','closed_code','closed_official'].includes(x.period_status)?'gray':'')}${x.outdated?pill('자료 바뀜','bad'):''}</span><span class="sub s13 blk">${esc(x.saved_on)}에 계획 저장 · 준비 작업 ${x.ready?`${x.total}개 모두 완료`:`${x.total}개 중 ${x.done}개 완료`}</span><span class="bar" role="img" aria-label="준비 작업 ${x.total}개 중 ${x.done}개 완료"><i style="width:${Math.round(x.done/x.total*100)}%"></i></span></summary>${body}<button class="link" style="margin-top:10px" data-a="detail" data-id="${esc(x.external_id)}">정책 조건 다시 보기</button></details>`;
+ // 준비 중 카드의 '준비 완료로 옮기기': 남은 준비 작업도 완료로 표시된다는 것을 버튼 아래에 미리 알린다. 자료가 바뀐 계획은 다시 승인해야 하므로 버튼이 없다.
+ const doingCard=x=>planCard(x,tasksOf(groups.get(x.external_id)||[])+sites(x.links,x.external_id)+(x.outdated?'':`<button class="btn w" style="margin-top:12px" data-a="ready" data-id="${esc(x.external_id)}">준비 완료로 옮기기</button>${x.done<x.total?`<p class="tiny c" style="margin-top:6px">남은 준비 작업 ${x.total-x.done}개도 완료로 표시돼요.</p>`:''}`));
+ // 준비 완료 카드의 안내는 접수 상태를 따른다. 끝났거나 시작 전인 정책에 '신청하세요'라고 하지 않고, 다음 모집일은 추정하지 않는다.
+ const goNext=x=>['ended','closed_code','closed_official'].includes(x.period_status)?'<strong>등록된 접수기간이 끝났어요.</strong> 다음 모집 여부는 공식 사이트에서 확인해 주세요.':x.period_status==='upcoming'?'<strong>아직 접수 시작 전이에요.</strong> 접수가 시작되면 공식 사이트에서 신청하세요.':'<strong>공식 사이트에서 신청하세요.</strong> 신청기간과 제출서류는 공식 공고에서 한 번 더 확인해 주세요.';
+ const readyCard=x=>planCard(x,`<p class="s14" style="margin:4px 0 8px">${goNext(x)}</p>${sites(x.links,x.external_id)}${tasksOf(groups.get(x.external_id)||[])}<p class="tiny" style="margin-top:8px">준비 작업의 체크를 풀면 다시 ‘내가 세운 신청 계획’으로 옮겨져요.</p>`);
+ const madeHtml=`<div class="row" style="margin-top:2px"><h3>내가 세운 신청 계획</h3><span class="tiny">${made.length?doing.length+'건 준비 중':'0건'}</span></div>${!made.length?`<div class="card"><h3>아직 세운 신청 계획이 없어요</h3><p class="sub">${picked.length?'아래 임시저장한 계획에서 서류를 모두 체크하고 ‘신청 전 점검’에서 승인하면 여기에 남아요.':'정책을 고르고 ‘신청 전 점검’에서 계획을 승인하면 여기에 남아요.'}</p>${picked.length?'':'<button class="btn w" style="margin-top:12px" data-a="openchat">챗봇에게 물어보기</button>'}</div>`:doing.length?doing.map(doingCard).join(''):'<p class="sub" style="margin:4px 4px 0">준비 중인 계획이 없어요. 준비를 마친 계획은 아래 ‘준비 완료’에 있어요.</p>'}
+${made.length?`<div class="row" style="margin-top:20px"><h3>준비 완료</h3><span class="tiny">${ready.length}건</span></div>${ready.length?ready.map(readyCard).join(''):'<p class="sub" style="margin:4px 4px 0">준비 작업을 모두 끝낸 계획이 여기에 모여요. 계획을 펼쳐 ‘준비 완료로 옮기기’를 눌러도 돼요.</p>'}`:''}`;
  // 임시저장: 골라 두었지만 아직 승인하지 않은 정책. 고른 정책과 체크한 서류는 이 브라우저에 이미 남아 있다(youth-desk-selected · youth-desk-docs).
  // 서류를 다 체크하지 못해 '신청 전 점검'으로 넘어가지 못한 계획을 여기서 확인하고 이어서 체크할 수 있다.
  const drafts=picked.filter(id=>!madeIds.has(id));
@@ -293,8 +304,8 @@ function sheet(){if(S.sheet===null||S.screen!=='detail'||!S.detail)return'';cons
 
 // ── 데이터 불러오기 ──
 async function refreshSpace(){S.space=await api(space())}
-async function loadCounts(){const first=tasks()[0],ids=selIds().length?selIds():savedIds();
- // 홈의 서류 진행 표시: 고른 정책(없으면 저장한 정책)의 서류 목록
+async function loadCounts(){const done=new Set((S.space?.plans||[]).filter(x=>x.ready).map(x=>x.external_id)),first=tasks().find(t=>!done.has(t.external_id))||tasks()[0],ids=selIds().length?selIds():savedIds().filter(id=>!done.has(id));
+ // 홈의 서류 진행 표시: 고른 정책(없으면 저장한 정책 가운데 '준비 완료'로 옮기지 않은 것)의 서류 목록
  if(ids.length&&S.space)api(space('/plan'),'POST',{external_ids:ids,profile:mine()}).then(r=>{r.must=r.documents.filter(d=>!d.optional);S.homePlan=r;if(S.screen==='home')render()},()=>{});else S.homePlan=null;
  if(first&&S.next?.external_id!==first.external_id)api('/api/integrations/ontong/screen','POST',{profile:{},q:first.external_id,page_size:1}).then(r=>{S.next=r.items[0]||null;if(S.screen==='home')render()},()=>{});
  if(!compared()){S.counts=null;return}S.counts=await api('/api/integrations/ontong/screen','POST',{profile:mine(),page_size:1});if(S.screen==='home')render()}
@@ -353,6 +364,8 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!
  else if(a==='results')run(()=>showResults(S.chat[d.i].keywords,false,S.chat[d.i].topics,d.t!=null?+d.t:null));else if(a==='browse')run(()=>showResults([],true));
  else if(a==='newchat'){if(!S.busy){S.chat=[];S.skip=[];S.chatId=null;S.chatOn=null;openChat();render(true)}}
  else if(a==='deldraft'){select(d.id,'',false);toast('임시저장한 계획을 지웠어요. 결과에서 다시 고를 수 있어요.');render();if(selIds().length)run(loadPlan)}
+ // '준비 완료로 옮기기': 그 정책의 준비 작업을 한꺼번에 완료로(서버가 자료가 바뀐 계획은 막는다). 실패해도 지금 상태를 다시 불러와 보여 준다.
+ else if(a==='ready')run(async()=>{try{await api(space('/plans/'+encodeURIComponent(d.id)),'PATCH',{status:'done'})}catch(e){await refreshSpace().catch(()=>{});render();throw e}await refreshSpace();S.homePlan=null;render();toast('‘준비 완료’로 옮겼어요.')});
  else if(a==='history'){if(!S.busy)go('chats')}
  else if(a==='oldchat'){const x=store.get(CHATS,[]).find(c=>c.id===d.id);if(x){S.chat=x.chat;S.chatId=x.id;S.skip=x.skip||[];S.chatOn=x.on;back()}}
  else if(a==='delchat'){store.set(CHATS,store.get(CHATS,[]).filter(c=>c.id!==d.id));if(S.chatId===d.id)S.chatId=null;render()}else if(a==='attach')toast('아직 파일을 첨부할 수 없어요');else if(a==='notice')toast('새로운 알림이 없어요');
@@ -391,7 +404,10 @@ document.addEventListener('change',e=>{const t=e.target,d=t.dataset;
  if(d.q){S.query[d.q]=t.value;run(()=>loadList());return}
  if(d.a==='sel'){if(t.checked&&selIds().length>=5){t.checked=false;toast('한 번에 5개까지 함께 준비할 수 있어요.');return}select(d.id,d.n,t.checked);render()}
  else if(d.a==='doc'){S.docs[d.k]=t.checked;store.set('youth-desk-docs',S.docs);render()}
- else if(d.a==='task')run(async()=>{try{await api(space('/tasks/'+encodeURIComponent(d.id)),'PATCH',{status:t.checked?'done':'todo'});await refreshSpace();render()}catch(error){t.checked=!t.checked;throw error}});
+ else if(d.a==='task')run(async()=>{const eid=(S.space?.tasks||[]).find(x=>x.id===d.id)?.external_id,ready=()=>!!(S.space?.plans||[]).find(x=>x.external_id===eid)?.ready,was=ready();
+  try{await api(space('/tasks/'+encodeURIComponent(d.id)),'PATCH',{status:t.checked?'done':'todo'});await refreshSpace();render()}catch(error){t.checked=!t.checked;throw error}
+  // 체크 하나로 칸이 바뀌면(마지막 작업을 끝냄 · 준비 완료에서 체크를 풂) 카드가 다른 칸으로 옮겨진 것을 알린다
+  if(ready()!==was){S.homePlan=null;toast(was?'다시 ‘내가 세운 신청 계획’으로 옮겼어요.':'준비 작업을 모두 끝내 ‘준비 완료’로 옮겼어요.')}});
  else if(d.a==='group'&&S.draft){const now=new Set(S.draft.groups||[]);t.checked?now.add(d.v):now.delete(d.v);S.draft.groups=[...now]}
  else if(d.a==='benefit'&&S.draft){const now=new Set(S.draft.benefits||[]);t.checked?now.add(d.v):now.delete(d.v);S.draft.benefits=[...now];render()}
  else if(d.k&&S.draft){S.draft[d.k]=t.value;if(d.k==='sido'){S.draft.region_code='';render()}else if(d.k==='birth'||d.k==='region_code'||d.k==='business')render()}});

@@ -163,6 +163,24 @@ with sync_playwright() as p:
     assert page.locator('.ord li').count() == 0
     assert page.locator('[data-a=unsel]').count() == 0 and page.locator('[data-a=check]').count() == 0
     assert page.evaluate(FITS)
+    # 준비 완료: 계획을 펼쳐 '준비 완료로 옮기기'를 누르면 '준비 완료' 칸으로 옮겨지고 공식 사이트 버튼이 보인다. 체크를 하나 풀면 다시 준비 중으로 돌아간다.
+    expect(page.locator('main')).to_contain_text('2건 준비 중')
+    expect(page.locator('.ready-card')).to_have_count(0)
+    page.locator('.plan-card summary').first.click()
+    expect(page.locator('.plan-card[open]')).to_contain_text('개도 완료로 표시돼요')
+    page.locator('.plan-card[open] [data-a=ready]').click()
+    expect(page.locator('.ready-card')).to_have_count(1)
+    expect(page.locator('#toast')).to_contain_text('준비 완료')
+    expect(page.locator('main')).to_contain_text('1건 준비 중')
+    expect(page.locator('.ready-card')).to_contain_text('모두 완료')
+    expect(page.locator('.ready-card')).to_contain_text('공식 사이트')       # 안내 문장은 접수 상태에 따라 다르다(접수 중이면 '신청하세요', 끝났으면 '다음 모집 여부 확인')
+    assert page.locator('.ready-card a.btn[href^="https://"]').count() >= 1
+    assert page.locator('.ready-card [data-a=ready]').count() == 0
+    assert page.evaluate(FITS)
+    page.locator('.ready-card input[data-a=task]').first.uncheck()
+    expect(page.locator('.ready-card')).to_have_count(0)
+    expect(page.locator('#toast')).to_contain_text('내가 세운 신청 계획')
+    expect(page.locator('.plan-card')).to_have_count(2)
 
     # 공식 페이지에서 보완한 정보(사람 검수 전) 표시
     page.evaluate("openDetail('20261106005400214758')")
