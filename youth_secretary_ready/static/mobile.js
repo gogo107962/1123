@@ -197,7 +197,7 @@ results:()=>{const L=S.list,q=S.query,cmp=compared(),tab=S.listTab,myAge=mine().
    const outs=cmp?`<div class="chips">${[['',`전체 ${n(all)}`],['api_match',`맞아요 ${n(o.api_match)}`],['needs_check',`확인 필요 ${n(o.needs_check)}`],['api_mismatch',`달라요 ${n(o.api_mismatch)}`]].map(([k,l])=>`<button class="chip ${q.outcome===k?'on':''}" data-a="filter" data-k="${k}">${l}</button>`).join('')}</div>`:'';
   const topicLine=q.keywords.length?`<p class="tiny">찾는 주제: ${esc(q.keywords.join(' · '))} · <button class="link" data-a="cleartopic">주제 지우기</button></p>`:'';
   const tabs=T?`<div class="chips">${[['','전체'],...T.map((t,k)=>[k,`${CIRC[k]} ${t.label} ${n(t.total)}`])].map(([k,l])=>`<button class="chip ${String(q.topic??'')===String(k)?'on':''}" data-a="subtopic" data-k="${k}">${esc(l)}</button>`).join('')}</div>`:'';
-  const selbar=`<div class="act"><span class="b s14">${sel}개 선택</span><button class="btn f1" data-a="plan" ${sel?'':'disabled'}>신청 계획 만들기</button></div>`;
+  const selbar=`<div class="act"><button class="btn f1" data-a="plan" ${sel?'':'disabled'}>신청 계획 만들기</button></div>`;
   // 주제를 둘 이상 물었을 때의 '전체': 주제마다 구역을 나눠 위쪽 정책을 보여 주고, 더 보려면 그 주제의 탭으로 간다
   if(allT)return bar('결과','b')+`<main class="pad"><p class="h18">${HOWMANY[T.length]} 가지 지원으로 나눠 보여 드려요</p>${topicLine}${tabs}${T.map((t,k)=>`<div class="sect"><b>${CIRC[k]} ${esc(t.label)}</b><span class="tiny">${cmp?`확인 필요 ${n(t.outcomes.needs_check)}건`:`정책 ${n(t.total)}건`}</span><i></i></div>${t.items.map(card).join('')||'<div class="card"><p class="sub">찾은 정책이 없어요.</p></div>'}${t.total>t.items.length?`<button class="more-link" data-a="subtopic" data-k="${k}">${esc(t.label.includes('·')?t.label.split(' ')[0]:t.label.split(' ').pop())} 정책 더 보기 <span aria-hidden="true">⌄</span></button>`:''}`).join('')}
 <p class="tiny mt">온통청년 정보${S.collected?`(${esc(S.collected)} 수집)`:''}와 비교한 결과이며 자격 판정이 아니에요 · 카드를 누르면 근거를 볼 수 있어요</p></main>${selbar}`;
@@ -209,7 +209,7 @@ ${topicLine}${tabs}
 ${L.items.map(tab?item:card).join('')||(tab?'<div class="card"><h3>찾은 정책이 없어요</h3><p class="sub">검색어나 필터를 바꿔 보세요.</p><button class="btn line w" style="margin-top:12px" data-a="clearfilters">검색 · 필터 지우기</button></div>':'<div class="card"><h3>찾은 정책이 없어요</h3><p class="sub">다른 말로 물어보거나 주제를 지워 보세요.</p></div>')}
 ${L.page<L.pages?`<button class="btn line w" data-a="more">더 보기 (${n(L.items.length)} / ${n(L.total)})</button>`:''}
 <p class="tiny mt">오늘(${esc(L.as_of)}) 기준 · 온통청년 정보${S.collected?`(${esc(S.collected)} 수집)`:''}와 비교한 결과이며 자격 판정이 아니에요 · 카드를 누르면 근거를 볼 수 있어요</p></main>
-${tab?(sel?`<div class="act floating"><span class="b s14">${sel}개 선택</span><button class="btn f1" data-a="plan">신청 계획 만들기</button></div>`:'')+dock('browse'):`<div class="act"><span class="b s14">${sel}개 선택</span><button class="btn f1" data-a="plan" ${sel?'':'disabled'}>신청 계획 만들기</button></div>`}`;},
+${tab?(sel?`<div class="act floating"><button class="btn f1" data-a="plan">신청 계획 만들기</button></div>`:'')+dock('browse'):`<div class="act"><button class="btn f1" data-a="plan" ${sel?'':'disabled'}>신청 계획 만들기</button></div>`}`;},
 
 detail:()=>{const d=S.detail;if(!d)return wait('정책 상세');
  const p=d.bundle.public_fields,check=d.bundle.source_check,r=rows(d),out=d.cmp?.screen?.outcome,site=official(d.sources,d.id);
